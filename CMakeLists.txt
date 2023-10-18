@@ -17,6 +17,7 @@ aux_source_directory(controllers CTL_SRC)
 aux_source_directory(filters FILTER_SRC)
 aux_source_directory(plugins PLUGIN_SRC)
 aux_source_directory(models MODEL_SRC)
+aux_source_directory(service SERVICE_SRC)
 
 
 add_executable(
@@ -46,7 +47,8 @@ target_sources(${PROJECT_NAME}
         ${CTL_SRC}
         ${FILTER_SRC}
         ${PLUGIN_SRC}
-        ${MODEL_SRC})
+        ${MODEL_SRC}
+        ${SERVICE_SRC})
 
 
 add_subdirectory(test)
