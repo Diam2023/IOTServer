@@ -2,65 +2,54 @@
 // Created by Monoliths on 4/23/2023.
 //
 
-#include <QtCore/QCoreApplication>
 #include <thread>
+#include <QtCore/QCoreApplication>
 #include <drogon/HttpAppFramework.h>
 
-/**
- * Signal For Exit
- */
-enum class ExitSignal{
-    INT,
-    TERM
-};
-
 // Handler Exit Signal
-static inline void exitSignalHandler(ExitSignal)
-{
-    // 处理退出程序
-    std::cout << "Exiting..." << std::endl;
+static void exitSignalHandler() {
+    // Handle Exit Signal
+    LOG_WARN << "Server Exiting...";
     drogon::app().quit();
     QCoreApplication::exit();
 }
 
-static int startDrogonTask()
-{
+static int runServer() {
     // Drogon Thread
-    auto drogonThread = std::thread([](){
+    auto drogonThread = std::thread([]() {
         // Handler Exit Signal
-        drogon::app().setIntSignalHandler([] { return exitSignalHandler(ExitSignal::INT); });
-        drogon::app().setTermSignalHandler([](){ return exitSignalHandler(ExitSignal::TERM); });
+        drogon::app().setIntSignalHandler(&exitSignalHandler);
+        drogon::app().setTermSignalHandler(&exitSignalHandler);
 
-        //Load config file
+        // Load config file
         drogon::app().loadConfigFile("/home/monoliths/Project/CMake/IOTServer/config/config.yaml");
-        LOG_INFO << "Document Root: " <<  drogon::app().getDocumentRoot();
+        LOG_INFO << "Document Root: " << drogon::app().getDocumentRoot();
 
-        // To get Customer Config
-//        drogon::app().getCustomConfig().get()
-
-        //Run HTTP framework,the method will block in the internal event loop
+        // Get Customer Config
+        auto config = drogon::app().getCustomConfig();
+//        auto res = config.get("mqtt", nullptr);
+//        res.isNull();
+        // Run HTTP framework,the method will block in the internal event loop
         drogon::app().run();
     });
 
     auto result = QCoreApplication::exec();
 
     // If Drogon Thread Not Exit Yet.
-    if (drogonThread.joinable())
-    {
+    if (drogonThread.joinable()) {
         // Wait To Exit
         drogonThread.join();
     }
+
+    LOG_INFO << "Server Exit With Code: " << result;
 
     return result;
 }
 
 // Main Process
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     // Qt Core Application
     QCoreApplication app(argc, argv);
 
-
-    return startDrogonTask();
+    return runServer();
 }
-

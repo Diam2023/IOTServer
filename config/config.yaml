@@ -10,98 +10,42 @@
 #     # [Options, Compression]
 #   ]
 listeners:
-  # address: Ip address,0.0.0.0 by default
   - address: 127.0.0.1
-  # port: Port number
     port: 8089
-    # https: If true, use https for security,false by default
     https: false
-#   - address: 0.0.0.0
-#     port: 443
-#     https: true
-#     # cert,key: Cert file path and key file path, empty by default,
-#     # if empty, use the global setting
-#     cert: ''
-#     key: ''
-#     # use_old_tls: enable the TLS1.0/1.1, false by default
-#     use_old_tls: false
-#     ssl_conf: [
-#       # [MinProtocol, TLSv1.3]
-#     ]
 db_clients:
-     # name: Name of the client,'default' by default
-  - name: ''
+  # name: Name of the client,'default' by default
+  - name: 'default'
     # rdbms: Server type, postgresql,mysql or sqlite3, "postgresql" by default
     rdbms: mysql
-    # filename: Sqlite3 db file name
-    # filename: '',
-    # host: Server address,localhost by default
     host: 127.0.0.1
-    # port: Server port, 5432 by default
     port: 3306
-    # dbname: Database name
-    dbname: 2023Pro
-    # user: 'postgres' by default
+    dbname: ExtPro
     user: 'root'
-    # passwd: '' by default
     passwd: '123456'
-    # is_fast: false by default, if it is true, the client is faster but user can't call
-    # any synchronous interface of it.
     is_fast: false
-    # client_encoding: The character set used by the client. it is empty string by default which
-    # means use the default character set.
-    # client_encoding: '',
-    # number_of_connections: 1 by default, if the 'is_fast' is true, the number is the number of
-    # connections per IO thread, otherwise it is the total number of all connections.
+    client_encoding: ''
     number_of_connections: 5
-    # timeout: -1 by default, in seconds, the timeout for executing a SQL query.
-    # zero or negative value means no timeout.
     timeout: -1
-    # "auto_batch": this feature is only available for the PostgreSQL driver(version >= 14.0), see
-    #  the wiki for more details.
-    auto_batch: false
+    auto_batch: true
 redis_clients:
-     # name: Name of the client,'default' by default
-   - name: ''
-     # host: Server IP, 127.0.0.1 by default
-     host: 127.0.0.1
-     # port: Server port, 6379 by default
-     port: 6379
-     # username: '' by default which means 'default' in redis ACL
-     username: ''
-     # passwd: '' by default
-     passwd: ''
-     # db index: 0 by default
-     db: 0
-     # is_fast: false by default, if it is true, the client is faster but user can't call
-     # any synchronous interface of it.
-     is_fast: false
-     # number_of_connections: 1 by default, if the 'is_fast' is true, the number is the number of
-     # connections per IO thread, otherwise it is the total number of all connections.
-     number_of_connections: 5
-     # timeout: -1.0 by default, in seconds, the timeout for executing a command.
-     # zero or negative value means no timeout.
-     timeout: -1
+  - name: ''
+    host: 127.0.0.1
+    port: 6379
+    username: ''
+    passwd: ''
+    db: 0
+    is_fast: false
+    number_of_connections: 5
+    timeout: -1
 app:
-  # number_of_threads: The number of IO threads, 1 by default, if the value is set to 0, the number of threads
-  # is the number of CPU cores
   number_of_threads: 4
-  # enable_session: False by default
   enable_session: true
-  session_timeout: 0
-  # string value of SameSite attribute of the Set-Cookie HTTP respone header
-  # valid value is either 'Null' (default), 'Lax', 'Strict' or 'None'
+  session_timeout: 1000
   session_same_site: 'Null'
-  # document_root: Root path of HTTP document, defaut path is ./
-  document_root: '/home/monoliths/Project/CMake/WaterBoxServer/site/public'
-  # home_page: Set the HTML file of the home page, the default value is "index.html"
-  # If there isn't any handler registered to the path "/", the home page file in the "document_root" is send to clients as a response
-  # to the request for "/".
+  document_root: '/home/monoliths/Project/CMake/IOTServer/site/public'
   home_page: index.html
-  # use_implicit_page: enable implicit pages if true, true by default
   use_implicit_page: true
-  # implicit_page: Set the file which would the server access in a directory that a user accessed.
-  # For example, by default, http://localhost/a-directory resolves to http://localhost/a-directory/index.html.
   implicit_page: index.html
   # static_file_headers: Headers for static files
   # static_file_headers:
@@ -132,8 +76,8 @@ app:
   # mime: A dictionary that extends the internal MIME type support. Maps extensions into new MIME types
   # note: This option only adds MIME to the sever. `file_types` above have to be set for the server to serve them.
   mime: {
-    # text/markdown: md,
-    # text/gemini: [gmi, gemini]
+    text/markdown: md,
+    text/gemini: [ gmi, gemini ]
   }
   # locations: An array of locations of static files for GET requests.
   locations:
@@ -154,7 +98,7 @@ app:
       # is_recursive: true by default. If it is set to false, files in sub directories can't be accessed.
       is_recursive: true
       # filters: string array, the filters applied to the location.
-      filters: []
+      filters: [ ]
   # max_connections: maximum number of connections, 100000 by default
   max_connections: 100000
   # max_connections_per_ip: maximum number of connections per clinet, 0 by default which means no limit
@@ -215,14 +159,14 @@ app:
   # 0 means cache forever, the negative value means no cache
   static_files_cache_time: 5
   # simple_controllers_map: Used to configure mapping from path to simple controller
-#  simple_controllers_map:
-#    - path: /path/name
-#      controller: controllerClassName
-#      http_methods:
-#        - get
-#        - post
-#      filters:
-#        - FilterClassName
+  #  simple_controllers_map:
+  #    - path: /path/name
+  #      controller: controllerClassName
+  #      http_methods:
+  #        - get
+  #        - post
+  #      filters:
+  #        - FilterClassName
   # idle_connection_timeout: Defaults to 60 seconds, the lifetime
   # of the connection without read or write
   idle_connection_timeout: 60
@@ -273,7 +217,7 @@ plugins:
   # name: The class name of the plugin
   - name: '' # drogon::plugin::SecureSSLRedirector
     # dependencies: Plugins that the plugin depends on. It can be commented out
-    dependencies: []
+    dependencies: [ ]
     # config: The configuration of the plugin. This json object is the parameter to initialize the plugin.
     # It can be commented out
     config:
@@ -282,8 +226,10 @@ plugins:
       secure_ssl_host: 'localhost:8849'
 # custom_config: custom configuration for users. This object can be get by the app().getCustomConfig() method.
 custom_config:
-  mqtt_broker: 'mqtt://127.0.0.1'
-  mqtt_port: 1883
+  mqtt: {
+    host: 'mqtt://127.0.0.1',
+    port: 1883
+  }
   realm: drogonRealm
   opaque: drogonOpaque
   credentials:
