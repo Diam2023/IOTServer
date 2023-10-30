@@ -1,31 +1,19 @@
-# WaterBox Server Project
+# IOT Server Project
 
 ---
 
-## DataBase
-* WaterBox
-  * User
-  * Device
+### 物聯網開關專用 IOT服務器
+#### 功能
+* [ ] 多端消息推送 -- Gotify
+* [ ] 社交軟體通知 -- GoCQHttp
+* [ ] Web網頁管理 -- Drogon、VUE
 
-## Controller
-* UserController
-* DeviceController
 
-## Filter
-* Auth
-* ...
+#### 準備支持的設備：
+* [ ] 物聯網智能開關（開發中） 
 
-## Feature
-* Device Status Searcher
-* User Group
-* WaterBox Device Message Statistics
-* Device Data Viewer
-
-## Create Mysql
-* CREATE USER 'waterbox'@'localhost' IDENTIFIED BY 'y2A@kw9&';
-* GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD ON *.* TO 'waterbox'@'localhost' WITH GRANT OPTION;
-* FLUSH PRIVILEGES;
+## 數據庫
+* Mysql
+* Redis
 
 ---
-
-Use User waterbox to
