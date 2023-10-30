@@ -226,6 +226,7 @@ plugins:
       secure_ssl_host: 'localhost:8849'
 # custom_config: custom configuration for users. This object can be get by the app().getCustomConfig() method.
 custom_config:
+  debug_cache: false
   mqtt: {
     host: 'mqtt://127.0.0.1',
     port: 1883
