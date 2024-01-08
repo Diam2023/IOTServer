@@ -20,10 +20,10 @@ db_clients:
     rdbms: mysql
     host: 127.0.0.1
     port: 3306
-    dbname: ExtPro
-    user: 'root'
-    passwd: '123456'
-    is_fast: false
+    dbname: IOTServerDB
+    user: 'server'
+    passwd: 'y2A@kw9&'
+    is_fast: true
     client_encoding: ''
     number_of_connections: 5
     timeout: -1
@@ -35,7 +35,7 @@ redis_clients:
     username: ''
     passwd: ''
     db: 0
-    is_fast: false
+    is_fast: true
     number_of_connections: 5
     timeout: -1
 app:

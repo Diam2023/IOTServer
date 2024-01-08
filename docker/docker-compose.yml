@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  mysql:
+#    build:
+#      context: mysql
+#      dockerfile: Dockerfile
+    image: mysql:8.2.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_DATABASE: IOTServerDB
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_USER: server
+      MYSQL_PASSWORD: y2A@kw9&
+    container_name: mysql-compose
+    restart: always
+    volumes:
+      - "./mysql/db/:/var/lib/mysql"
+      - "./mysql/sql/:/docker-entrypoint-initdb.d"
+    command: --default-authentication-plugin=caching_sha2_password
+
+  redis:
+    build:
+      context: redis
+      dockerfile: Dockerfile
+    ports:
+      - "6379:6379"
+    container_name: redis-compose
+    restart: always
+    volumes:
+      - "./redis/db/:/data"
+
+  mosquitto:
+    build:
+      context: mosquitto
+      dockerfile: Dockerfile
+#    image: eclipse-mosquitto:latest
+    container_name: mosquitto-compose
+    ports:
+      - "1883:1883"
+      - "9001:9001"
