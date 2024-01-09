@@ -16,7 +16,6 @@ using namespace drogon::orm;
 
 namespace mqtt {
 
-
     DataBaseMqttTopicFilter::DataBaseMqttTopicFilter() {
         // First Initialize Task
         std::thread task(&DataBaseMqttTopicFilter::cacheUpdateTask, this);
@@ -78,8 +77,6 @@ namespace mqtt {
         // 更新
         // Start Sync Mysql Data To Cache
         LOG_DEBUG_IF(app().getCustomConfig().get("debug_cache", false).asBool()) << "Cache Update!";
-
-
     }
 
     DataBaseMqttTopicFilter::~DataBaseMqttTopicFilter() = default;

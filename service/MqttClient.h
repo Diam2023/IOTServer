@@ -14,27 +14,20 @@ namespace mqtt {
     static const char *DEFAULT_HOST = "mqtt://127.0.0.1";
     static const int DEFAULT_PORT = 1883;
 
-
+    // MqttData Disrupt
     using MqttData = std::pair<QMqttTopicName, Json::Value>;
 
-    class Notify {
+    class MessageNotify {
     public:
         virtual void notify(MqttData &&) = 0;
     };
 
-
+    // Mqtt Client
     class MqttClient final : public QObject {
     private:
         QMqttClient client;
-//        std::queue<std::pair<QMqttTopicName, Json::Value>> messageQueue;
 
-        std::vector<Notify> callbackChan;
-    public:
-//        [[nodiscard]] const std::queue<std::pair<QMqttTopicName, Json::Value>> &getMessageQueue() const;
-
-    private slots:
-
-        void messageHandler(const QByteArray &message, const QMqttTopicName &topic = QMqttTopicName());
+        std::vector<MessageNotify> callbackChain;
 
     public:
         MqttClient() = default;
@@ -43,13 +36,12 @@ namespace mqtt {
 
         void loadConfig(const Json::Value &value) noexcept(false);
 
-
         /**
          * Register A Notify Class For mqtt message
          * @tparam T
          */
         template<class T>
-        void registerNotifyCallback(const Notify &);
+        void registerNotifyCallback(const MessageNotify &);
 
         inline static MqttClient &instance() {
             static MqttClient client;

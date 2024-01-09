@@ -28,6 +28,7 @@ namespace mqtt {
 
         DataBaseMqttTopicFilter();
 
+        // Search Redis if exist
         bool doFilter(const QMqttTopicName &) override;
 
         static DataBaseMqttTopicFilter &getInstance() {
@@ -35,8 +36,10 @@ namespace mqtt {
             return dbmtf;
         }
 
+        // Write Mysql Data to redis
         void doSyncUpdate();
 
+        // Loop for Write Mysql Data to redis
         [[noreturn]] void cacheUpdateTask();
 
         ~DataBaseMqttTopicFilter() override;
