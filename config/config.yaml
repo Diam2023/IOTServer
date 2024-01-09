@@ -43,7 +43,7 @@ app:
   enable_session: true
   session_timeout: 1000
   session_same_site: 'Null'
-  document_root: '/home/monoliths/Project/CMake/IOTServer/site/public'
+  document_root: '../site/dist'
   home_page: index.html
   use_implicit_page: true
   implicit_page: index.html

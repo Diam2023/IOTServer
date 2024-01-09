@@ -82,4 +82,6 @@ namespace mqtt {
 
     }
 
+    DataBaseMqttTopicFilter::~DataBaseMqttTopicFilter() = default;
+
 } // mqtt

@@ -22,7 +22,7 @@ static int runServer() {
         drogon::app().setTermSignalHandler(&exitSignalHandler);
 
         // Load config file
-        drogon::app().loadConfigFile("/home/monoliths/Project/CMake/IOTServer/config/config.yaml");
+        drogon::app().loadConfigFile("../config/config.yaml");
         LOG_INFO << "Document Root: " << drogon::app().getDocumentRoot();
 
         // Get Customer Config

@@ -8,17 +8,18 @@
 #include <QMqttClient>
 
 namespace mqtt {
-    class MqttFilter {
+    class MqttFilter : public QObject {
+    Q_OBJECT;
     public:
         virtual bool doFilter(const QMqttTopicName &) = 0;
 
-        ~MqttFilter() = default;
+        ~MqttFilter() override = default;
     };
 
     // 需求：
     // 需要一個過濾類來過濾Topic是否被Mysql收錄，如果收錄了就pass
     // 思考：使用Redis加快查詢速度
-    class DataBaseMqttTopicFilter : public virtual MqttFilter, QObject {
+    class DataBaseMqttTopicFilter : public virtual MqttFilter {
     Q_OBJECT;
 
     private:
@@ -37,6 +38,8 @@ namespace mqtt {
         void doSyncUpdate();
 
         [[noreturn]] void cacheUpdateTask();
+
+        ~DataBaseMqttTopicFilter() override;
     };
 
 } // mqtt
