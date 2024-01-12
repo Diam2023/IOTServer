@@ -26,9 +26,7 @@ static int runServer() {
         LOG_INFO << "Document Root: " << drogon::app().getDocumentRoot();
 
         // Get Customer Config
-        auto config = drogon::app().getCustomConfig();
-//        auto res = config.get("mqtt", nullptr);
-//        res.isNull();
+        // auto config = drogon::app().getCustomConfig();
         // Run HTTP framework,the method will block in the internal event loop
         drogon::app().run();
     });
