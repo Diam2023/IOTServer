@@ -11,7 +11,7 @@
 
 using namespace drogon;
 using namespace drogon::orm;
-using namespace drogon_model::ExtPro;
+using namespace drogon_model::IOTServerDB;
 
 const std::string Topics::Cols::_topic_id = "topic_id";
 const std::string Topics::Cols::_topic_name = "topic_name";

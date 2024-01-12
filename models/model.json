@@ -2,10 +2,12 @@
   "rdbms": "mysql",
   "host": "127.0.0.1",
   "port": 3306,
-  "dbname": "ExtPro",
-  "user": "root",
-  "passwd": "123456",
+  "dbname": "IOTServerDB",
+  "user": "server",
+  "passwd": "y2A@kw9&",
   "tables": [
-	  "topics"
+    "topics",
+    "permissions",
+    "users"
   ]
 }

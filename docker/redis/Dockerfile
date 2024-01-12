@@ -1,5 +1,5 @@
 
-FROM redis-stack:latest
+FROM redis/redis-stack:latest
 
 # Waiting change to redis-stack-server
 
