@@ -37,6 +37,7 @@ services:
       context: mosquitto
       dockerfile: Dockerfile
 #    image: eclipse-mosquitto:latest
+    restart: always
     container_name: mosquitto-compose
     ports:
       - "1883:1883"

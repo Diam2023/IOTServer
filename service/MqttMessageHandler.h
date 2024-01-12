@@ -15,7 +15,7 @@ namespace mqtt {
 
     // Default Handler
     class MqttMessageHandler : public QObject {
-        QObject;
+        Q_OBJECT;
 
     public:
 
