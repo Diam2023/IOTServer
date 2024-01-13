@@ -13,6 +13,9 @@
 
 namespace api {
 
+    /**
+     * Api For adapter
+     */
     class UserApi {
 
     public:
@@ -31,7 +34,7 @@ namespace api {
          * @param token token for redis
          * @return if successful
          */
-        static std::future<bool> logout(const std::string &token) noexcept(false);
+        static std::future<bool> logout(const std::string_view &token) noexcept(false);
     };
 
 } // api

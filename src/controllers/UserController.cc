@@ -2,8 +2,8 @@
 
 #include "Users.h"
 #include <json/value.h>
-#include "UserApi.h"
 #include "common.h"
+#include "UserApi.h"
 
 using namespace drogon::orm;
 using namespace drogon::nosql;
@@ -88,9 +88,7 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
 
     const std::string_view token = req->getHeader("token");
 
-
     auto redisClientPtr = app().getFastRedisClient();
-
 
     Json::Value resJson;
     auto resCode = kUnknown;
@@ -135,6 +133,34 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
 
     // response
     auto resp = HttpResponse::newHttpJsonResponse(resJson);
+    resp->setStatusCode(resCode);
+    callback(resp);
+}
+
+void UserController::newUser(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto reqJson = req->getJsonObject();
+    auto userPtr = std::make_shared<Users>(*reqJson);
+
+    auto dbClientPtr = app().getFastDbClient();
+    // ORM:
+    Mapper<Users> mp(dbClientPtr);
+
+    auto resCode = k200OK;
+
+    // Check permission
+    // Initialize to 0
+    userPtr->setUserPermissionId(DEFAULT_PERMISSION_ID);
+
+    try {
+        // insert
+        mp.insert(*userPtr);
+    } catch (const std::exception &e) {
+        LOG_WARN << e.what();
+        resCode = k500InternalServerError;
+    }
+
+    // response
+    auto resp = HttpResponse::newHttpResponse();
     resp->setStatusCode(resCode);
     callback(resp);
 }

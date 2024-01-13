@@ -3,12 +3,16 @@
 //
 
 #include "common.h"
-#include "UserApi.h"
+
+#include <drogon/utils/Utilities.h>
+#include <drogon/HttpAppFramework.h>
+#include <drogon/HttpController.h>
 
 #include <string>
 #include <string_view>
 
-#include <drogon/HttpAppFramework.h>
+#include "UserApi.h"
+
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -33,14 +37,18 @@ namespace api {
             // Successful find
 
             // generator token
-            auto token = utils::getUuid();
+            std::string token = drogon::utils::getUuid(true);
 
             // Push to Redis
             auto redisClientPtr = app().getFastRedisClient();
-            redisClientPtr->execCommandSync([prom, token](const RedisResult &r) {
+
+
+            redisClientPtr->execCommandAsync([prom, token](const RedisResult &r) {
                 LOG_INFO << "Token: " << token << " Res: " << r.getStringForDisplaying();
                 prom->set_value(token);
-            }, "set %s%s %s", TOKEN_PREFIX, token, user.getUserId());
+            }, [prom, token](const RedisException &e) {
+                prom->set_exception(std::current_exception());
+            }, "set %s%s %lud", TOKEN_PREFIX, token.c_str(), *user.getUserId());
         } catch (const RedisException &e) {
             LOG_WARN << e.what();
             prom->set_exception(std::current_exception());
@@ -53,12 +61,12 @@ namespace api {
         return prom->get_future();
     }
 
-    std::future<bool> UserApi::logout(const string &token) {
+    std::future<bool> UserApi::logout(const string_view &token) {
         auto redisClientPtr = app().getFastRedisClient();
 
         std::shared_ptr<std::promise<bool>> prom = std::make_shared<std::promise<bool>>();
 
-        redisClientPtr->execCommandAsync([prom, token](const RedisResult &r) {
+        redisClientPtr->execCommandAsync([prom](const RedisResult &r) {
             if (r.type() == RedisResultType::kNil) {
                 // throw RedisException(RedisErrorCode::kNone, "Not found");
                 prom->set_value(false);
