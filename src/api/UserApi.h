@@ -17,7 +17,6 @@ namespace api {
 
     public:
 
-
         /**
          * Login
          * @param key id or name

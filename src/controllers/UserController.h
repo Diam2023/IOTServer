@@ -17,9 +17,24 @@ public:
 
     METHOD_LIST_END
 
+    /**
+     * Http login
+     * @param req request
+     * @param callback response callback
+     */
     void login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
+    /**
+     * Http logout
+     * @param req request
+     * @param callback response callback
+     */
     void logout(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
+    /**
+     * Http Get user info
+     * @param req request
+     * @param callback response callback
+     */
     void getInfo(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 };
