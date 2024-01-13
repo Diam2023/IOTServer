@@ -27,6 +27,8 @@ namespace mqtt {
             cacheGetResult =
                     app().getRedisClient()->execCommandSync<std::vector<RedisResult>>([](const RedisResult &r) {
                         return r.asArray();
+
+                        // TODO Replace use exists
                     }, "get %s", defaultCacheName.data());
         } catch (const RedisException &err) {
             LOG_ERROR << err.what();

@@ -12,17 +12,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 # Adding Source Code
-aux_source_directory(src SRCS)
-aux_source_directory(controllers CTL_SRC)
-aux_source_directory(filters FILTER_SRC)
-aux_source_directory(plugins PLUGIN_SRC)
-aux_source_directory(models MODEL_SRC)
-aux_source_directory(service SERVICE_SRC)
-
+aux_source_directory(src/controllers CTL_SRC)
+aux_source_directory(src/filters FILTER_SRC)
+aux_source_directory(src/plugins PLUGIN_SRC)
+aux_source_directory(src/models MODEL_SRC)
+aux_source_directory(src/service SERVICE_SRC)
+aux_source_directory(src/adapters SERVICE_SRC)
+aux_source_directory(src/api API_SRC)
 
 add_executable(
         ${PROJECT_NAME}
-        ${SRCS}
+        src/main.cc
 )
 
 find_package(Qt5 COMPONENTS Core Network Mqtt REQUIRED) # Qt COMPONENTS
@@ -38,7 +38,11 @@ drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/models)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/models
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/service
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/api
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/common
+)
 
 
 target_sources(${PROJECT_NAME}
@@ -48,7 +52,9 @@ target_sources(${PROJECT_NAME}
         ${FILTER_SRC}
         ${PLUGIN_SRC}
         ${MODEL_SRC}
-        ${SERVICE_SRC})
+        ${SERVICE_SRC}
+        ${API_SRC}
+)
 
 
 add_subdirectory(test)

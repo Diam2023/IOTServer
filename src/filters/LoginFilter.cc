@@ -6,9 +6,7 @@
 
 #include <drogon/HttpAppFramework.h>
 #include "LoginFilter.h"
-
-constexpr std::string_view TOKEN_PREFIX = "TK-";
-
+#include "common.h"
 
 void LoginFilter::doFilter(const HttpRequestPtr &req,
                            FilterCallback &&fcb,

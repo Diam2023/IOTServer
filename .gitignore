@@ -35,3 +35,10 @@ coverage
 
 *.tsbuildinfo
 package-lock.json
+
+# Drawio
+.$*.drawio*
+
+
+
+

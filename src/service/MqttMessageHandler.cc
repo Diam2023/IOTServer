@@ -32,7 +32,6 @@ namespace mqtt {
                         for (const auto &topicItem: resArr) {
 
                         }
-                        // Corotin
 
                     } while (false);
                 }, [](
@@ -47,7 +46,6 @@ namespace mqtt {
                     // TODO ?
                 }, "get %s", "?"
         );
-
 
     }
 } // mqtt
