@@ -23,9 +23,9 @@ db_clients:
     dbname: IOTServerDB
     user: 'server'
     passwd: 'y2A@kw9&'
-    is_fast: true
+    is_fast: false
     client_encoding: ''
-    number_of_connections: 5
+    number_of_connections: 2
     timeout: -1
     auto_batch: true
 redis_clients:
@@ -39,8 +39,8 @@ redis_clients:
     number_of_connections: 5
     timeout: -1
 app:
-  number_of_threads: 4
-  enable_session: true
+  number_of_threads: 6
+  enable_session: false
   session_timeout: 1000
   session_same_site: 'Null'
   document_root: '../site/dist'

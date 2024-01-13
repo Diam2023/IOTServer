@@ -110,7 +110,7 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
     try {
         auto resId = prom->get_future().get();
 
-        auto dbClientPtr = app().getFastDbClient();
+        auto dbClientPtr = app().getDbClient();
         // ORM:
         Mapper<Users> mp(dbClientPtr);
 
@@ -141,7 +141,7 @@ void UserController::newUser(const HttpRequestPtr &req, std::function<void(const
     auto reqJson = req->getJsonObject();
     auto userPtr = std::make_shared<Users>(*reqJson);
 
-    auto dbClientPtr = app().getFastDbClient();
+    auto dbClientPtr = app().getDbClient();
     // ORM:
     Mapper<Users> mp(dbClientPtr);
 
@@ -153,7 +153,8 @@ void UserController::newUser(const HttpRequestPtr &req, std::function<void(const
 
     try {
         // insert
-        mp.insert(*userPtr);
+        auto future = mp.insertFuture(*userPtr);
+        auto res = future.get();
     } catch (const std::exception &e) {
         LOG_WARN << e.what();
         resCode = k500InternalServerError;

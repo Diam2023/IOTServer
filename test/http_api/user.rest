@@ -1,10 +1,12 @@
 
 # login
-POST http://localhost:8089/user/login
+PUT http://localhost:8089/user/register
 Content-Type: application/json
 
 {
-  ""
+  "user_name": "testUser1",
+  "user_password": "pwd1",
+  "user_permission_id": 0
 }
 
 ###

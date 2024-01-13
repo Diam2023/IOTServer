@@ -23,7 +23,7 @@ using namespace std;
 namespace api {
     std::future<std::string> UserApi::login(const std::string &key, const std::string &pwd) {
 
-        auto dbClientPtr = app().getFastDbClient();
+        auto dbClientPtr = app().getDbClient();
 
         // ORM:
         Mapper<Users> mp(dbClientPtr);
