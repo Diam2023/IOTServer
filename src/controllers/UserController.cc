@@ -39,6 +39,8 @@ void UserController::login(const HttpRequestPtr &req, std::function<void(const H
             resJson["token"] = result;
             resCode = k200OK;
         } catch (const std::exception &e) {
+
+            resJson["msg"] = "id or pwd error";
             LOG_WARN << e.what();
             resCode = k401Unauthorized;
         }
@@ -56,7 +58,7 @@ void UserController::logout(const HttpRequestPtr &req, std::function<void(const 
     // Call Logout Api
 
     auto resCode = kUnknown;
-    auto token = req->getHeader("token");
+    auto token = req->getHeader("Authorization");
 
     try {
 
@@ -82,7 +84,7 @@ void UserController::logout(const HttpRequestPtr &req, std::function<void(const 
 void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     // Get userid first
 
-    const std::string_view token = req->getHeader("token");
+    auto token = req->getHeader("Authorization");
 
     auto redisClientPtr = app().getRedisClient();
 
@@ -94,13 +96,13 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
 
     redisClientPtr->execCommandAsync([prom](const RedisResult &res) {
         if (res.type() != RedisResultType::kString) {
-            throw RedisException(RedisErrorCode::kNone, "Not found");
+            prom->set_exception(std::make_exception_ptr(RedisException(RedisErrorCode::kNone, "Not found")));
         } else {
             prom->set_value(res.asString());
         }
     }, [prom](const RedisException &e) {
         prom->set_exception(std::current_exception());
-    }, "get %s%s", TOKEN_PREFIX, token);
+    }, "get %s%s", TOKEN_PREFIX, token.c_str());
 
 
     try {

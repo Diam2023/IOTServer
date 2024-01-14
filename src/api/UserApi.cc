@@ -72,15 +72,14 @@ namespace api {
         std::shared_ptr<std::promise<bool>> prom = std::make_shared<std::promise<bool>>();
 
         redisClientPtr->execCommandAsync([prom](const RedisResult &r) {
-            if (r.type() != RedisResultType::kNil) {
-                // throw RedisException(RedisErrorCode::kNone, "Not found");
+            if ((r.type() != RedisResultType::kInteger) && (r.asInteger() != 1)) {
                 prom->set_value(false);
             } else {
                 prom->set_value(true);
             }
         }, [prom](const RedisException &e) {
             prom->set_exception(current_exception());
-        }, "get %s%s", TOKEN_PREFIX, token.data());
+        }, "del %s%s", TOKEN_PREFIX, token.data());
 
         return prom->get_future();
     }

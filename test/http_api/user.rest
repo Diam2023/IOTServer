@@ -1,13 +1,11 @@
-
-
 # PASS 20240113
 # register
 PUT http://localhost:8089/user/register
 Content-Type: application/json
 
 {
-  "user_name": "testUser1",
-  "user_password": "pwd1",
+  "user_name": "testUser10",
+  "user_password": "pwd10",
   "user_permission_id": 0
 }
 
@@ -20,14 +18,22 @@ POST http://localhost:8089/user/login
 Content-Type: application/json
 
 {
-  "key": "testUser1",
-  "pwd": "pwd1"
+  "key": "testUser10",
+  "pwd": "pwd10"
 }
+
+###
+
+# PASS 20240114
+# getInfo
+GET http://localhost:8089/user/info
+Authorization: 490ec163-ee89-495d-94c8-220fdefa6103
 
 ###
 
 # PASS 20240114
 # logout
 DELETE http://localhost:8089/user/logout
-Authorization: dc2170bd-ebfa-43fb-89b1-f31a53682d1d
+Authorization: 490ec163-ee89-495d-94c8-220fdefa6103
 
+###
