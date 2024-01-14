@@ -12,7 +12,7 @@
 /**
  * Redis Prefix
  */
-constexpr std::string_view TOKEN_PREFIX = "TK:";
+const static char *TOKEN_PREFIX = "TK:";
 
 /**
  * Default permission

@@ -14,7 +14,7 @@ void LoginFilter::doFilter(const HttpRequestPtr &req,
     using namespace drogon;
     using namespace drogon::nosql;
 
-    auto &token = req->getHeader("token");
+    auto &token = req->getHeader("Authorization");
 
     HttpStatusCode resultCode = kUnknown;
 
@@ -35,7 +35,7 @@ void LoginFilter::doFilter(const HttpRequestPtr &req,
                     [](const RedisResult &r) {
                         return r.asString();
                     },
-                    "get %s%s", TOKEN_PREFIX, token
+                    "get %s%s", TOKEN_PREFIX, token.c_str()
             );
             if (res.empty()) {
                 resultCode = k401Unauthorized;

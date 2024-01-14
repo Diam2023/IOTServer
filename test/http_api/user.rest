@@ -1,5 +1,6 @@
 
 
+# PASS 20240113
 # register
 PUT http://localhost:8089/user/register
 Content-Type: application/json
@@ -13,6 +14,7 @@ Content-Type: application/json
 ###
 
 
+# PASS 20240114
 # login
 POST http://localhost:8089/user/login
 Content-Type: application/json
@@ -23,3 +25,9 @@ Content-Type: application/json
 }
 
 ###
+
+# PASS 20240114
+# logout
+DELETE http://localhost:8089/user/logout
+Authorization: dc2170bd-ebfa-43fb-89b1-f31a53682d1d
+

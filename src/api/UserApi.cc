@@ -42,27 +42,26 @@ namespace api {
             // Push to Redis
             auto redisClientPtr = app().getRedisClient();
 
-            if (!redisClientPtr || (redisClientPtr.get() == nullptr))
-            {
+            if (!redisClientPtr) {
                 LOG_ERROR << "Empty!";
             }
 
             redisClientPtr->execCommandAsync([prom, token](const RedisResult &r) {
                 LOG_INFO << "Token: " << token << " Res: " << r.getStringForDisplaying();
-                // prom->set_value(token);
+                prom->set_value(token);
             }, [prom, token](const RedisException &e) {
                 LOG_WARN << e.what();
-                // prom->set_exception(std::current_exception());
+                prom->set_exception(std::current_exception());
             }, "set %s%s %u", TOKEN_PREFIX, token.c_str(), *user.getUserId());
         } catch (const RedisException &e) {
             LOG_WARN << e.what();
-            // prom->set_exception(std::current_exception());
+            prom->set_exception(std::current_exception());
         } catch (const DrogonDbException &e) {
             LOG_WARN << "D DB E";
-            // prom->set_exception(std::current_exception());
+            prom->set_exception(std::current_exception());
         } catch (const std::exception &e) {
             LOG_WARN << e.what();
-            // prom->set_exception(std::current_exception());
+            prom->set_exception(std::current_exception());
         }
         return prom->get_future();
     }
@@ -73,7 +72,7 @@ namespace api {
         std::shared_ptr<std::promise<bool>> prom = std::make_shared<std::promise<bool>>();
 
         redisClientPtr->execCommandAsync([prom](const RedisResult &r) {
-            if (r.type() == RedisResultType::kNil) {
+            if (r.type() != RedisResultType::kNil) {
                 // throw RedisException(RedisErrorCode::kNone, "Not found");
                 prom->set_value(false);
             } else {
@@ -81,7 +80,7 @@ namespace api {
             }
         }, [prom](const RedisException &e) {
             prom->set_exception(current_exception());
-        }, "get %s%s", TOKEN_PREFIX, token);
+        }, "get %s%s", TOKEN_PREFIX, token.data());
 
         return prom->get_future();
     }
