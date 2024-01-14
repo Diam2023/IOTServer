@@ -13,7 +13,7 @@ namespace mqtt {
 
         // First:  Search Redis Topic List.
         // Second: Update To Redis And Mysql If Exist.
-        auto redisClient = drogon::app().getFastRedisClient();
+        auto redisClient = drogon::app().getRedisClient();
 
         redisClient->
                 execCommandAsync(

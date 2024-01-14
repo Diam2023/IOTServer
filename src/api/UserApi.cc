@@ -40,29 +40,35 @@ namespace api {
             std::string token = drogon::utils::getUuid(true);
 
             // Push to Redis
-            auto redisClientPtr = app().getFastRedisClient();
+            auto redisClientPtr = app().getRedisClient();
 
+            if (!redisClientPtr || (redisClientPtr.get() == nullptr))
+            {
+                LOG_ERROR << "Empty!";
+            }
 
             redisClientPtr->execCommandAsync([prom, token](const RedisResult &r) {
                 LOG_INFO << "Token: " << token << " Res: " << r.getStringForDisplaying();
-                prom->set_value(token);
+                // prom->set_value(token);
             }, [prom, token](const RedisException &e) {
-                prom->set_exception(std::current_exception());
-            }, "set %s%s %lud", TOKEN_PREFIX, token.c_str(), *user.getUserId());
+                LOG_WARN << e.what();
+                // prom->set_exception(std::current_exception());
+            }, "set %s%s %u", TOKEN_PREFIX, token.c_str(), *user.getUserId());
         } catch (const RedisException &e) {
             LOG_WARN << e.what();
-            prom->set_exception(std::current_exception());
+            // prom->set_exception(std::current_exception());
         } catch (const DrogonDbException &e) {
-            prom->set_exception(std::current_exception());
+            LOG_WARN << "D DB E";
+            // prom->set_exception(std::current_exception());
         } catch (const std::exception &e) {
             LOG_WARN << e.what();
-            prom->set_exception(std::current_exception());
+            // prom->set_exception(std::current_exception());
         }
         return prom->get_future();
     }
 
     std::future<bool> UserApi::logout(const string_view &token) {
-        auto redisClientPtr = app().getFastRedisClient();
+        auto redisClientPtr = app().getRedisClient();
 
         std::shared_ptr<std::promise<bool>> prom = std::make_shared<std::promise<bool>>();
 

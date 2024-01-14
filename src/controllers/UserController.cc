@@ -28,12 +28,7 @@ void UserController::login(const HttpRequestPtr &req, std::function<void(const H
         auto keyField = (*reqJson)["key"];
         auto pwdField = (*reqJson)["pwd"];
 
-        if (keyField) {
-            resCode = k203NonAuthoritativeInformation;
-            break;
-        }
-
-        if (pwdField) {
+        if (keyField.empty() || pwdField.empty()) {
             resCode = k203NonAuthoritativeInformation;
             break;
         }
@@ -44,6 +39,7 @@ void UserController::login(const HttpRequestPtr &req, std::function<void(const H
             resJson["token"] = result;
             resCode = k200OK;
         } catch (const std::exception &e) {
+            LOG_WARN << e.what();
             resCode = k401Unauthorized;
         }
     } while (false);
@@ -88,7 +84,7 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
 
     const std::string_view token = req->getHeader("token");
 
-    auto redisClientPtr = app().getFastRedisClient();
+    auto redisClientPtr = app().getRedisClient();
 
     Json::Value resJson;
     auto resCode = kUnknown;

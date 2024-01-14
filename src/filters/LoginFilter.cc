@@ -27,7 +27,7 @@ void LoginFilter::doFilter(const HttpRequestPtr &req,
 
         // TODO:1 Verify length or another feature for token
 
-        auto redisClientPtr = app().getFastRedisClient();
+        auto redisClientPtr = app().getRedisClient();
         // if (redisClientPtr)
 
         try {

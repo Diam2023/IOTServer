@@ -1,5 +1,6 @@
 
-# login
+
+# register
 PUT http://localhost:8089/user/register
 Content-Type: application/json
 
@@ -7,6 +8,18 @@ Content-Type: application/json
   "user_name": "testUser1",
   "user_password": "pwd1",
   "user_permission_id": 0
+}
+
+###
+
+
+# login
+POST http://localhost:8089/user/login
+Content-Type: application/json
+
+{
+  "key": "testUser1",
+  "pwd": "pwd1"
 }
 
 ###

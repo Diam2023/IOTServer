@@ -25,21 +25,21 @@ db_clients:
     passwd: 'y2A@kw9&'
     is_fast: false
     client_encoding: ''
-    number_of_connections: 2
+    number_of_connections: 1
     timeout: -1
     auto_batch: true
 redis_clients:
-  - name: ''
+  - name: 'default'
     host: 127.0.0.1
     port: 6379
-    username: ''
-    passwd: ''
+    username: 'default'
+    passwd: 'iO81@71'
     db: 0
-    is_fast: true
-    number_of_connections: 5
+    is_fast: false
+    number_of_connections: 1
     timeout: -1
 app:
-  number_of_threads: 6
+  number_of_threads: 10
   enable_session: false
   session_timeout: 1000
   session_same_site: 'Null'
