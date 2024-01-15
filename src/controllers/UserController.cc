@@ -85,43 +85,36 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
     // Get userid first
 
     auto token = req->getHeader("Authorization");
-
-    auto redisClientPtr = app().getRedisClient();
+    auto uid = req->getHeader("uid");
 
     Json::Value resJson;
     auto resCode = kUnknown;
+    if (token.empty()) {
+        resCode = k203NonAuthoritativeInformation;
+        auto resp = HttpResponse::newHttpJsonResponse(resJson);
 
-    std::shared_ptr<std::promise<std::string>> prom = std::make_shared<std::promise<std::string>>();
-
-
-    redisClientPtr->execCommandAsync([prom](const RedisResult &res) {
-        if (res.type() != RedisResultType::kString) {
-            prom->set_exception(std::make_exception_ptr(RedisException(RedisErrorCode::kNone, "Not found")));
-        } else {
-            prom->set_value(res.asString());
-        }
-    }, [prom](const RedisException &e) {
-        prom->set_exception(std::current_exception());
-    }, "get %s%s", TOKEN_PREFIX, token.c_str());
-
+    }
 
     try {
-        auto resId = prom->get_future().get();
+        if (uid.empty()) {
+            // verify token out of date!
+            uid = api::UserApi::getUserId(token).get();
+        }
 
         auto dbClientPtr = app().getDbClient();
         // ORM:
         Mapper<Users> mp(dbClientPtr);
 
         // find user with id
-        auto future = mp.findFutureOne(Criteria(Users::Cols::_user_id, CompareOperator::EQ, resId));
-        auto resUser = future.get();
+        auto resUser = mp.findFutureOne(
+                Criteria(Users::Cols::_user_id, CompareOperator::EQ, uid)).get();
 
         // Mask pwd
         resUser.setUserPassword("");
         resJson["user"] = resUser.toJson();
         resCode = k200OK;
-
-
+    } catch (const RedisException &e) {
+        resCode = k401Unauthorized;
     } catch (const std::exception &e) {
         // TODO Restructure reqCode
         LOG_WARN << e.what();

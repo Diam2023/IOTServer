@@ -7,6 +7,7 @@
 #include <drogon/HttpAppFramework.h>
 #include "LoginFilter.h"
 #include "common.h"
+#include "UserApi.h"
 
 void LoginFilter::doFilter(const HttpRequestPtr &req,
                            FilterCallback &&fcb,
@@ -27,30 +28,28 @@ void LoginFilter::doFilter(const HttpRequestPtr &req,
 
         // TODO:1 Verify length or another feature for token
 
-        auto redisClientPtr = app().getRedisClient();
-
         try {
-            std::string res = redisClientPtr->execCommandSync(
-                    [](const RedisResult &r) {
-                        return r.asString();
-                    },
-                    "get %s%s", TOKEN_PREFIX, token.c_str()
-            );
-            if (res.empty()) {
+            auto future = api::UserApi::getUserId(token);
+            auto uid = future.get();
+            if (uid.empty()) {
+                // Err current
+                // out of date
                 resultCode = k401Unauthorized;
             } else {
-                // TODO:2 Verify length or another feature for uuid
-                req->addHeader("uuid", res);
+                req->addHeader("uid", uid);
                 resultCode = k200OK;
             }
+            // Verify uid exists in mysql
+        } catch (const RedisException &e) {
+            if (e.code() == RedisErrorCode::kNone) {
+                resultCode = k401Unauthorized;
+            } else {
+                LOG_ERROR << e.what();
+                resultCode = k406NotAcceptable;
+            }
         }
-        catch (const RedisException &err) {
-            // TODO Warning
-            LOG_WARN << err.what();
-            resultCode = k406NotAcceptable;
-        }
-        catch (const std::exception &err) {
-            LOG_ERROR << err.what();
+        catch (const std::exception &e) {
+            LOG_ERROR << e.what();
             resultCode = k503ServiceUnavailable;
         }
 
@@ -59,6 +58,7 @@ void LoginFilter::doFilter(const HttpRequestPtr &req,
     if (resultCode == k200OK) {
         // Passed
         fccb();
+
     } else {
         // Check failed
         auto res = drogon::HttpResponse::newHttpResponse();

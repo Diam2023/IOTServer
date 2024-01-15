@@ -41,11 +41,6 @@ namespace api {
 
             // Push to Redis
             auto redisClientPtr = app().getRedisClient();
-
-            if (!redisClientPtr) {
-                LOG_ERROR << "Empty!";
-            }
-
             redisClientPtr->execCommandAsync([prom, token](const RedisResult &r) {
                 LOG_INFO << "Token: " << token << " Res: " << r.getStringForDisplaying();
                 prom->set_value(token);
@@ -80,6 +75,26 @@ namespace api {
         }, [prom](const RedisException &e) {
             prom->set_exception(current_exception());
         }, "del %s%s", TOKEN_PREFIX, token.data());
+
+        return prom->get_future();
+    }
+
+    std::future<std::string> UserApi::getUserId(const string &token) {
+        // Promise
+        std::shared_ptr<std::promise<std::string>> prom = std::make_shared<std::promise<std::string>>();
+        // Get Redis ptr
+        // TODO Check Ptr is null
+        auto redisClientPtr = app().getRedisClient();
+        // Run command
+        redisClientPtr->execCommandAsync([prom](const RedisResult &r) {
+            if (r.type() != RedisResultType::kString) {
+                prom->set_exception(std::make_exception_ptr(RedisException(RedisErrorCode::kNone, "Not found")));
+            } else {
+                prom->set_value(r.asString());
+            }
+        }, [prom](const RedisException &e) {
+            prom->set_exception(current_exception());
+        }, "get %s%s", TOKEN_PREFIX, token.c_str());
 
         return prom->get_future();
     }
