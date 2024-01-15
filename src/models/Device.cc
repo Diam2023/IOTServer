@@ -14,6 +14,7 @@ using namespace drogon::orm;
 using namespace drogon_model::iot_server;
 
 const std::string Device::Cols::_device_id = "device_id";
+const std::string Device::Cols::_device_sn = "device_sn";
 const std::string Device::Cols::_device_name = "device_name";
 const std::string Device::Cols::_device_comment = "device_comment";
 const std::string Device::Cols::_target_permission_level = "target_permission_level";
@@ -23,6 +24,7 @@ const std::string Device::tableName = "device";
 
 const std::vector<typename Device::MetaData> Device::metaData_={
 {"device_id","uint32_t","int unsigned",4,1,1,1},
+{"device_sn","std::string","varchar(100)",100,0,0,1},
 {"device_name","std::string","varchar(100)",100,0,0,1},
 {"device_comment","std::string","varchar(1024)",1024,0,0,0},
 {"target_permission_level","uint32_t","int unsigned",4,0,0,1}
@@ -40,6 +42,10 @@ Device::Device(const Row &r, const ssize_t indexOffset) noexcept
         {
             deviceId_=std::make_shared<uint32_t>(r["device_id"].as<uint32_t>());
         }
+        if(!r["device_sn"].isNull())
+        {
+            deviceSn_=std::make_shared<std::string>(r["device_sn"].as<std::string>());
+        }
         if(!r["device_name"].isNull())
         {
             deviceName_=std::make_shared<std::string>(r["device_name"].as<std::string>());
@@ -56,7 +62,7 @@ Device::Device(const Row &r, const ssize_t indexOffset) noexcept
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 4 > r.size())
+        if(offset + 5 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -70,14 +76,19 @@ Device::Device(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 1;
         if(!r[index].isNull())
         {
-            deviceName_=std::make_shared<std::string>(r[index].as<std::string>());
+            deviceSn_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 2;
         if(!r[index].isNull())
         {
-            deviceComment_=std::make_shared<std::string>(r[index].as<std::string>());
+            deviceName_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 3;
+        if(!r[index].isNull())
+        {
+            deviceComment_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 4;
         if(!r[index].isNull())
         {
             targetPermissionLevel_=std::make_shared<uint32_t>(r[index].as<uint32_t>());
@@ -88,7 +99,7 @@ Device::Device(const Row &r, const ssize_t indexOffset) noexcept
 
 Device::Device(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 5)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -106,7 +117,7 @@ Device::Device(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[1] = true;
         if(!pJson[pMasqueradingVector[1]].isNull())
         {
-            deviceName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
+            deviceSn_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
@@ -114,7 +125,7 @@ Device::Device(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            deviceComment_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+            deviceName_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
@@ -122,7 +133,15 @@ Device::Device(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            targetPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[3]].asUInt64());
+            deviceComment_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+        }
+    }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        dirtyFlag_[4] = true;
+        if(!pJson[pMasqueradingVector[4]].isNull())
+        {
+            targetPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[4]].asUInt64());
         }
     }
 }
@@ -137,9 +156,17 @@ Device::Device(const Json::Value &pJson) noexcept(false)
             deviceId_=std::make_shared<uint32_t>((uint32_t)pJson["device_id"].asUInt64());
         }
     }
-    if(pJson.isMember("device_name"))
+    if(pJson.isMember("device_sn"))
     {
         dirtyFlag_[1]=true;
+        if(!pJson["device_sn"].isNull())
+        {
+            deviceSn_=std::make_shared<std::string>(pJson["device_sn"].asString());
+        }
+    }
+    if(pJson.isMember("device_name"))
+    {
+        dirtyFlag_[2]=true;
         if(!pJson["device_name"].isNull())
         {
             deviceName_=std::make_shared<std::string>(pJson["device_name"].asString());
@@ -147,7 +174,7 @@ Device::Device(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("device_comment"))
     {
-        dirtyFlag_[2]=true;
+        dirtyFlag_[3]=true;
         if(!pJson["device_comment"].isNull())
         {
             deviceComment_=std::make_shared<std::string>(pJson["device_comment"].asString());
@@ -155,7 +182,7 @@ Device::Device(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("target_permission_level"))
     {
-        dirtyFlag_[3]=true;
+        dirtyFlag_[4]=true;
         if(!pJson["target_permission_level"].isNull())
         {
             targetPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson["target_permission_level"].asUInt64());
@@ -166,7 +193,7 @@ Device::Device(const Json::Value &pJson) noexcept(false)
 void Device::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 5)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -183,7 +210,7 @@ void Device::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[1] = true;
         if(!pJson[pMasqueradingVector[1]].isNull())
         {
-            deviceName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
+            deviceSn_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
@@ -191,7 +218,7 @@ void Device::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            deviceComment_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+            deviceName_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
@@ -199,7 +226,15 @@ void Device::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            targetPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[3]].asUInt64());
+            deviceComment_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+        }
+    }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        dirtyFlag_[4] = true;
+        if(!pJson[pMasqueradingVector[4]].isNull())
+        {
+            targetPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[4]].asUInt64());
         }
     }
 }
@@ -213,9 +248,17 @@ void Device::updateByJson(const Json::Value &pJson) noexcept(false)
             deviceId_=std::make_shared<uint32_t>((uint32_t)pJson["device_id"].asUInt64());
         }
     }
-    if(pJson.isMember("device_name"))
+    if(pJson.isMember("device_sn"))
     {
         dirtyFlag_[1] = true;
+        if(!pJson["device_sn"].isNull())
+        {
+            deviceSn_=std::make_shared<std::string>(pJson["device_sn"].asString());
+        }
+    }
+    if(pJson.isMember("device_name"))
+    {
+        dirtyFlag_[2] = true;
         if(!pJson["device_name"].isNull())
         {
             deviceName_=std::make_shared<std::string>(pJson["device_name"].asString());
@@ -223,7 +266,7 @@ void Device::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("device_comment"))
     {
-        dirtyFlag_[2] = true;
+        dirtyFlag_[3] = true;
         if(!pJson["device_comment"].isNull())
         {
             deviceComment_=std::make_shared<std::string>(pJson["device_comment"].asString());
@@ -231,7 +274,7 @@ void Device::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("target_permission_level"))
     {
-        dirtyFlag_[3] = true;
+        dirtyFlag_[4] = true;
         if(!pJson["target_permission_level"].isNull())
         {
             targetPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson["target_permission_level"].asUInt64());
@@ -261,6 +304,28 @@ const typename Device::PrimaryKeyType & Device::getPrimaryKey() const
     return *deviceId_;
 }
 
+const std::string &Device::getValueOfDeviceSn() const noexcept
+{
+    const static std::string defaultValue = std::string();
+    if(deviceSn_)
+        return *deviceSn_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Device::getDeviceSn() const noexcept
+{
+    return deviceSn_;
+}
+void Device::setDeviceSn(const std::string &pDeviceSn) noexcept
+{
+    deviceSn_ = std::make_shared<std::string>(pDeviceSn);
+    dirtyFlag_[1] = true;
+}
+void Device::setDeviceSn(std::string &&pDeviceSn) noexcept
+{
+    deviceSn_ = std::make_shared<std::string>(std::move(pDeviceSn));
+    dirtyFlag_[1] = true;
+}
+
 const std::string &Device::getValueOfDeviceName() const noexcept
 {
     const static std::string defaultValue = std::string();
@@ -275,12 +340,12 @@ const std::shared_ptr<std::string> &Device::getDeviceName() const noexcept
 void Device::setDeviceName(const std::string &pDeviceName) noexcept
 {
     deviceName_ = std::make_shared<std::string>(pDeviceName);
-    dirtyFlag_[1] = true;
+    dirtyFlag_[2] = true;
 }
 void Device::setDeviceName(std::string &&pDeviceName) noexcept
 {
     deviceName_ = std::make_shared<std::string>(std::move(pDeviceName));
-    dirtyFlag_[1] = true;
+    dirtyFlag_[2] = true;
 }
 
 const std::string &Device::getValueOfDeviceComment() const noexcept
@@ -297,17 +362,17 @@ const std::shared_ptr<std::string> &Device::getDeviceComment() const noexcept
 void Device::setDeviceComment(const std::string &pDeviceComment) noexcept
 {
     deviceComment_ = std::make_shared<std::string>(pDeviceComment);
-    dirtyFlag_[2] = true;
+    dirtyFlag_[3] = true;
 }
 void Device::setDeviceComment(std::string &&pDeviceComment) noexcept
 {
     deviceComment_ = std::make_shared<std::string>(std::move(pDeviceComment));
-    dirtyFlag_[2] = true;
+    dirtyFlag_[3] = true;
 }
 void Device::setDeviceCommentToNull() noexcept
 {
     deviceComment_.reset();
-    dirtyFlag_[2] = true;
+    dirtyFlag_[3] = true;
 }
 
 const uint32_t &Device::getValueOfTargetPermissionLevel() const noexcept
@@ -324,7 +389,7 @@ const std::shared_ptr<uint32_t> &Device::getTargetPermissionLevel() const noexce
 void Device::setTargetPermissionLevel(const uint32_t &pTargetPermissionLevel) noexcept
 {
     targetPermissionLevel_ = std::make_shared<uint32_t>(pTargetPermissionLevel);
-    dirtyFlag_[3] = true;
+    dirtyFlag_[4] = true;
 }
 
 void Device::updateId(const uint64_t id)
@@ -335,6 +400,7 @@ void Device::updateId(const uint64_t id)
 const std::vector<std::string> &Device::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
+        "device_sn",
         "device_name",
         "device_comment",
         "target_permission_level"
@@ -346,6 +412,17 @@ void Device::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
     if(dirtyFlag_[1])
     {
+        if(getDeviceSn())
+        {
+            binder << getValueOfDeviceSn();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[2])
+    {
         if(getDeviceName())
         {
             binder << getValueOfDeviceName();
@@ -355,7 +432,7 @@ void Device::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[2])
+    if(dirtyFlag_[3])
     {
         if(getDeviceComment())
         {
@@ -366,7 +443,7 @@ void Device::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[3])
+    if(dirtyFlag_[4])
     {
         if(getTargetPermissionLevel())
         {
@@ -394,12 +471,27 @@ const std::vector<std::string> Device::updateColumns() const
     {
         ret.push_back(getColumnName(3));
     }
+    if(dirtyFlag_[4])
+    {
+        ret.push_back(getColumnName(4));
+    }
     return ret;
 }
 
 void Device::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
     if(dirtyFlag_[1])
+    {
+        if(getDeviceSn())
+        {
+            binder << getValueOfDeviceSn();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[2])
     {
         if(getDeviceName())
         {
@@ -410,7 +502,7 @@ void Device::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[2])
+    if(dirtyFlag_[3])
     {
         if(getDeviceComment())
         {
@@ -421,7 +513,7 @@ void Device::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[3])
+    if(dirtyFlag_[4])
     {
         if(getTargetPermissionLevel())
         {
@@ -443,6 +535,14 @@ Json::Value Device::toJson() const
     else
     {
         ret["device_id"]=Json::Value();
+    }
+    if(getDeviceSn())
+    {
+        ret["device_sn"]=getValueOfDeviceSn();
+    }
+    else
+    {
+        ret["device_sn"]=Json::Value();
     }
     if(getDeviceName())
     {
@@ -475,7 +575,7 @@ Json::Value Device::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 4)
+    if(pMasqueradingVector.size() == 5)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -490,9 +590,9 @@ Json::Value Device::toMasqueradedJson(
         }
         if(!pMasqueradingVector[1].empty())
         {
-            if(getDeviceName())
+            if(getDeviceSn())
             {
-                ret[pMasqueradingVector[1]]=getValueOfDeviceName();
+                ret[pMasqueradingVector[1]]=getValueOfDeviceSn();
             }
             else
             {
@@ -501,9 +601,9 @@ Json::Value Device::toMasqueradedJson(
         }
         if(!pMasqueradingVector[2].empty())
         {
-            if(getDeviceComment())
+            if(getDeviceName())
             {
-                ret[pMasqueradingVector[2]]=getValueOfDeviceComment();
+                ret[pMasqueradingVector[2]]=getValueOfDeviceName();
             }
             else
             {
@@ -512,13 +612,24 @@ Json::Value Device::toMasqueradedJson(
         }
         if(!pMasqueradingVector[3].empty())
         {
-            if(getTargetPermissionLevel())
+            if(getDeviceComment())
             {
-                ret[pMasqueradingVector[3]]=getValueOfTargetPermissionLevel();
+                ret[pMasqueradingVector[3]]=getValueOfDeviceComment();
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[4].empty())
+        {
+            if(getTargetPermissionLevel())
+            {
+                ret[pMasqueradingVector[4]]=getValueOfTargetPermissionLevel();
+            }
+            else
+            {
+                ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
         return ret;
@@ -531,6 +642,14 @@ Json::Value Device::toMasqueradedJson(
     else
     {
         ret["device_id"]=Json::Value();
+    }
+    if(getDeviceSn())
+    {
+        ret["device_sn"]=getValueOfDeviceSn();
+    }
+    else
+    {
+        ret["device_sn"]=Json::Value();
     }
     if(getDeviceName())
     {
@@ -566,9 +685,19 @@ bool Device::validateJsonForCreation(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(0, "device_id", pJson["device_id"], err, true))
             return false;
     }
+    if(pJson.isMember("device_sn"))
+    {
+        if(!validJsonOfField(1, "device_sn", pJson["device_sn"], err, true))
+            return false;
+    }
+    else
+    {
+        err="The device_sn column cannot be null";
+        return false;
+    }
     if(pJson.isMember("device_name"))
     {
-        if(!validJsonOfField(1, "device_name", pJson["device_name"], err, true))
+        if(!validJsonOfField(2, "device_name", pJson["device_name"], err, true))
             return false;
     }
     else
@@ -578,12 +707,12 @@ bool Device::validateJsonForCreation(const Json::Value &pJson, std::string &err)
     }
     if(pJson.isMember("device_comment"))
     {
-        if(!validJsonOfField(2, "device_comment", pJson["device_comment"], err, true))
+        if(!validJsonOfField(3, "device_comment", pJson["device_comment"], err, true))
             return false;
     }
     if(pJson.isMember("target_permission_level"))
     {
-        if(!validJsonOfField(3, "target_permission_level", pJson["target_permission_level"], err, true))
+        if(!validJsonOfField(4, "target_permission_level", pJson["target_permission_level"], err, true))
             return false;
     }
     return true;
@@ -592,7 +721,7 @@ bool Device::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                 const std::vector<std::string> &pMasqueradingVector,
                                                 std::string &err)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 5)
     {
         err = "Bad masquerading vector";
         return false;
@@ -626,12 +755,25 @@ bool Device::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+        else
+        {
+            err="The " + pMasqueradingVector[2] + " column cannot be null";
+            return false;
+        }
       }
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
           {
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[4].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[4]))
+          {
+              if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
       }
@@ -655,19 +797,24 @@ bool Device::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+    if(pJson.isMember("device_sn"))
+    {
+        if(!validJsonOfField(1, "device_sn", pJson["device_sn"], err, false))
+            return false;
+    }
     if(pJson.isMember("device_name"))
     {
-        if(!validJsonOfField(1, "device_name", pJson["device_name"], err, false))
+        if(!validJsonOfField(2, "device_name", pJson["device_name"], err, false))
             return false;
     }
     if(pJson.isMember("device_comment"))
     {
-        if(!validJsonOfField(2, "device_comment", pJson["device_comment"], err, false))
+        if(!validJsonOfField(3, "device_comment", pJson["device_comment"], err, false))
             return false;
     }
     if(pJson.isMember("target_permission_level"))
     {
-        if(!validJsonOfField(3, "target_permission_level", pJson["target_permission_level"], err, false))
+        if(!validJsonOfField(4, "target_permission_level", pJson["target_permission_level"], err, false))
             return false;
     }
     return true;
@@ -676,7 +823,7 @@ bool Device::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                               const std::vector<std::string> &pMasqueradingVector,
                                               std::string &err)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 5)
     {
         err = "Bad masquerading vector";
         return false;
@@ -705,6 +852,11 @@ bool Device::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+      {
+          if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
     }
@@ -764,6 +916,27 @@ bool Device::validJsonOfField(size_t index,
         case 2:
             if(pJson.isNull())
             {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            // asString().length() creates a string object, is there any better way to validate the length?
+            if(pJson.isString() && pJson.asString().length() > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
+                return false;
+            }
+
+            break;
+        case 3:
+            if(pJson.isNull())
+            {
                 return true;
             }
             if(!pJson.isString())
@@ -781,7 +954,7 @@ bool Device::validJsonOfField(size_t index,
             }
 
             break;
-        case 3:
+        case 4:
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";

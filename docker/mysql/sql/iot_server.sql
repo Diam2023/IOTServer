@@ -14,6 +14,7 @@ CREATE TABLE `user`
 CREATE TABLE `device`
 (
     `device_id`               int unsigned NOT NULL AUTO_INCREMENT COMMENT '设备ID',
+    `device_sn`               varchar(100) NOT NULL COMMENT '设备序列号',
     `device_name`             varchar(100) NOT NULL COMMENT '设备名',
     `device_comment`          varchar(1024)         DEFAULT NULL COMMENT '设备描述',
     `target_permission_level` int unsigned NOT NULL DEFAULT '50' COMMENT '操作权限等级',
@@ -41,7 +42,7 @@ CREATE TABLE `subscribe_map`
     `map_id`           int unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
     `target_user_id`   int unsigned NOT NULL COMMENT 'user id',
     `target_device_id` int unsigned NOT NULL COMMENT 'Device id',
-    `target_topic_id`  int unsigned NOT NULL COMMENT 'topic id',
+    `target_topic_id`  int unsigned DEFAULT '0' COMMENT 'topic id zero to all',
     PRIMARY KEY (`map_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4

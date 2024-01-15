@@ -25,7 +25,7 @@ const std::vector<typename SubscribeMap::MetaData> SubscribeMap::metaData_={
 {"map_id","uint32_t","int unsigned",4,1,1,1},
 {"target_user_id","uint32_t","int unsigned",4,0,0,1},
 {"target_device_id","uint32_t","int unsigned",4,0,0,1},
-{"target_topic_id","uint32_t","int unsigned",4,0,0,1}
+{"target_topic_id","uint32_t","int unsigned",4,0,0,0}
 };
 const std::string &SubscribeMap::getColumnName(size_t index) noexcept(false)
 {
@@ -311,6 +311,11 @@ void SubscribeMap::setTargetTopicId(const uint32_t &pTargetTopicId) noexcept
     targetTopicId_ = std::make_shared<uint32_t>(pTargetTopicId);
     dirtyFlag_[3] = true;
 }
+void SubscribeMap::setTargetTopicIdToNull() noexcept
+{
+    targetTopicId_.reset();
+    dirtyFlag_[3] = true;
+}
 
 void SubscribeMap::updateId(const uint64_t id)
 {
@@ -576,11 +581,6 @@ bool SubscribeMap::validateJsonForCreation(const Json::Value &pJson, std::string
         if(!validJsonOfField(3, "target_topic_id", pJson["target_topic_id"], err, true))
             return false;
     }
-    else
-    {
-        err="The target_topic_id column cannot be null";
-        return false;
-    }
     return true;
 }
 bool SubscribeMap::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -634,11 +634,6 @@ bool SubscribeMap::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[3] + " column cannot be null";
-            return false;
-        }
       }
     }
     catch(const Json::LogicError &e)
@@ -772,8 +767,7 @@ bool SubscribeMap::validJsonOfField(size_t index,
         case 3:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
             if(!pJson.isUInt())
             {

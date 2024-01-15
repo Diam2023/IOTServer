@@ -130,6 +130,7 @@ class SubscribeMap
     const std::shared_ptr<uint32_t> &getTargetTopicId() const noexcept;
     ///Set the value of the column target_topic_id
     void setTargetTopicId(const uint32_t &pTargetTopicId) noexcept;
+    void setTargetTopicIdToNull() noexcept;
 
 
     static size_t getColumnNumber() noexcept {  return 4;  }
@@ -198,10 +199,11 @@ class SubscribeMap
             sql += "target_device_id,";
             ++parametersCount;
         }
-        if(dirtyFlag_[3])
+        sql += "target_topic_id,";
+        ++parametersCount;
+        if(!dirtyFlag_[3])
         {
-            sql += "target_topic_id,";
-            ++parametersCount;
+            needSelection=true;
         }
         needSelection=true;
         if(parametersCount > 0)
@@ -227,6 +229,10 @@ class SubscribeMap
         {
             sql.append("?,");
 
+        }
+        else
+        {
+            sql +="default,";
         }
         if(parametersCount > 0)
         {

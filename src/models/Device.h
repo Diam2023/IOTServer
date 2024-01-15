@@ -45,6 +45,7 @@ class Device
     struct Cols
     {
         static const std::string _device_id;
+        static const std::string _device_sn;
         static const std::string _device_name;
         static const std::string _device_comment;
         static const std::string _target_permission_level;
@@ -107,6 +108,15 @@ class Device
     ///Set the value of the column device_id
     void setDeviceId(const uint32_t &pDeviceId) noexcept;
 
+    /**  For column device_sn  */
+    ///Get the value of the column device_sn, returns the default value if the column is null
+    const std::string &getValueOfDeviceSn() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getDeviceSn() const noexcept;
+    ///Set the value of the column device_sn
+    void setDeviceSn(const std::string &pDeviceSn) noexcept;
+    void setDeviceSn(std::string &&pDeviceSn) noexcept;
+
     /**  For column device_name  */
     ///Get the value of the column device_name, returns the default value if the column is null
     const std::string &getValueOfDeviceName() const noexcept;
@@ -135,7 +145,7 @@ class Device
     void setTargetPermissionLevel(const uint32_t &pTargetPermissionLevel) noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 4;  }
+    static size_t getColumnNumber() noexcept {  return 5;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -157,6 +167,7 @@ class Device
     ///For mysql or sqlite3
     void updateId(const uint64_t id);
     std::shared_ptr<uint32_t> deviceId_;
+    std::shared_ptr<std::string> deviceSn_;
     std::shared_ptr<std::string> deviceName_;
     std::shared_ptr<std::string> deviceComment_;
     std::shared_ptr<uint32_t> targetPermissionLevel_;
@@ -171,7 +182,7 @@ class Device
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[4]={ false };
+    bool dirtyFlag_[5]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -193,17 +204,22 @@ class Device
             ++parametersCount;
         if(dirtyFlag_[1])
         {
-            sql += "device_name,";
+            sql += "device_sn,";
             ++parametersCount;
         }
         if(dirtyFlag_[2])
+        {
+            sql += "device_name,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[3])
         {
             sql += "device_comment,";
             ++parametersCount;
         }
         sql += "target_permission_level,";
         ++parametersCount;
-        if(!dirtyFlag_[3])
+        if(!dirtyFlag_[4])
         {
             needSelection=true;
         }
@@ -228,6 +244,11 @@ class Device
 
         }
         if(dirtyFlag_[3])
+        {
+            sql.append("?,");
+
+        }
+        if(dirtyFlag_[4])
         {
             sql.append("?,");
 
