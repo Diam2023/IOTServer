@@ -4,19 +4,27 @@
 
 using namespace drogon;
 
-class DeviceController : public drogon::HttpController<DeviceController>
-{
-  public:
+class DeviceController : public drogon::HttpController<DeviceController> {
+public:
     METHOD_LIST_BEGIN
 
+        ADD_METHOD_TO(DeviceController::newDevice, "/device/new", Put, "LoginFilter");
+        ADD_METHOD_TO(DeviceController::deleteDevice, "/device/delete", Delete, "LoginFilter");
 
-    // use METHOD_ADD to add your custom processing function here;
-    // METHOD_ADD(DeviceController::get, "/{2}/{1}", Get); // path is /DeviceController/{arg2}/{arg1}
-    // METHOD_ADD(DeviceController::your_method_name, "/{1}/{2}/list", Get); // path is /DeviceController/{arg1}/{arg2}/list
-    // ADD_METHOD_TO(DeviceController::your_method_name, "/absolute/path/{1}/{2}/list", Get); // path is /absolute/path/{arg1}/{arg2}/list
 
     METHOD_LIST_END
-    // your declaration of processing function maybe like this:
-    // void get(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback, int p1, std::string p2);
-    // void your_method_name(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback, double p1, int p2) const;
+
+    /**
+     * Create New Device To Device Table
+     * @param req
+     * @param callback
+     */
+    void newDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+    /**
+     * Delete Device From Device Table
+     * @param req
+     * @param callback
+     */
+    void deleteDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 };

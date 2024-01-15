@@ -44,12 +44,20 @@ namespace api {
         static std::future<std::string> getUserId(const std::string &token);
 
         /**
-         * Add Device To User Device List
+         * Add Device To User Subscribe
          * @param token user token
          * @param deviceId deviceId for add
          * @return if successful
          */
         static std::future<bool> addDevice(const std::string &token, const std::string &deviceId);
+
+        /**
+         * Remove Device From User Subscribe
+         * @param token
+         * @param deviceId
+         * @return
+         */
+        static std::future<bool> removeDevice(const std::string &token, const std::string &deviceId);
     };
 
 } // api

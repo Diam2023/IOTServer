@@ -103,7 +103,6 @@ namespace api {
         auto prom = std::make_shared<std::promise<bool>>();
 
         try {
-
             auto userId = api::UserApi::getUserId(token).get();
             auto dbClientPtr = app().getDbClient();
 
@@ -124,5 +123,11 @@ namespace api {
         }
 
         return prom->get_future();
+    }
+
+    std::future<bool> UserApi::removeDevice(const string &token, const string &deviceId) {
+
+        // TODO
+        return std::future<bool>();
     }
 } // api

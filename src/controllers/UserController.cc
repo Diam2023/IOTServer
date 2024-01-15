@@ -156,3 +156,11 @@ void UserController::newUser(const HttpRequestPtr &req, std::function<void(const
     resp->setStatusCode(resCode);
     callback(resp);
 }
+
+void UserController::addDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    // TODO
+}
+
+void UserController::removeDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    // TODO
+}
