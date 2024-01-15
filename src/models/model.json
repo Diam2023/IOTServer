@@ -8,6 +8,8 @@
   "tables": [
     "topics",
     "permissions",
-    "users"
+    "users",
+    "devices",
+    "device_topics"
   ]
 }
