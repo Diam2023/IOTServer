@@ -27,13 +27,13 @@ Content-Type: application/json
 # PASS 20240114
 # getInfo
 GET http://localhost:8089/user/info
-Authorization: 490ec163-ee89-495d-94c8-220fdefa6103
+Authorization: a1c3ad95-3012-4e94-aaf9-9b52d76f2449
 
 ###
 
 # PASS 20240114
 # logout
 DELETE http://localhost:8089/user/logout
-Authorization: 490ec163-ee89-495d-94c8-220fdefa6103
+Authorization: a1c3ad95-3012-4e94-aaf9-9b52d76f2449
 
 ###
