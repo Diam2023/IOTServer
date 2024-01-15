@@ -17,7 +17,7 @@ services:
     container_name: mysql-compose
     restart: always
     volumes:
-      - "./mysql/db/:/var/lib/mysql"
+      #- "./mysql/db/:/var/lib/mysql"
       - "./mysql/sql/:/docker-entrypoint-initdb.d"
     command: --default-authentication-plugin=caching_sha2_password
 
