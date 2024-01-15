@@ -9,7 +9,7 @@
 #include <json/value.h>
 #include <memory>
 
-#include "Users.h"
+#include "User.h"
 
 namespace api {
 
@@ -41,7 +41,7 @@ namespace api {
          * @param token token for redis
          * @return id if successful
          */
-        static std::future<std::string> getUserId(const std::string& token);
+        static std::future<std::string> getUserId(const std::string &token);
     };
 
 } // api

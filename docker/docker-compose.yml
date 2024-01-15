@@ -10,7 +10,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: yes
-      MYSQL_DATABASE: IOTServerDB
+      MYSQL_DATABASE: iot_server
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_USER: server
       MYSQL_PASSWORD: y2A@kw9&

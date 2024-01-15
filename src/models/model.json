@@ -2,14 +2,13 @@
   "rdbms": "mysql",
   "host": "127.0.0.1",
   "port": 3306,
-  "dbname": "IOTServerDB",
+  "dbname": "iot_server",
   "user": "server",
   "passwd": "y2A@kw9&",
   "tables": [
-    "topics",
-    "permissions",
-    "users",
-    "devices",
-    "device_topics"
+    "topic",
+    "device",
+    "user",
+    "subscribe_map"
   ]
 }

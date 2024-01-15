@@ -17,6 +17,6 @@ const static char *TOKEN_PREFIX = "TK:";
 /**
  * Default permission
  */
-const static uint32_t DEFAULT_PERMISSION_ID = 0;
+const static uint32_t DEFAULT_PERMISSION_LEVEL = 100;
 
 #endif //IOTSERVER_COMMON_H

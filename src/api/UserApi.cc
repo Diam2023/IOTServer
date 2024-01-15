@@ -17,7 +17,7 @@
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon::nosql;
-using namespace drogon_model::IOTServerDB;
+using namespace drogon_model::iot_server;
 using namespace std;
 
 namespace api {
@@ -26,14 +26,14 @@ namespace api {
         auto dbClientPtr = app().getDbClient();
 
         // ORM:
-        Mapper<Users> mp(dbClientPtr);
+        Mapper<User> mp(dbClientPtr);
 
         std::shared_ptr<std::promise<std::string>> prom = std::make_shared<std::promise<std::string>>();
 
         try {
-            auto user = mp.findOne((Criteria(Users::Cols::_user_name, CompareOperator::EQ, key) ||
-                                    Criteria(Users::Cols::_user_id, CompareOperator::EQ, key)) &&
-                                   Criteria(Users::Cols::_user_password, CompareOperator::EQ, pwd));
+            auto user = mp.findOne((Criteria(User::Cols::_user_name, CompareOperator::EQ, key) ||
+                                    Criteria(User::Cols::_user_id, CompareOperator::EQ, key)) &&
+                                   Criteria(User::Cols::_user_password, CompareOperator::EQ, pwd));
             // Successful find
 
             // generator token

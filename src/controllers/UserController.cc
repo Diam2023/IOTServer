@@ -1,13 +1,13 @@
 #include "UserController.h"
 
-#include "Users.h"
+#include "User.h"
 #include <json/value.h>
 #include "common.h"
 #include "UserApi.h"
 
 using namespace drogon::orm;
 using namespace drogon::nosql;
-using namespace drogon_model::IOTServerDB;
+using namespace drogon_model::iot_server;
 
 void UserController::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     // Get Fast DB
@@ -103,11 +103,11 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
 
         auto dbClientPtr = app().getDbClient();
         // ORM:
-        Mapper<Users> mp(dbClientPtr);
+        Mapper<User> mp(dbClientPtr);
 
         // find user with id
         auto resUser = mp.findFutureOne(
-                Criteria(Users::Cols::_user_id, CompareOperator::EQ, uid)).get();
+                Criteria(User::Cols::_user_id, CompareOperator::EQ, uid)).get();
 
         // Mask pwd
         resUser.setUserPassword("");
@@ -130,17 +130,17 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
 
 void UserController::newUser(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     auto reqJson = req->getJsonObject();
-    auto userPtr = std::make_shared<Users>(*reqJson);
+    auto userPtr = std::make_shared<User>(*reqJson);
 
     auto dbClientPtr = app().getDbClient();
     // ORM:
-    Mapper<Users> mp(dbClientPtr);
+    Mapper<User> mp(dbClientPtr);
 
     auto resCode = k200OK;
 
     // Check permission
     // Initialize to 0
-    userPtr->setUserPermissionId(DEFAULT_PERMISSION_ID);
+    userPtr->setUserPermissionLevel(DEFAULT_PERMISSION_LEVEL);
 
     try {
         // insert

@@ -4,17 +4,45 @@
 
 using namespace drogon;
 
-class TopicController : public drogon::HttpController<TopicController>
-{
-  public:
+class TopicController : public drogon::HttpController<TopicController> {
+public:
     METHOD_LIST_BEGIN
-    // use METHOD_ADD to add your custom processing function here;
-    // METHOD_ADD(Topic::get, "/{2}/{1}", Get); // path is /Topic/{arg2}/{arg1}
-    // METHOD_ADD(Topic::your_method_name, "/{1}/{2}/list", Get); // path is /Topic/{arg1}/{arg2}/list
-    // ADD_METHOD_TO(Topic::your_method_name, "/absolute/path/{1}/{2}/list", Get); // path is /absolute/path/{arg1}/{arg2}/list
+
+        ADD_METHOD_TO(TopicController::search, "/topic/get", Get, "LoginFilter");
+
+        // ADD_METHOD_TO(TopicController::insert, "/topic/insert", Put, "LoginFilter");
+
+        // ADD_METHOD_TO(TopicController::update, "/topic/update", Patch, "LoginFilter");
+
+        // ADD_METHOD_TO(TopicController::erase, "/topic/delete", Delete, "LoginFilter");
 
     METHOD_LIST_END
-    // your declaration of processing function maybe like this:
-    // void get(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback, int p1, std::string p2);
-    // void your_method_name(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback, double p1, int p2) const;
+
+    /**
+     * Search topic and return it
+     * @param req
+     * @param callback
+     */
+    void search(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+    /**
+     * Insert to database
+     * @param req
+     * @param callback
+     */
+    void insert(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+    /**
+     * Update topic
+     * @param req
+     * @param callback
+     */
+    void update(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+    /**
+     * Delete target topic
+     * @param req
+     * @param callback
+     */
+    void erase(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 };
