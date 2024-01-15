@@ -12,7 +12,8 @@
 #include <string_view>
 
 #include "UserApi.h"
-
+#include "Device.h"
+#include "SubscribeMap.h"
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -60,7 +61,7 @@ namespace api {
         return prom->get_future();
     }
 
-    std::future<bool> UserApi::logout(const string_view &token) {
+    std::future<bool> UserApi::logout(const string &token) {
         auto redisClientPtr = app().getRedisClient();
 
         std::shared_ptr<std::promise<bool>> prom = std::make_shared<std::promise<bool>>();
@@ -73,7 +74,7 @@ namespace api {
             }
         }, [prom](const RedisException &e) {
             prom->set_exception(current_exception());
-        }, "del %s%s", TOKEN_PREFIX, token.data());
+        }, "del %s%s", TOKEN_PREFIX, token.c_str());
 
         return prom->get_future();
     }
@@ -94,6 +95,33 @@ namespace api {
         }, [prom](const RedisException &e) {
             prom->set_exception(current_exception());
         }, "get %s%s", TOKEN_PREFIX, token.c_str());
+
+        return prom->get_future();
+    }
+
+    std::future<bool> UserApi::addDevice(const string &token, const string &deviceId) {
+        auto prom = std::make_shared<std::promise<bool>>();
+
+        try {
+
+            auto userId = api::UserApi::getUserId(token).get();
+            auto dbClientPtr = app().getDbClient();
+
+            Json::Value subscribeMapJson;
+            subscribeMapJson["target_user_id"] = userId;
+            subscribeMapJson["target_device_id"] = deviceId;
+            // init to zero
+            // all topic
+            // subscribeMapJson["target_topic_id"] = ;
+
+            Mapper<SubscribeMap> subscribeMapMapper(dbClientPtr);
+
+            subscribeMapMapper.insertFuture(SubscribeMap(subscribeMapJson)).get();
+            prom->set_value(true);
+
+        } catch (const UnexpectedRows &e) {
+            prom->set_exception(make_exception_ptr(e));
+        }
 
         return prom->get_future();
     }

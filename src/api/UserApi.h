@@ -34,7 +34,7 @@ namespace api {
          * @param token token for redis
          * @return if successful
          */
-        static std::future<bool> logout(const std::string_view &token) noexcept(false);
+        static std::future<bool> logout(const std::string &token) noexcept(false);
 
         /**
          * return user id if logged in
@@ -42,6 +42,14 @@ namespace api {
          * @return id if successful
          */
         static std::future<std::string> getUserId(const std::string &token);
+
+        /**
+         * Add Device To User Device List
+         * @param token user token
+         * @param deviceId deviceId for add
+         * @return if successful
+         */
+        static std::future<bool> addDevice(const std::string &token, const std::string &deviceId);
     };
 
 } // api
