@@ -42,7 +42,6 @@ namespace api {
             // Push to Redis
             auto redisClientPtr = app().getRedisClient();
             redisClientPtr->execCommandAsync([prom, token](const RedisResult &r) {
-                LOG_INFO << "Token: " << token << " Res: " << r.getStringForDisplaying();
                 prom->set_value(token);
             }, [prom, token](const RedisException &e) {
                 LOG_WARN << e.what();
