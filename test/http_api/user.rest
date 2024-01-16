@@ -27,7 +27,7 @@ Content-Type: application/json
 # PASS 20240114
 # getInfo
 GET http://localhost:8089/user/info
-Authorization: a1c3ad95-3012-4e94-aaf9-9b52d76f2449
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
 
 ###
 

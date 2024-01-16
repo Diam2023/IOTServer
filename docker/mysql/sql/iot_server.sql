@@ -4,7 +4,6 @@ CREATE TABLE `user`
     `user_name`             varchar(100) NOT NULL COMMENT '用户名',
     `user_password`         varchar(100)          DEFAULT NULL COMMENT '密码',
     `user_permission_level` int unsigned NOT NULL DEFAULT '100' COMMENT '操作权限等级',
-    `user_device_topic_id`  int unsigned NOT NULL COMMENT '用户订阅的设备以及Topic列表id',
     PRIMARY KEY (`user_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4

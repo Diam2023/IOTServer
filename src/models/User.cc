@@ -17,7 +17,6 @@ const std::string User::Cols::_user_id = "user_id";
 const std::string User::Cols::_user_name = "user_name";
 const std::string User::Cols::_user_password = "user_password";
 const std::string User::Cols::_user_permission_level = "user_permission_level";
-const std::string User::Cols::_user_device_topic_id = "user_device_topic_id";
 const std::string User::primaryKeyName = "user_id";
 const bool User::hasPrimaryKey = true;
 const std::string User::tableName = "user";
@@ -26,8 +25,7 @@ const std::vector<typename User::MetaData> User::metaData_={
 {"user_id","uint32_t","int unsigned",4,1,1,1},
 {"user_name","std::string","varchar(100)",100,0,0,1},
 {"user_password","std::string","varchar(100)",100,0,0,0},
-{"user_permission_level","uint32_t","int unsigned",4,0,0,1},
-{"user_device_topic_id","uint32_t","int unsigned",4,0,0,1}
+{"user_permission_level","uint32_t","int unsigned",4,0,0,1}
 };
 const std::string &User::getColumnName(size_t index) noexcept(false)
 {
@@ -54,15 +52,11 @@ User::User(const Row &r, const ssize_t indexOffset) noexcept
         {
             userPermissionLevel_=std::make_shared<uint32_t>(r["user_permission_level"].as<uint32_t>());
         }
-        if(!r["user_device_topic_id"].isNull())
-        {
-            userDeviceTopicId_=std::make_shared<uint32_t>(r["user_device_topic_id"].as<uint32_t>());
-        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 5 > r.size())
+        if(offset + 4 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -88,18 +82,13 @@ User::User(const Row &r, const ssize_t indexOffset) noexcept
         {
             userPermissionLevel_=std::make_shared<uint32_t>(r[index].as<uint32_t>());
         }
-        index = offset + 4;
-        if(!r[index].isNull())
-        {
-            userDeviceTopicId_=std::make_shared<uint32_t>(r[index].as<uint32_t>());
-        }
     }
 
 }
 
 User::User(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 5)
+    if(pMasqueradingVector.size() != 4)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -134,14 +123,6 @@ User::User(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
             userPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[3]].asUInt64());
-        }
-    }
-    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
-    {
-        dirtyFlag_[4] = true;
-        if(!pJson[pMasqueradingVector[4]].isNull())
-        {
-            userDeviceTopicId_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[4]].asUInt64());
         }
     }
 }
@@ -180,20 +161,12 @@ User::User(const Json::Value &pJson) noexcept(false)
             userPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson["user_permission_level"].asUInt64());
         }
     }
-    if(pJson.isMember("user_device_topic_id"))
-    {
-        dirtyFlag_[4]=true;
-        if(!pJson["user_device_topic_id"].isNull())
-        {
-            userDeviceTopicId_=std::make_shared<uint32_t>((uint32_t)pJson["user_device_topic_id"].asUInt64());
-        }
-    }
 }
 
 void User::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 5)
+    if(pMasqueradingVector.size() != 4)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -229,14 +202,6 @@ void User::updateByMasqueradedJson(const Json::Value &pJson,
             userPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[3]].asUInt64());
         }
     }
-    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
-    {
-        dirtyFlag_[4] = true;
-        if(!pJson[pMasqueradingVector[4]].isNull())
-        {
-            userDeviceTopicId_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[4]].asUInt64());
-        }
-    }
 }
 
 void User::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -270,14 +235,6 @@ void User::updateByJson(const Json::Value &pJson) noexcept(false)
         if(!pJson["user_permission_level"].isNull())
         {
             userPermissionLevel_=std::make_shared<uint32_t>((uint32_t)pJson["user_permission_level"].asUInt64());
-        }
-    }
-    if(pJson.isMember("user_device_topic_id"))
-    {
-        dirtyFlag_[4] = true;
-        if(!pJson["user_device_topic_id"].isNull())
-        {
-            userDeviceTopicId_=std::make_shared<uint32_t>((uint32_t)pJson["user_device_topic_id"].asUInt64());
         }
     }
 }
@@ -370,23 +327,6 @@ void User::setUserPermissionLevel(const uint32_t &pUserPermissionLevel) noexcept
     dirtyFlag_[3] = true;
 }
 
-const uint32_t &User::getValueOfUserDeviceTopicId() const noexcept
-{
-    const static uint32_t defaultValue = uint32_t();
-    if(userDeviceTopicId_)
-        return *userDeviceTopicId_;
-    return defaultValue;
-}
-const std::shared_ptr<uint32_t> &User::getUserDeviceTopicId() const noexcept
-{
-    return userDeviceTopicId_;
-}
-void User::setUserDeviceTopicId(const uint32_t &pUserDeviceTopicId) noexcept
-{
-    userDeviceTopicId_ = std::make_shared<uint32_t>(pUserDeviceTopicId);
-    dirtyFlag_[4] = true;
-}
-
 void User::updateId(const uint64_t id)
 {
     userId_ = std::make_shared<uint32_t>(static_cast<uint32_t>(id));
@@ -397,8 +337,7 @@ const std::vector<std::string> &User::insertColumns() noexcept
     static const std::vector<std::string> inCols={
         "user_name",
         "user_password",
-        "user_permission_level",
-        "user_device_topic_id"
+        "user_permission_level"
     };
     return inCols;
 }
@@ -438,17 +377,6 @@ void User::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[4])
-    {
-        if(getUserDeviceTopicId())
-        {
-            binder << getValueOfUserDeviceTopicId();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
 }
 
 const std::vector<std::string> User::updateColumns() const
@@ -465,10 +393,6 @@ const std::vector<std::string> User::updateColumns() const
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
-    }
-    if(dirtyFlag_[4])
-    {
-        ret.push_back(getColumnName(4));
     }
     return ret;
 }
@@ -502,17 +426,6 @@ void User::updateArgs(drogon::orm::internal::SqlBinder &binder) const
         if(getUserPermissionLevel())
         {
             binder << getValueOfUserPermissionLevel();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[4])
-    {
-        if(getUserDeviceTopicId())
-        {
-            binder << getValueOfUserDeviceTopicId();
         }
         else
         {
@@ -555,14 +468,6 @@ Json::Value User::toJson() const
     {
         ret["user_permission_level"]=Json::Value();
     }
-    if(getUserDeviceTopicId())
-    {
-        ret["user_device_topic_id"]=getValueOfUserDeviceTopicId();
-    }
-    else
-    {
-        ret["user_device_topic_id"]=Json::Value();
-    }
     return ret;
 }
 
@@ -570,7 +475,7 @@ Json::Value User::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 5)
+    if(pMasqueradingVector.size() == 4)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -616,17 +521,6 @@ Json::Value User::toMasqueradedJson(
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
-        if(!pMasqueradingVector[4].empty())
-        {
-            if(getUserDeviceTopicId())
-            {
-                ret[pMasqueradingVector[4]]=getValueOfUserDeviceTopicId();
-            }
-            else
-            {
-                ret[pMasqueradingVector[4]]=Json::Value();
-            }
-        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -662,14 +556,6 @@ Json::Value User::toMasqueradedJson(
     {
         ret["user_permission_level"]=Json::Value();
     }
-    if(getUserDeviceTopicId())
-    {
-        ret["user_device_topic_id"]=getValueOfUserDeviceTopicId();
-    }
-    else
-    {
-        ret["user_device_topic_id"]=Json::Value();
-    }
     return ret;
 }
 
@@ -700,23 +586,13 @@ bool User::validateJsonForCreation(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(3, "user_permission_level", pJson["user_permission_level"], err, true))
             return false;
     }
-    if(pJson.isMember("user_device_topic_id"))
-    {
-        if(!validJsonOfField(4, "user_device_topic_id", pJson["user_device_topic_id"], err, true))
-            return false;
-    }
-    else
-    {
-        err="The user_device_topic_id column cannot be null";
-        return false;
-    }
     return true;
 }
 bool User::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                               const std::vector<std::string> &pMasqueradingVector,
                                               std::string &err)
 {
-    if(pMasqueradingVector.size() != 5)
+    if(pMasqueradingVector.size() != 4)
     {
         err = "Bad masquerading vector";
         return false;
@@ -759,19 +635,6 @@ bool User::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
-      if(!pMasqueradingVector[4].empty())
-      {
-          if(pJson.isMember(pMasqueradingVector[4]))
-          {
-              if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
-                  return false;
-          }
-        else
-        {
-            err="The " + pMasqueradingVector[4] + " column cannot be null";
-            return false;
-        }
-      }
     }
     catch(const Json::LogicError &e)
     {
@@ -807,18 +670,13 @@ bool User::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(3, "user_permission_level", pJson["user_permission_level"], err, false))
             return false;
     }
-    if(pJson.isMember("user_device_topic_id"))
-    {
-        if(!validJsonOfField(4, "user_device_topic_id", pJson["user_device_topic_id"], err, false))
-            return false;
-    }
     return true;
 }
 bool User::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector,
                                             std::string &err)
 {
-    if(pMasqueradingVector.size() != 5)
+    if(pMasqueradingVector.size() != 4)
     {
         err = "Bad masquerading vector";
         return false;
@@ -847,11 +705,6 @@ bool User::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
-              return false;
-      }
-      if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
-      {
-          if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
     }
@@ -929,18 +782,6 @@ bool User::validJsonOfField(size_t index,
 
             break;
         case 3:
-            if(pJson.isNull())
-            {
-                err="The " + fieldName + " column cannot be null";
-                return false;
-            }
-            if(!pJson.isUInt())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            break;
-        case 4:
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";

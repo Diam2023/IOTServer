@@ -21,20 +21,6 @@ void AdminFilter::doFilter(const HttpRequestPtr &req,
 
     // Request Login Filter
     HttpStatusCode resultCode = kUnknown;
-//
-//    // If Dep Login
-//    auto uid = req->getHeader("uid");
-//    if (uid.empty()) {
-//        auto &token = req->getHeader("Authorization");
-//
-//        if (token.empty()) {
-//            resultCode = k511NetworkAuthenticationRequired;
-//        }
-//        try {
-//            uid = api::UserApi::getUserId(token).get();
-//        } catch (const RedisException &e) {
-//        }
-//    }
 
     do {
 
