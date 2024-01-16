@@ -88,11 +88,11 @@ namespace api {
 
         auto trans = dbClientPtr->newTransaction();
         Mapper<Device> deviceMapper(trans);
-        Mapper<Topic> topicMapper(dbClientPtr);
+        Mapper<Topic> topicMapper(trans);
         try {
-            deviceMapper.deleteFutureByPrimaryKey(deviceId).get();
+            auto deletedLength = deviceMapper.deleteFutureByPrimaryKey(deviceId).get();
 
-            if (deleteTopics) {
+            if (deleteTopics || (deletedLength > 0)) {
                 // Delete All topic
                 auto topics = topicMapper.findFutureBy(
                         Criteria(Topic::Cols::_target_device_id, CompareOperator::EQ, deviceId)).get();
@@ -100,9 +100,11 @@ namespace api {
                     topicMapper.deleteFutureOne(topic).get();
                 }
             }
-
-            // TODO Set To Exception
-            prom->set_value(true);
+            if (deletedLength > 0) {
+                prom->set_value(true);
+            } else {
+                prom->set_value(false);
+            }
         } catch (const DrogonDbException &e) {
             // Roll back!
             trans->rollback();

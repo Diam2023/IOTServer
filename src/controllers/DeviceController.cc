@@ -52,20 +52,24 @@ DeviceController::deleteDevice(const HttpRequestPtr &req, std::function<void(con
     do {
         auto jsonBody = req->getJsonObject();
         if (jsonBody->empty()) {
-            resCode = k204NoContent;
+            resCode = k406NotAcceptable;
             break;
         }
 
-        Device device(*jsonBody);
-        if (!device.getDeviceId()) {
-            resCode = k204NoContent;
+        auto deviceId = (*jsonBody)["device_id"];
+        if (deviceId.empty() ||
+            ((deviceId.type() != Json::ValueType::uintValue) && (deviceId.type() != Json::ValueType::intValue))) {
+            resCode = k406NotAcceptable;
             break;
         }
         try {
             // New Device
-            api::DeviceApi::deleteDevice(*device.getDeviceId()).get();
-
-            resCode = k200OK;
+            auto res = api::DeviceApi::deleteDevice(deviceId.asUInt64()).get();
+            if (res) {
+                resCode = k200OK;
+            } else {
+                resCode = k204NoContent;
+            }
         } catch (const DrogonDbException &e) {
             resCode = k400BadRequest;
         } catch (const std::exception &e) {

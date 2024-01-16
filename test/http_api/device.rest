@@ -21,11 +21,12 @@ Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
 
 ###
 
-
-
 ## PASS 20240116
-# Get All Device
-GET http://localhost:8089/device/all
+# Delete Device
+DELETE http://localhost:8089/device/delete
 Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+Content-Type: application/json
 
-
+{
+  "device_id": 2
+}
