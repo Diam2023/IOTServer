@@ -76,11 +76,16 @@ void TopicController::deleteTopic(const HttpRequestPtr &req, std::function<void(
 void TopicController::getAllTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     auto dbClientPtr = app().getDbClient();
     Mapper<Topic> topicMapper(dbClientPtr);
-    auto reqJsonObj = req->getJsonObject();
 
+    Json::Value jsonDeviceId;
 
-    auto future = (*reqJsonObj)["device_id"].empty() ? topicMapper.findFutureAll() : topicMapper.findFutureBy(
-            Criteria(Topic::Cols::_target_device_id, CompareOperator::EQ, ((*reqJsonObj)["device_id"]).asString()));
+    if (req->contentType() == ContentType::CT_APPLICATION_JSON) {
+        auto reqJsonObj = req->getJsonObject();
+        jsonDeviceId = (*reqJsonObj)["device_id"];
+    }
+
+    auto future = jsonDeviceId.empty() ? topicMapper.findFutureAll() : topicMapper.findFutureBy(
+            Criteria(Topic::Cols::_target_device_id, CompareOperator::EQ, jsonDeviceId.asString()));
 
     Json::Value jsonValue;
     Json::Value topicsJson;
@@ -94,7 +99,10 @@ void TopicController::getAllTopic(const HttpRequestPtr &req, std::function<void(
             topicsJson.append(topic.toJson());
         }
 
-        jsonValue["device_id"] = (*reqJsonObj)["device_id"];
+        if (!jsonDeviceId.empty()) {
+            jsonValue["device_id"] = jsonDeviceId;
+        }
+
         jsonValue["topics"] = topicsJson;
         resCode = k200OK;
     } catch (const UnexpectedRows &e) {

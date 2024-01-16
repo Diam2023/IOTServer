@@ -1,0 +1,44 @@
+## PASS 20240116
+# New topic
+PUT http://localhost:8089/topic/new
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+Content-Type: application/json
+
+{
+  "topic_qos": "QOS1",
+  "topic_name": "uaks",
+  "target_device_id": 3
+}
+
+###
+
+## PASS 20240116
+# Get All topic
+GET http://localhost:8089/topic/all
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+
+
+###
+
+## PASS 20240116
+# get select topic
+GET http://localhost:8089/topic/all
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+Content-Type: application/json
+
+{
+  "device_id": "3"
+}
+
+
+###
+
+## PASS 20240116
+# Delete topic
+DELETE http://localhost:8089/topic/delete
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+Content-Type: application/json
+
+{
+  "topic_id": 1
+}
