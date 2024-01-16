@@ -135,6 +135,7 @@ namespace api {
             Mapper<SubscribeMap> subscribeMapMapper(dbClientPtr);
 
             auto deletedSize = subscribeMapMapper.deleteFutureBy(
+                    Criteria(SubscribeMap::Cols::_target_user_id, CompareOperator::EQ, userId) &&
                     Criteria(SubscribeMap::Cols::_target_device_id, CompareOperator::EQ, deviceId)).get();
             if (deletedSize > 0) {
                 prom->set_value(true);
@@ -185,16 +186,16 @@ namespace api {
 
         try {
 
-            auto topics = subScribeMapper .orderBy(SubscribeMap::Cols::_target_device_id).findFutureBy(
+            auto topics = subScribeMapper.orderBy(SubscribeMap::Cols::_target_device_id).findFutureBy(
                     Criteria(SubscribeMap::Cols::_target_user_id, CompareOperator::EQ, userId)).get();
 
             // remove replace item
 //            vector<SubscribeMap> noRepTopics;
 //            std::copy(topics.begin(), topics.end(), noRepTopics.begin());
             topics.erase(unique(topics.begin(), topics.end(),
-                                     [](const SubscribeMap &fir, const SubscribeMap &sec) -> bool {
-                                         return fir.getTargetDeviceId() == sec.getTargetDeviceId();
-                                     }), topics.end());
+                                [](const SubscribeMap &fir, const SubscribeMap &sec) -> bool {
+                                    return fir.getTargetDeviceId() == sec.getTargetDeviceId();
+                                }), topics.end());
 
             for (auto &topic: topics) {
                 auto res = deviceMapper.findFutureOne(
@@ -245,6 +246,58 @@ namespace api {
             prom->set_exception(current_exception());
         }
 
+        return prom->get_future();
+    }
+
+    std::future<bool> UserApi::addTopic(const string &token, const std::string &deviceId, const string &topicId) {
+
+        auto prom = std::make_shared<std::promise<bool>>();
+
+        try {
+            auto userId = api::UserApi::getUserId(token).get();
+            auto dbClientPtr = app().getDbClient();
+
+            Json::Value subscribeMapJson;
+            subscribeMapJson["target_user_id"] = std::stoul(userId);
+            subscribeMapJson["target_device_id"] = std::stoul(deviceId);
+            subscribeMapJson["target_topic_id"] = std::stoul(topicId);
+
+            Mapper<SubscribeMap> subscribeMapMapper(dbClientPtr);
+
+            subscribeMapMapper.insertFuture(SubscribeMap(subscribeMapJson)).get();
+            prom->set_value(true);
+
+        } catch (const UnexpectedRows &e) {
+            prom->set_exception(make_exception_ptr(e));
+        }
+
+        return prom->get_future();
+    }
+
+    std::future<bool> UserApi::removeTopic(const string &token, const string &deviceId, const string &topicId) {
+        auto prom = std::make_shared<std::promise<bool>>();
+
+        try {
+            auto userId = api::UserApi::getUserId(token).get();
+            auto dbClientPtr = app().getDbClient();
+
+            Mapper<SubscribeMap> subscribeMapMapper(dbClientPtr);
+
+            auto deletedSize = subscribeMapMapper.deleteFutureBy(
+                    Criteria(SubscribeMap::Cols::_target_user_id, CompareOperator::EQ, userId) &&
+                    Criteria(SubscribeMap::Cols::_target_device_id, CompareOperator::EQ, deviceId) &&
+                    Criteria(SubscribeMap::Cols::_target_topic_id, CompareOperator::EQ, topicId)).get();
+            if (deletedSize > 0) {
+                prom->set_value(true);
+            } else {
+                prom->set_value(false);
+            }
+        } catch (const UnexpectedRows &e) {
+            prom->set_exception(make_exception_ptr(e));
+        } catch (const std::exception &e) {
+            LOG_WARN << e.what();
+            prom->set_exception(make_exception_ptr(e));
+        }
         return prom->get_future();
     }
 } // api

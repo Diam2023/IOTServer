@@ -4,7 +4,6 @@
 #include <json/value.h>
 #include "common.h"
 #include "UserApi.h"
-#include "SubscribeMap.h"
 
 using namespace drogon::orm;
 using namespace drogon::nosql;
@@ -341,5 +340,89 @@ void UserController::getDeviceInfo(const HttpRequestPtr &req, std::function<void
 
     auto resp = jsonValue.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(jsonValue);
     resp->setStatusCode(resCode);
+    callback(resp);
+}
+
+void UserController::addTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto token = req->getHeader("Authorization");
+
+    auto reqJsonObj = req->getJsonObject();
+    auto deviceId = (*reqJsonObj)["device_id"];
+    auto topicId = (*reqJsonObj)["topic_id"];
+    auto resCode = kUnknown;
+
+    do {
+        if (token.empty()) {
+            resCode = k401Unauthorized;
+            break;
+        }
+        if (topicId.empty() || (!topicId.isNumeric())) {
+            resCode = k400BadRequest;
+            break;
+        }
+        if (deviceId.empty() || (!deviceId.isNumeric())) {
+            resCode = k400BadRequest;
+            break;
+        }
+        try {
+            auto res = api::UserApi::addTopic(token, deviceId.asString(), topicId.asString()).get();
+            if (!res) {
+                resCode = k208AlreadyReported;
+            } else {
+                resCode = k200OK;
+            }
+        } catch (const UnexpectedRows &e) {
+            resCode = k304NotModified;
+        } catch (const std::exception &e) {
+            LOG_WARN << e.what();
+            resCode = k500InternalServerError;
+        }
+
+    } while (false);
+    auto resp = HttpResponse::newHttpResponse();
+    resp->setStatusCode(resCode);
+
+    callback(resp);
+}
+
+void UserController::removeTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto token = req->getHeader("Authorization");
+
+    auto reqJsonObj = req->getJsonObject();
+    auto deviceId = (*reqJsonObj)["device_id"];
+    auto topicId = (*reqJsonObj)["topic_id"];
+    auto resCode = kUnknown;
+
+    do {
+        if (token.empty()) {
+            resCode = k401Unauthorized;
+            break;
+        }
+        if (deviceId.empty() || (!deviceId.isNumeric())) {
+            resCode = k400BadRequest;
+            break;
+        }
+        if (topicId.empty() || (!topicId.isNumeric())) {
+            resCode = k400BadRequest;
+            break;
+        }
+        try {
+            auto res = api::UserApi::removeTopic(token, topicId.asString(), deviceId.asString()).get();
+            if (!res) {
+                resCode = k304NotModified;
+            } else {
+                resCode = k200OK;
+            }
+        } catch (const UnexpectedRows &e) {
+            resCode = k404NotFound;
+        } catch (const std::exception &e) {
+            LOG_WARN << e.what();
+            resCode = k500InternalServerError;
+        }
+
+    } while (false);
+    auto resp = HttpResponse::newHttpResponse();
+    resp->setStatusCode(resCode);
+
     callback(resp);
 }

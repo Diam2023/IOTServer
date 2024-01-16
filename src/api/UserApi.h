@@ -69,6 +69,25 @@ namespace api {
          */
         static std::future<bool> removeDevice(const std::string &token, const std::string &deviceId);
 
+
+        /**
+         * Add Topic To User Subscribe
+         * @param token user token
+         * @param deviceId
+         * @param topicId topic for add
+         * @return if successful
+         */
+        static std::future<bool> addTopic(const std::string &token, const std::string &deviceId, const std::string &topicId);
+
+        /**
+         * Remove Topic From User Subscribe
+         * @param token
+         * @param deviceId
+         * @param topicId
+         * @return
+         */
+        static std::future<bool> removeTopic(const std::string &token, const std::string &deviceId, const std::string &topicId);
+
         /**
          * Get All Device subscribed by user
          * @param userId
