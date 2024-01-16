@@ -21,7 +21,6 @@ public:
         ADD_METHOD_TO(UserController::removeDevice, "/user/device/remove", Delete, "LoginFilter");
 
         ADD_METHOD_TO(UserController::getAllDevice, "/user/device/getAll", Get, "LoginFilter");
-        ADD_METHOD_TO(UserController::getDeviceInfo, "/user/device/get", Get, "LoginFilter");
 
         ADD_METHOD_TO(UserController::addTopic, "/user/topic/add", Put, "LoginFilter");
         ADD_METHOD_TO(UserController::removeTopic, "/user/topic/remove", Delete, "LoginFilter");
