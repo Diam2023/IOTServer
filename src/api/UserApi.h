@@ -10,6 +10,8 @@
 #include <memory>
 
 #include "User.h"
+#include "Device.h"
+#include "Topic.h"
 
 namespace api {
 
@@ -19,6 +21,7 @@ namespace api {
     class UserApi {
 
     public:
+        // TODO Remove token
 
         /**
          * Login
@@ -44,6 +47,13 @@ namespace api {
         static std::future<std::string> getUserId(const std::string &token);
 
         /**
+         * get Permission level
+         * @param token
+         * @return level
+         */
+        static std::future<uint32_t> getUserPermissionLevel(const std::string &token);
+
+        /**
          * Add Device To User Subscribe
          * @param token user token
          * @param deviceId deviceId for add
@@ -58,6 +68,22 @@ namespace api {
          * @return
          */
         static std::future<bool> removeDevice(const std::string &token, const std::string &deviceId);
+
+        /**
+         * Get All Device subscribed by user
+         * @param userId
+         * @return
+         */
+        static std::future<std::vector<drogon_model::iot_server::Device>>
+        getAllSubscribedDevice(const std::string &userId);
+
+        /**
+         * Get All Device Topic subscribed by user
+         * @param userId
+         * @return
+         */
+        static std::future<std::vector<drogon_model::iot_server::Topic>>
+        getSubscribedDeviceAllTopics(const std::string &userId, const std::string &deviceId);
     };
 
 } // api

@@ -111,4 +111,23 @@ namespace api {
 
         return prom->get_future();
     }
+
+    std::future<std::vector<drogon_model::iot_server::Topic>> DeviceApi::getDeiceTopicInfo(uint32_t deviceId) {
+        auto dbClientPtr = app().getDbClient();
+
+        auto prom = std::make_shared<std::promise<std::vector<drogon_model::iot_server::Topic>>>();
+
+        Mapper<Topic> topicMapper(dbClientPtr);
+
+        try {
+            auto topics = topicMapper.findFutureBy(
+                    Criteria(Topic::Cols::_target_device_id, CompareOperator::EQ, deviceId)).get();
+            prom->set_value(topics);
+        } catch (const UnexpectedRows &e) {
+            // None Row found!
+            prom->set_exception(std::make_exception_ptr(e));
+        }
+
+        return prom->get_future();
+    }
 } // api

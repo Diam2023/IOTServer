@@ -8,9 +8,9 @@ class DeviceController : public drogon::HttpController<DeviceController> {
 public:
     METHOD_LIST_BEGIN
 
-        ADD_METHOD_TO(DeviceController::newDevice, "/device/new", Put, "LoginFilter");
-        ADD_METHOD_TO(DeviceController::deleteDevice, "/device/delete", Delete, "LoginFilter");
-
+        ADD_METHOD_TO(DeviceController::newDevice, "/device/new", Put, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(DeviceController::deleteDevice, "/device/delete", Delete, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(DeviceController::getAllDevice, "/device/all", Get, "LoginFilter", "AdminFilter");
 
     METHOD_LIST_END
 
@@ -27,4 +27,11 @@ public:
      * @param callback
      */
     void deleteDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+    /**
+     * Fetch All Device
+     * @param req
+     * @param callback
+     */
+    void getAllDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 };

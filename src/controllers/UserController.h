@@ -15,9 +15,13 @@ public:
         ADD_METHOD_TO(UserController::login, "/user/login", Post);
         ADD_METHOD_TO(UserController::logout, "/user/logout", Delete, "LoginFilter");
         ADD_METHOD_TO(UserController::getInfo, "/user/info", Get, "LoginFilter");
+        // Delete User admin permission
 
-        ADD_METHOD_TO(UserController::addDevice, "/user/device/add", Patch, "LoginFilter");
-        ADD_METHOD_TO(UserController::removeDevice, "/user/device/remove", Patch, "LoginFilter");
+        ADD_METHOD_TO(UserController::addDevice, "/user/device/add", Put, "LoginFilter");
+        ADD_METHOD_TO(UserController::removeDevice, "/user/device/remove", Delete, "LoginFilter");
+
+        ADD_METHOD_TO(UserController::getAllDevice, "/user/device/getAll", Get, "LoginFilter");
+        ADD_METHOD_TO(UserController::getDeviceInfo, "/user/device/get", Get, "LoginFilter");
 
     METHOD_LIST_END
 
@@ -65,4 +69,17 @@ public:
      */
     void removeDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
+    /**
+     * Get All Subscribed device
+     * @param req
+     * @param callback
+     */
+    void getAllDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+    /**
+     * Get target device topic info
+     * @param req
+     * @param callback
+     */
+    void getDeviceInfo(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 };

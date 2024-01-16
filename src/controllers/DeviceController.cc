@@ -44,5 +44,67 @@ void DeviceController::newDevice(const HttpRequestPtr &req, std::function<void(c
 
 void
 DeviceController::deleteDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto userId = req->getHeader("uid");
 
+    HttpStatusCode resCode;
+    Json::Value resJson;
+
+    do {
+        auto jsonBody = req->getJsonObject();
+        if (jsonBody->empty()) {
+            resCode = k204NoContent;
+            break;
+        }
+
+        Device device(*jsonBody);
+        if (!device.getDeviceId()) {
+            resCode = k204NoContent;
+            break;
+        }
+        try {
+            // New Device
+            api::DeviceApi::deleteDevice(*device.getDeviceId()).get();
+
+            resCode = k200OK;
+        } catch (const DrogonDbException &e) {
+            resCode = k400BadRequest;
+        } catch (const std::exception &e) {
+            resCode = k500InternalServerError;
+        }
+    } while (false);
+
+    auto resp = resJson.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(resJson);
+    resp->setStatusCode(resCode);
+    callback(resp);
+
+}
+
+void DeviceController::getAllDevice(const HttpRequestPtr &req, function<void(const HttpResponsePtr &)> &&callback) {
+
+    auto dbClientPtr = app().getDbClient();
+    Mapper<Device> deviceMapper(dbClientPtr);
+    auto future = deviceMapper.findFutureAll();
+
+    Json::Value jsonValue;
+    Json::Value devicesJson;
+
+    HttpStatusCode resCode;
+
+    try {
+        auto devices = future.get();
+        for (auto &device: devices) {
+            devicesJson.append(device.toJson());
+        }
+
+        jsonValue["devices"] = devicesJson;
+        resCode = k200OK;
+    } catch (const UnexpectedRows &e) {
+        resCode = k404NotFound;
+    } catch (const std::exception &e) {
+        resCode = k500InternalServerError;
+    }
+
+    auto resp = resCode == k200OK ? HttpResponse::newHttpJsonResponse(jsonValue) : HttpResponse::newHttpResponse();
+    resp->setStatusCode(resCode);
+    callback(resp);
 }

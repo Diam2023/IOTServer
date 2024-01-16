@@ -41,6 +41,13 @@ namespace api {
          * @return if delete
          */
         static std::future<bool> deleteDevice(uint32_t deviceId, bool deleteTopics = true) noexcept(false);
+
+        /**
+         * Get Device all topic info
+         * @param deviceId deviceId
+         * @return topics
+         */
+        static std::future<std::vector<drogon_model::iot_server::Topic>> getDeiceTopicInfo(uint32_t deviceId);
     };
 } // api
 

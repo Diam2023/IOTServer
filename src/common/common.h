@@ -19,4 +19,9 @@ const static char *TOKEN_PREFIX = "TK:";
  */
 const static uint32_t DEFAULT_PERMISSION_LEVEL = 100;
 
+/**
+ * Admin must bigger than this value
+ */
+const static uint32_t DEFAULT_ADMIN_THRESHOLD = 499;
+
 #endif //IOTSERVER_COMMON_H

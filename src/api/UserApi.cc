@@ -126,8 +126,125 @@ namespace api {
     }
 
     std::future<bool> UserApi::removeDevice(const string &token, const string &deviceId) {
+        auto prom = std::make_shared<std::promise<bool>>();
 
-        // TODO
-        return std::future<bool>();
+        try {
+            auto userId = api::UserApi::getUserId(token).get();
+            auto dbClientPtr = app().getDbClient();
+
+            Mapper<SubscribeMap> subscribeMapMapper(dbClientPtr);
+
+            auto deletedSize = subscribeMapMapper.deleteFutureBy(
+                    Criteria(SubscribeMap::Cols::_target_user_id, CompareOperator::EQ, userId)).get();
+            if (deletedSize > 0) {
+                prom->set_value(true);
+            } else {
+                prom->set_value(false);
+            }
+        } catch (const UnexpectedRows &e) {
+            prom->set_exception(make_exception_ptr(e));
+        } catch (const std::exception &e) {
+            LOG_WARN << e.what();
+            prom->set_exception(make_exception_ptr(e));
+        }
+        return prom->get_future();
+    }
+
+    std::future<uint32_t> UserApi::getUserPermissionLevel(const string &token) {
+
+        // Promise
+        std::shared_ptr<std::promise<uint32_t>> prom = std::make_shared<std::promise<uint32_t>>();
+        // Get Redis ptr
+
+        try {
+            auto userId = api::UserApi::getUserId(token).get();
+            auto dbClientPtr = app().getDbClient();
+
+            Mapper<User> userMapper(dbClientPtr);
+            auto user = userMapper.findFutureOne(Criteria(User::Cols::_user_id, CompareOperator::EQ, userId)).get();
+            prom->set_value(*user.getUserPermissionLevel());
+        } catch (const UnexpectedRows &e) {
+            prom->set_exception(make_exception_ptr(e));
+        } catch (const RedisException &e) {
+            // Need Login
+            prom->set_exception(make_exception_ptr(e));
+        } catch (const std::exception &e) {
+            prom->set_exception(make_exception_ptr(e));
+        }
+
+        return prom->get_future();
+    }
+
+    std::future<std::vector<drogon_model::iot_server::Device>> UserApi::getAllSubscribedDevice(const string &userId) {
+        auto prom = std::make_shared<std::promise<std::vector<drogon_model::iot_server::Device>>>();
+        auto dbClientPtr = app().getDbClient();
+        Mapper<SubscribeMap> subScribeMapper(dbClientPtr);
+        Mapper<Device> deviceMapper(dbClientPtr);
+
+        std::vector<drogon_model::iot_server::Device> devices;
+
+        try {
+
+            auto topics = subScribeMapper.orderBy(SubscribeMap::Cols::_target_device_id).findFutureBy(
+                    Criteria(SubscribeMap::Cols::_target_user_id, CompareOperator::EQ, userId)).get();
+
+            // remove replace item
+            vector<SubscribeMap> noRepTopics;
+            std::copy(topics.begin(), topics.end(), noRepTopics.begin());
+            noRepTopics.erase(unique(noRepTopics.begin(), noRepTopics.end(),
+                                     [](const SubscribeMap &fir, const SubscribeMap &sec) -> bool {
+                                         return fir.getTargetDeviceId() == sec.getTargetDeviceId();
+                                     }), noRepTopics.end());
+
+            for (auto &topic: noRepTopics) {
+                auto res = deviceMapper.findFutureOne(
+                        Criteria(Device::Cols::_device_id, CompareOperator::EQ, *topic.getTargetDeviceId())).get();
+                devices.push_back(res);
+            }
+
+            prom->set_value(devices);
+
+        } catch (const UnexpectedRows &e) {
+            prom->set_exception(std::make_exception_ptr(e));
+        } catch (const DrogonDbException &e) {
+            prom->set_exception(std::make_exception_ptr(e));
+        } catch (const std::exception &e) {
+            prom->set_exception(current_exception());
+        }
+
+
+        return prom->get_future();
+    }
+
+    std::future<std::vector<drogon_model::iot_server::Topic>>
+    UserApi::getSubscribedDeviceAllTopics(const string &userId, const string &deviceId) {
+        auto prom = std::make_shared<std::promise<std::vector<drogon_model::iot_server::Topic>>>();
+        auto dbClientPtr = app().getDbClient();
+        Mapper<SubscribeMap> subScribeMapper(dbClientPtr);
+        Mapper<Topic> topicMapper(dbClientPtr);
+
+        std::vector<drogon_model::iot_server::Topic> topics;
+
+        try {
+            auto subscribeMapList = subScribeMapper.findFutureBy(
+                    Criteria(SubscribeMap::Cols::_target_user_id, CompareOperator::EQ, userId) &&
+                    Criteria(SubscribeMap::Cols::_target_device_id, CompareOperator::EQ, deviceId)).get();
+
+            for (auto &subscribeMap: subscribeMapList) {
+                auto topic = topicMapper.findFutureOne(
+                        Criteria(Topic::Cols::_topic_id, CompareOperator::EQ, *subscribeMap.getTargetTopicId())).get();
+                topics.push_back(topic);
+            }
+
+            prom->set_value(topics);
+        } catch (const UnexpectedRows &e) {
+            prom->set_exception(std::make_exception_ptr(DataException("Non Topic")));
+        } catch (const DrogonDbException &e) {
+            prom->set_exception(current_exception());
+        } catch (const std::exception &e) {
+            prom->set_exception(current_exception());
+        }
+
+        return prom->get_future();
     }
 } // api

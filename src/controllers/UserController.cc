@@ -4,6 +4,7 @@
 #include <json/value.h>
 #include "common.h"
 #include "UserApi.h"
+#include "SubscribeMap.h"
 
 using namespace drogon::orm;
 using namespace drogon::nosql;
@@ -158,9 +159,83 @@ void UserController::newUser(const HttpRequestPtr &req, std::function<void(const
 }
 
 void UserController::addDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
-    // TODO
+    auto token = req->getHeader("Authorization");
+
+    auto reqJsonObj = req->getJsonObject();
+    auto deviceId = (*reqJsonObj)["device_id"];
+    auto resCode = kUnknown;
+
+    do {
+        if (token.empty()) {
+            resCode = k401Unauthorized;
+            break;
+        }
+        if (deviceId.empty()) {
+            resCode = k400BadRequest;
+            break;
+        }
+        try {
+            auto res = api::UserApi::addDevice(token, deviceId.asString()).get();
+            if (!res) {
+                resCode = k208AlreadyReported;
+            } else {
+                resCode = k200OK;
+            }
+        } catch (const UnexpectedRows &e) {
+            resCode = k304NotModified;
+        } catch (const std::exception &e) {
+            LOG_WARN << e.what();
+            resCode = k500InternalServerError;
+        }
+
+    } while (false);
+    auto resp = HttpResponse::newHttpResponse();
+    resp->setStatusCode(resCode);
+
+    callback(resp);
 }
 
 void UserController::removeDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
-    // TODO
+    auto token = req->getHeader("Authorization");
+
+    auto reqJsonObj = req->getJsonObject();
+    auto deviceId = (*reqJsonObj)["device_id"];
+    auto resCode = kUnknown;
+
+    do {
+        if (token.empty()) {
+            resCode = k401Unauthorized;
+            break;
+        }
+        if (deviceId.empty()) {
+            resCode = k400BadRequest;
+            break;
+        }
+        try {
+            auto res = api::UserApi::removeDevice(token, deviceId.asString()).get();
+            if (!res) {
+                resCode = k304NotModified;
+            } else {
+                resCode = k200OK;
+            }
+        } catch (const UnexpectedRows &e) {
+            resCode = k404NotFound;
+        } catch (const std::exception &e) {
+            LOG_WARN << e.what();
+            resCode = k500InternalServerError;
+        }
+
+    } while (false);
+    auto resp = HttpResponse::newHttpResponse();
+    resp->setStatusCode(resCode);
+
+    callback(resp);
+}
+
+void UserController::getDeviceInfo(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+
+}
+
+void UserController::getAllDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+
 }
