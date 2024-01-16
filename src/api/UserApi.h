@@ -96,13 +96,6 @@ namespace api {
         static std::future<std::vector<drogon_model::iot_server::Device>>
         getAllSubscribedDevice(const std::string &userId);
 
-        /**
-         * Get All Device Topic subscribed by user
-         * @param userId
-         * @return
-         */
-        static std::future<std::vector<drogon_model::iot_server::Topic>>
-        getSubscribedDeviceAllTopics(const std::string &userId, const std::string &deviceId);
     };
 
 } // api

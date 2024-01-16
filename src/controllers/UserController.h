@@ -80,14 +80,6 @@ public:
     void getAllDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     /**
-     * Get target device topic info
-     * @param req
-     * @param callback
-     */
-    void getDeviceInfo(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
-
-
-    /**
      * subscribe device topic
      * @param req
      * @param callback

@@ -217,38 +217,6 @@ namespace api {
         return prom->get_future();
     }
 
-    std::future<std::vector<drogon_model::iot_server::Topic>>
-    UserApi::getSubscribedDeviceAllTopics(const string &userId, const string &deviceId) {
-        auto prom = std::make_shared<std::promise<std::vector<drogon_model::iot_server::Topic>>>();
-        auto dbClientPtr = app().getDbClient();
-        Mapper<SubscribeMap> subScribeMapper(dbClientPtr);
-        Mapper<Topic> topicMapper(dbClientPtr);
-
-        std::vector<drogon_model::iot_server::Topic> topics;
-
-        try {
-            auto subscribeMapList = subScribeMapper.findFutureBy(
-                    Criteria(SubscribeMap::Cols::_target_user_id, CompareOperator::EQ, userId) &&
-                    Criteria(SubscribeMap::Cols::_target_device_id, CompareOperator::EQ, deviceId)).get();
-
-            for (auto &subscribeMap: subscribeMapList) {
-                auto topic = topicMapper.findFutureOne(
-                        Criteria(Topic::Cols::_topic_id, CompareOperator::EQ, *subscribeMap.getTargetTopicId())).get();
-                topics.push_back(topic);
-            }
-
-            prom->set_value(topics);
-        } catch (const UnexpectedRows &e) {
-            prom->set_exception(std::make_exception_ptr(DataException("Non Topic")));
-        } catch (const DrogonDbException &e) {
-            prom->set_exception(current_exception());
-        } catch (const std::exception &e) {
-            prom->set_exception(current_exception());
-        }
-
-        return prom->get_future();
-    }
-
     std::future<bool> UserApi::addTopic(const string &token, const std::string &deviceId, const string &topicId) {
 
         auto prom = std::make_shared<std::promise<bool>>();
