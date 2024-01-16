@@ -135,7 +135,7 @@ namespace api {
             Mapper<SubscribeMap> subscribeMapMapper(dbClientPtr);
 
             auto deletedSize = subscribeMapMapper.deleteFutureBy(
-                    Criteria(SubscribeMap::Cols::_target_user_id, CompareOperator::EQ, userId)).get();
+                    Criteria(SubscribeMap::Cols::_target_device_id, CompareOperator::EQ, deviceId)).get();
             if (deletedSize > 0) {
                 prom->set_value(true);
             } else {
@@ -185,18 +185,18 @@ namespace api {
 
         try {
 
-            auto topics = subScribeMapper.orderBy(SubscribeMap::Cols::_target_device_id).findFutureBy(
+            auto topics = subScribeMapper .orderBy(SubscribeMap::Cols::_target_device_id).findFutureBy(
                     Criteria(SubscribeMap::Cols::_target_user_id, CompareOperator::EQ, userId)).get();
 
             // remove replace item
-            vector<SubscribeMap> noRepTopics;
-            std::copy(topics.begin(), topics.end(), noRepTopics.begin());
-            noRepTopics.erase(unique(noRepTopics.begin(), noRepTopics.end(),
+//            vector<SubscribeMap> noRepTopics;
+//            std::copy(topics.begin(), topics.end(), noRepTopics.begin());
+            topics.erase(unique(topics.begin(), topics.end(),
                                      [](const SubscribeMap &fir, const SubscribeMap &sec) -> bool {
                                          return fir.getTargetDeviceId() == sec.getTargetDeviceId();
-                                     }), noRepTopics.end());
+                                     }), topics.end());
 
-            for (auto &topic: noRepTopics) {
+            for (auto &topic: topics) {
                 auto res = deviceMapper.findFutureOne(
                         Criteria(Device::Cols::_device_id, CompareOperator::EQ, *topic.getTargetDeviceId())).get();
                 devices.push_back(res);

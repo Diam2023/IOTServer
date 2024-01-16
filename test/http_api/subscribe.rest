@@ -5,31 +5,39 @@ Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
 Content-Type: application/json
 
 {
+  "device_id": 4
+}
+
+###
+
+# PASS 20240116
+# Get All Subscribed device
+GET http://localhost:8089/user/device/getAll
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+
+###
+
+# TODO Retest when full topic ok
+# Get target device topic info
+GET http://localhost:8089/user/device/get
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+Content-Type: application/json
+
+{
   "device_id": 3
 }
 
 ###
 
 
+# PASS 20240116
 # remove device from user sub
-POST http://localhost:8089/user/device/remove
+DELETE http://localhost:8089/user/device/remove
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
 Content-Type: application/json
 
 {
-  "key": "testUser10",
-  "pwd": "pwd10"
+  "device_id": 4
 }
-
-###
-
-# remove device from user sub
-GET http://localhost:8089/device/getAll
-Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
-
-###
-
-# logout
-DELETE http://localhost:8089/device/get
-Authorization: a1c3ad95-3012-4e94-aaf9-9b52d76f2449
 
 ###

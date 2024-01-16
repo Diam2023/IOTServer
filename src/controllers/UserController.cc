@@ -235,10 +235,111 @@ void UserController::removeDevice(const HttpRequestPtr &req, std::function<void(
     callback(resp);
 }
 
-void UserController::getDeviceInfo(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+void UserController::getAllDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto userId = req->getHeader("uid");
 
+    auto reqJsonObj = req->getJsonObject();
+    auto resCode = kUnknown;
+
+    Json::Value jsonValue;
+    Json::Value devicesJson;
+
+    if (userId.empty()) {
+        try {
+            userId = api::UserApi::getUserId(req->getHeader("Authorization")).get();
+        } catch (const std::exception &e) {
+            LOG_WARN << e.what();
+            resCode = k400BadRequest;
+
+            auto resp = HttpResponse::newHttpResponse();
+            resp->setStatusCode(resCode);
+            callback(resp);
+            return;
+        }
+
+    }
+
+    do {
+
+        if (userId.empty()) {
+            resCode = k203NonAuthoritativeInformation;
+            break;
+        }
+
+        try {
+            auto devices = api::UserApi::getAllSubscribedDevice(userId).get();
+            for (auto &device: devices) {
+                devicesJson.append(device.toJson());
+            }
+            jsonValue["devices"] = devicesJson;
+            resCode = k200OK;
+        } catch (const UnexpectedRows &e) {
+            resCode = k404NotFound;
+        } catch (const std::exception &e) {
+            resCode = k500InternalServerError;
+        }
+
+    } while (false);
+
+    auto resp = jsonValue.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(jsonValue);
+    resp->setStatusCode(resCode);
+    callback(resp);
 }
 
-void UserController::getAllDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
 
+void UserController::getDeviceInfo(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto userId = req->getHeader("uid");
+
+    auto reqJsonObj = req->getJsonObject();
+    auto resCode = kUnknown;
+    auto deviceId = (*reqJsonObj)["device_id"];
+    Json::Value jsonValue;
+    Json::Value topicsJson;
+
+    if (userId.empty()) {
+        try {
+            userId = api::UserApi::getUserId(req->getHeader("Authorization")).get();
+        } catch (const std::exception &e) {
+            LOG_WARN << e.what();
+            resCode = k400BadRequest;
+
+            auto resp = HttpResponse::newHttpResponse();
+            resp->setStatusCode(resCode);
+            callback(resp);
+            return;
+        }
+
+    }
+
+    do {
+
+        if (userId.empty()) {
+            resCode = k203NonAuthoritativeInformation;
+            break;
+        }
+        if (deviceId.empty() || !deviceId.isNumeric()) {
+            resCode = k400BadRequest;
+            break;
+        }
+
+        try {
+            auto topics = api::UserApi::getSubscribedDeviceAllTopics(userId, deviceId.asString()).get();
+            for (auto &topic: topics) {
+                topicsJson.append(topic.toJson());
+            }
+            jsonValue["topics"] = topicsJson;
+            resCode = k200OK;
+        } catch (const UnexpectedRows &e) {
+            resCode = k404NotFound;
+        } catch (const DataException &e) {
+            resCode = k204NoContent;
+        } catch (const std::exception &e) {
+            resCode = k500InternalServerError;
+        }
+
+    } while (false);
+
+    auto resp = jsonValue.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(jsonValue);
+    resp->setStatusCode(resCode);
+    callback(resp);
 }

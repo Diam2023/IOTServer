@@ -5,7 +5,7 @@ Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
 Content-Type: application/json
 
 {
-  "device_sn": "ioawnmd2",
+  "device_sn": "ioawnmd102",
   "device_name": "test device",
   "device_comment": "Test comment",
   "target_permission_level": 50
