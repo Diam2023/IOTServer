@@ -96,6 +96,7 @@ void DeviceController::getAllDevice(const HttpRequestPtr &req, function<void(con
 
     try {
         auto devices = future.get();
+        // TODO Need To Filter If user Permission lower than device
         for (auto &device: devices) {
             devicesJson.append(device.toJson());
         }

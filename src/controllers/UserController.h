@@ -23,6 +23,9 @@ public:
         ADD_METHOD_TO(UserController::getAllDevice, "/user/device/getAll", Get, "LoginFilter");
         ADD_METHOD_TO(UserController::getDeviceInfo, "/user/device/get", Get, "LoginFilter");
 
+        ADD_METHOD_TO(UserController::addTopic, "/user/topic/add", Put, "LoginFilter");
+        ADD_METHOD_TO(UserController::removeTopic, "/user/topic/remove", Delete, "LoginFilter");
+
     METHOD_LIST_END
 
     /**
@@ -82,4 +85,20 @@ public:
      * @param callback
      */
     void getDeviceInfo(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+
+    /**
+     * subscribe device topic
+     * @param req
+     * @param callback
+     */
+    void addTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+    /**
+     * unsubscribe device topic
+     * @param req
+     * @param callback
+     */
+    void removeTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
 };

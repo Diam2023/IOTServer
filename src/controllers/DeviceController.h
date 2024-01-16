@@ -10,7 +10,7 @@ public:
 
         ADD_METHOD_TO(DeviceController::newDevice, "/device/new", Put, "LoginFilter", "AdminFilter");
         ADD_METHOD_TO(DeviceController::deleteDevice, "/device/delete", Delete, "LoginFilter", "AdminFilter");
-        ADD_METHOD_TO(DeviceController::getAllDevice, "/device/all", Get, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(DeviceController::getAllDevice, "/device/all", Get, "LoginFilter");
 
     METHOD_LIST_END
 
