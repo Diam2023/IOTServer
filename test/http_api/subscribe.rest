@@ -1,0 +1,35 @@
+# PASS 20240116
+# add device
+PUT http://localhost:8089/user/device/add
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+Content-Type: application/json
+
+{
+  "device_id": 3
+}
+
+###
+
+
+# remove device from user sub
+POST http://localhost:8089/user/device/remove
+Content-Type: application/json
+
+{
+  "key": "testUser10",
+  "pwd": "pwd10"
+}
+
+###
+
+# remove device from user sub
+GET http://localhost:8089/device/getAll
+Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+
+###
+
+# logout
+DELETE http://localhost:8089/device/get
+Authorization: a1c3ad95-3012-4e94-aaf9-9b52d76f2449
+
+###

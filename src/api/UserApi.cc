@@ -107,8 +107,8 @@ namespace api {
             auto dbClientPtr = app().getDbClient();
 
             Json::Value subscribeMapJson;
-            subscribeMapJson["target_user_id"] = userId;
-            subscribeMapJson["target_device_id"] = deviceId;
+            subscribeMapJson["target_user_id"] = std::stoul(userId);
+            subscribeMapJson["target_device_id"] = std::stoul(deviceId);
             // init to zero
             // all topic
             // subscribeMapJson["target_topic_id"] = ;

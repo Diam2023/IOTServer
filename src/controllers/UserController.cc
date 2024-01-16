@@ -90,13 +90,16 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
 
     Json::Value resJson;
     auto resCode = kUnknown;
+
     if (token.empty()) {
         resCode = k203NonAuthoritativeInformation;
-        auto resp = HttpResponse::newHttpJsonResponse(resJson);
-
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(resCode);
+        callback(resp);
+        return;
     }
-
     try {
+
         if (uid.empty()) {
             // verify token out of date!
             uid = api::UserApi::getUserId(token).get();
@@ -170,7 +173,7 @@ void UserController::addDevice(const HttpRequestPtr &req, std::function<void(con
             resCode = k401Unauthorized;
             break;
         }
-        if (deviceId.empty()) {
+        if (deviceId.empty() || (!deviceId.isNumeric())) {
             resCode = k400BadRequest;
             break;
         }
@@ -207,7 +210,7 @@ void UserController::removeDevice(const HttpRequestPtr &req, std::function<void(
             resCode = k401Unauthorized;
             break;
         }
-        if (deviceId.empty()) {
+        if (deviceId.empty() || (!deviceId.isNumeric())) {
             resCode = k400BadRequest;
             break;
         }

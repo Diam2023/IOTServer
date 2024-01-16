@@ -13,7 +13,6 @@ Content-Type: application/json
 
 ###
 
-
 ## PASS 20240116
 # Get All Device
 GET http://localhost:8089/device/all

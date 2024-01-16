@@ -30,15 +30,8 @@ void LoginFilter::doFilter(const HttpRequestPtr &req,
 
         try {
             auto future = api::UserApi::getUserId(token);
-            auto uid = future.get();
-            if (uid.empty()) {
-                // Err current
-                // out of date
-                resultCode = k401Unauthorized;
-            } else {
-                req->addHeader("uid", uid);
-                resultCode = k200OK;
-            }
+            req->addHeader("uid", future.get());
+            resultCode = k200OK;
             // Verify uid exists in mysql
         } catch (const RedisException &e) {
             if (e.code() == RedisErrorCode::kNone) {
