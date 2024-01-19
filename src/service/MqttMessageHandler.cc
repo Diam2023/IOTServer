@@ -16,6 +16,7 @@ namespace mqtt {
         LOG_INFO << "MqttMessage: " << str.toStdString();
 
 
+
         // First:  Search Redis Topic List.
         // Second: Update To Redis And Mysql If Exist.
 //        auto redisClient = drogon::app().getRedisClient();
