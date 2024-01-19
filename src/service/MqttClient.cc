@@ -7,7 +7,7 @@
 #include <QMqttMessage>
 
 namespace mqtt {
-    void MqttClient::loadConfig(const Json::Value &value) {
+    MqttClient &MqttClient::loadConfig(const Json::Value &value) {
         auto hostRes = value.get("host", DEFAULT_HOST);
         auto portRes = value.get("port", DEFAULT_PORT);
 
@@ -18,19 +18,50 @@ namespace mqtt {
             throw std::invalid_argument("port invalid");
         }
 
-        // TODO Add SSL
+        LOG_INFO << "load mqtt host: " << hostRes.asString() << " port: " << portRes.asInt64();
 
-        client.setPort(portRes.asInt64());
+        clientPtr->setPort(portRes.asInt64());
         // Default Encode utf8
-        client.setHostname(QString::fromStdString(hostRes.asString()));
-        client.subscribe(QMqttTopicFilter("#"));
+        clientPtr->setHostname(QString::fromStdString(hostRes.asString()));
+
+        return *this;
+    }
+
+    void MqttClient::connected() {
+        LOG_INFO << "Mqtt Connected";
+        clientPtr->subscribe(QMqttTopicFilter("#"));
+        isConnected = true;
+    }
+
+    void MqttClient::disconnected() {
+        LOG_INFO << "Mqtt Disconnected";
+        isConnected = false;
+        if (clientPtr->error() != QMqttClient::NoError) {
+            abort();
+            LOG_ERROR << qt_getEnumName(clientPtr->error()) << " Enum Value: " << (int) clientPtr->error();
+        }
+    }
+
+    void MqttClient::start() {
+        // TODO Add SSL
+        clientPtr->setAutoKeepAlive(true);
+
+        clientPtr->connectToHost();
+
+        LOG_INFO << "Mqtt Start";
+    }
+
+    MqttClient::MqttClient() : isConnected(false), clientPtr(new QMqttClient(this)) {
+
+        QObject::connect(clientPtr.data(), &QMqttClient::connected, this, &MqttClient::connected);
+        QObject::connect(clientPtr.data(), &QMqttClient::disconnected, this, &MqttClient::disconnected);
 
         // First
-        QObject::connect(&client, &QMqttClient::messageReceived, &mqtt::MqttMessageHandler::getInstance(),
+        QObject::connect(clientPtr.data(), &QMqttClient::messageReceived, &mqtt::MqttMessageHandler::getInstance(),
                          &mqtt::MqttMessageHandler::messageHandler);
 
         // Second
-        QObject::connect(&client, &QMqttClient::messageReceived,
+        QObject::connect(clientPtr.data(), &QMqttClient::messageReceived,
                          [this](const QByteArray &message, const QMqttTopicName &topic) -> void {
                              // messageHandler将订阅所有消息，并将消息放入队列
                              // 使用一个消费者类将该类接收到的数据按时间最后状态过滤发送到Mysql
@@ -46,6 +77,12 @@ namespace mqtt {
                                  cb.notify({topic, obj});
                              }
                          });
+    }
+
+    void MqttClient::stop() {
+        if (isConnected || clientPtr->state() == QMqttClient::Connected) {
+            clientPtr->disconnectFromHost();
+        }
     }
 
     template<class T>

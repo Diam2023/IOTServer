@@ -5,16 +5,21 @@
 #include <thread>
 #include <QtCore/QCoreApplication>
 #include <drogon/HttpAppFramework.h>
+#include "MqttClient.h"
+#include <QTimer>
 
 // Handler Exit Signal
 static void exitSignalHandler() {
     // Handle Exit Signal
     LOG_WARN << "Server Exiting...";
+    mqtt::MqttClient::instance().stop();
     drogon::app().quit();
     QCoreApplication::exit();
 }
 
 static int runServer() {
+    using namespace std::chrono_literals;
+
     // Drogon Thread
     auto drogonThread = std::thread([]() {
         // Handler Exit Signal
@@ -48,6 +53,10 @@ static int runServer() {
 int main(int argc, char **argv) {
     // Qt Core Application
     QCoreApplication app(argc, argv);
+
+    QTimer::singleShot(2000,&app,[](){
+        mqtt::MqttClient::instance().loadConfig(drogon::app().getCustomConfig()["mqtt"]).start();
+    });
 
     return runServer();
 }

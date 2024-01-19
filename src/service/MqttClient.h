@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace mqtt {
-    static const char *DEFAULT_HOST = "mqtt://127.0.0.1";
+    static const char *DEFAULT_HOST = "localhost";
     static const int DEFAULT_PORT = 1883;
 
     // MqttData Disrupt
@@ -25,16 +25,25 @@ namespace mqtt {
     // Mqtt Client
     class MqttClient final : public QObject {
     private:
-        QMqttClient client;
+        QScopedPointer<QMqttClient> clientPtr;
 
         std::vector<MessageNotify> callbackChain;
 
+        std::atomic<bool> isConnected;
+
     public:
-        MqttClient() = default;
+
+        bool checkIsConnected() { return isConnected; };
+
+        MqttClient();
 
         ~MqttClient() override = default;
 
-        void loadConfig(const Json::Value &value) noexcept(false);
+        MqttClient &loadConfig(const Json::Value &value) noexcept(false);
+
+        void start();
+
+        void stop();
 
         /**
          * Register A Notify Class For mqtt message
@@ -47,7 +56,14 @@ namespace mqtt {
             static MqttClient client;
             return client;
         };
+
+    public slots:
+
+        void connected();
+
+        void disconnected();
     };
+
 
 } // mqtt
 
