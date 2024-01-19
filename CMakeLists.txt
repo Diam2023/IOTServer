@@ -17,8 +17,9 @@ aux_source_directory(src/filters FILTER_SRC)
 aux_source_directory(src/plugins PLUGIN_SRC)
 aux_source_directory(src/models MODEL_SRC)
 aux_source_directory(src/service SERVICE_SRC)
-aux_source_directory(src/adapters SERVICE_SRC)
+aux_source_directory(src/cqhttp CQ_SRC)
 aux_source_directory(src/api API_SRC)
+aux_source_directory(src/common COMMON_SRC)
 
 add_executable(
         ${PROJECT_NAME}
@@ -42,6 +43,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/service
         ${CMAKE_CURRENT_SOURCE_DIR}/src/api
         ${CMAKE_CURRENT_SOURCE_DIR}/src/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cqhttp
 )
 
 
@@ -53,7 +55,9 @@ target_sources(${PROJECT_NAME}
         ${PLUGIN_SRC}
         ${MODEL_SRC}
         ${SERVICE_SRC}
+        ${CQ_SRC}
         ${API_SRC}
+        ${COMMON_SRC}
 )
 
 
