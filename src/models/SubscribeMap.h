@@ -38,6 +38,9 @@ namespace drogon_model
 {
 namespace iot_server
 {
+class Device;
+class Topic;
+class User;
 
 class SubscribeMap
 {
@@ -139,6 +142,18 @@ class SubscribeMap
     Json::Value toJson() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+    User getUser(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getUser(const drogon::orm::DbClientPtr &clientPtr,
+                 const std::function<void(User)> &rcb,
+                 const drogon::orm::ExceptionCallback &ecb) const;
+    Device getDevice(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getDevice(const drogon::orm::DbClientPtr &clientPtr,
+                   const std::function<void(Device)> &rcb,
+                   const drogon::orm::ExceptionCallback &ecb) const;
+    Topic getTopic(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getTopic(const drogon::orm::DbClientPtr &clientPtr,
+                  const std::function<void(Topic)> &rcb,
+                  const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<SubscribeMap>;
     friend drogon::orm::BaseBuilder<SubscribeMap, true, true>;

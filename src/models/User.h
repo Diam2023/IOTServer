@@ -38,6 +38,9 @@ namespace drogon_model
 {
 namespace iot_server
 {
+class SubscribeMap;
+class UserDeviceActionMap;
+class UserDeviceAliasMap;
 
 class User
 {
@@ -141,6 +144,18 @@ class User
     Json::Value toJson() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+    std::vector<SubscribeMap> getSubscribes(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getSubscribes(const drogon::orm::DbClientPtr &clientPtr,
+                       const std::function<void(std::vector<SubscribeMap>)> &rcb,
+                       const drogon::orm::ExceptionCallback &ecb) const;
+    std::vector<UserDeviceAliasMap> getAlias(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getAlias(const drogon::orm::DbClientPtr &clientPtr,
+                  const std::function<void(std::vector<UserDeviceAliasMap>)> &rcb,
+                  const drogon::orm::ExceptionCallback &ecb) const;
+    std::vector<UserDeviceActionMap> getActions(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getActions(const drogon::orm::DbClientPtr &clientPtr,
+                    const std::function<void(std::vector<UserDeviceActionMap>)> &rcb,
+                    const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<User>;
     friend drogon::orm::BaseBuilder<User, true, true>;

@@ -6,6 +6,8 @@
  */
 
 #include "Topic.h"
+#include "Device.h"
+#include "SubscribeMap.h"
 #include <drogon/utils/Utilities.h>
 #include <string>
 
@@ -953,4 +955,83 @@ bool Topic::validJsonOfField(size_t index,
             return false;
     }
     return true;
+}
+Device Topic::getDevice(const DbClientPtr &clientPtr) const {
+    const static std::string sql = "select * from device where device_id = ?";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *targetDeviceId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Device(r[0]);
+}
+
+void Topic::getDevice(const DbClientPtr &clientPtr,
+                      const std::function<void(Device)> &rcb,
+                      const ExceptionCallback &ecb) const
+{
+    const static std::string sql = "select * from device where device_id = ?";
+    *clientPtr << sql
+               << *targetDeviceId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Device(r[0]));
+                    }
+               }
+               >> ecb;
+}
+std::vector<SubscribeMap> Topic::getSubscribes(const DbClientPtr &clientPtr) const {
+    const static std::string sql = "select * from subscribe_map where target_topic_id = ?";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *topicId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    std::vector<SubscribeMap> ret;
+    ret.reserve(r.size());
+    for (auto const &row : r)
+    {
+        ret.emplace_back(SubscribeMap(row));
+    }
+    return ret;
+}
+
+void Topic::getSubscribes(const DbClientPtr &clientPtr,
+                          const std::function<void(std::vector<SubscribeMap>)> &rcb,
+                          const ExceptionCallback &ecb) const
+{
+    const static std::string sql = "select * from subscribe_map where target_topic_id = ?";
+    *clientPtr << sql
+               << *topicId_
+               >> [rcb = std::move(rcb)](const Result &r){
+                   std::vector<SubscribeMap> ret;
+                   ret.reserve(r.size());
+                   for (auto const &row : r)
+                   {
+                       ret.emplace_back(SubscribeMap(row));
+                   }
+                   rcb(ret);
+               }
+               >> ecb;
 }

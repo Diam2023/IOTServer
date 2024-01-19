@@ -6,6 +6,10 @@
  */
 
 #include "Device.h"
+#include "SubscribeMap.h"
+#include "Topic.h"
+#include "UserDeviceActionMap.h"
+#include "UserDeviceAliasMap.h"
 #include <drogon/utils/Utilities.h>
 #include <string>
 
@@ -971,4 +975,148 @@ bool Device::validJsonOfField(size_t index,
             return false;
     }
     return true;
+}
+std::vector<Topic> Device::getTopics(const DbClientPtr &clientPtr) const {
+    const static std::string sql = "select * from topic where target_device_id = ?";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *deviceId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    std::vector<Topic> ret;
+    ret.reserve(r.size());
+    for (auto const &row : r)
+    {
+        ret.emplace_back(Topic(row));
+    }
+    return ret;
+}
+
+void Device::getTopics(const DbClientPtr &clientPtr,
+                       const std::function<void(std::vector<Topic>)> &rcb,
+                       const ExceptionCallback &ecb) const
+{
+    const static std::string sql = "select * from topic where target_device_id = ?";
+    *clientPtr << sql
+               << *deviceId_
+               >> [rcb = std::move(rcb)](const Result &r){
+                   std::vector<Topic> ret;
+                   ret.reserve(r.size());
+                   for (auto const &row : r)
+                   {
+                       ret.emplace_back(Topic(row));
+                   }
+                   rcb(ret);
+               }
+               >> ecb;
+}
+std::vector<SubscribeMap> Device::getSubscribes(const DbClientPtr &clientPtr) const {
+    const static std::string sql = "select * from subscribe_map where target_device_id = ?";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *deviceId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    std::vector<SubscribeMap> ret;
+    ret.reserve(r.size());
+    for (auto const &row : r)
+    {
+        ret.emplace_back(SubscribeMap(row));
+    }
+    return ret;
+}
+
+void Device::getSubscribes(const DbClientPtr &clientPtr,
+                           const std::function<void(std::vector<SubscribeMap>)> &rcb,
+                           const ExceptionCallback &ecb) const
+{
+    const static std::string sql = "select * from subscribe_map where target_device_id = ?";
+    *clientPtr << sql
+               << *deviceId_
+               >> [rcb = std::move(rcb)](const Result &r){
+                   std::vector<SubscribeMap> ret;
+                   ret.reserve(r.size());
+                   for (auto const &row : r)
+                   {
+                       ret.emplace_back(SubscribeMap(row));
+                   }
+                   rcb(ret);
+               }
+               >> ecb;
+}
+std::vector<UserDeviceAliasMap> Device::getAlias(const DbClientPtr &clientPtr) const {
+    const static std::string sql = "select * from user_device_alias_map where target_device_id = ?";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *deviceId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    std::vector<UserDeviceAliasMap> ret;
+    ret.reserve(r.size());
+    for (auto const &row : r)
+    {
+        ret.emplace_back(UserDeviceAliasMap(row));
+    }
+    return ret;
+}
+
+void Device::getAlias(const DbClientPtr &clientPtr,
+                      const std::function<void(std::vector<UserDeviceAliasMap>)> &rcb,
+                      const ExceptionCallback &ecb) const
+{
+    const static std::string sql = "select * from user_device_alias_map where target_device_id = ?";
+    *clientPtr << sql
+               << *deviceId_
+               >> [rcb = std::move(rcb)](const Result &r){
+                   std::vector<UserDeviceAliasMap> ret;
+                   ret.reserve(r.size());
+                   for (auto const &row : r)
+                   {
+                       ret.emplace_back(UserDeviceAliasMap(row));
+                   }
+                   rcb(ret);
+               }
+               >> ecb;
+}
+std::vector<UserDeviceActionMap> Device::getActions(const DbClientPtr &clientPtr) const {
+    const static std::string sql = "select * from user_device_action_map where target_device_id = ?";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *deviceId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    std::vector<UserDeviceActionMap> ret;
+    ret.reserve(r.size());
+    for (auto const &row : r)
+    {
+        ret.emplace_back(UserDeviceActionMap(row));
+    }
+    return ret;
+}
+
+void Device::getActions(const DbClientPtr &clientPtr,
+                        const std::function<void(std::vector<UserDeviceActionMap>)> &rcb,
+                        const ExceptionCallback &ecb) const
+{
+    const static std::string sql = "select * from user_device_action_map where target_device_id = ?";
+    *clientPtr << sql
+               << *deviceId_
+               >> [rcb = std::move(rcb)](const Result &r){
+                   std::vector<UserDeviceActionMap> ret;
+                   ret.reserve(r.size());
+                   for (auto const &row : r)
+                   {
+                       ret.emplace_back(UserDeviceActionMap(row));
+                   }
+                   rcb(ret);
+               }
+               >> ecb;
 }

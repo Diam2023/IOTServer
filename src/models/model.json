@@ -9,6 +9,85 @@
     "topic",
     "device",
     "user",
-    "subscribe_map"
-  ]
+    "subscribe_map",
+    "user_device_alias_map",
+    "user_device_action_map"
+  ],
+  "relationships": {
+    "enabled": true,
+    "items": [
+      {
+        "type": "has many",
+        "original_table_name": "user",
+        "original_key": "user_id",
+        "target_table_name": "subscribe_map",
+        "target_table_alias": "subscribes",
+        "target_key": "target_user_id",
+        "enable_reverse": true
+      },
+      {
+        "type": "has many",
+        "original_table_name": "user",
+        "original_key": "user_id",
+        "target_table_name": "user_device_alias_map",
+        "target_table_alias": "alias",
+        "target_key": "target_user_id",
+        "enable_reverse": true
+      },
+      {
+        "type": "has many",
+        "original_table_name": "user",
+        "original_key": "user_id",
+        "target_table_name": "user_device_action_map",
+        "target_table_alias": "actions",
+        "target_key": "target_user_id",
+        "enable_reverse": true
+      },
+      {
+        "type": "has many",
+        "original_table_name": "device",
+        "original_key": "device_id",
+        "target_table_name": "topic",
+        "target_table_alias": "topics",
+        "target_key": "target_device_id",
+        "enable_reverse": true
+      },
+      {
+        "type": "has many",
+        "original_table_name": "device",
+        "original_key": "device_id",
+        "target_table_name": "subscribe_map",
+        "target_table_alias": "subscribes",
+        "target_key": "target_device_id",
+        "enable_reverse": true
+      },
+      {
+        "type": "has many",
+        "original_table_name": "device",
+        "original_key": "device_id",
+        "target_table_name": "user_device_alias_map",
+        "target_table_alias": "alias",
+        "target_key": "target_device_id",
+        "enable_reverse": true
+      },
+      {
+        "type": "has many",
+        "original_table_name": "device",
+        "original_key": "device_id",
+        "target_table_name": "user_device_action_map",
+        "target_table_alias": "actions",
+        "target_key": "target_device_id",
+        "enable_reverse": true
+      },
+      {
+        "type": "has many",
+        "original_table_name": "topic",
+        "original_key": "topic_id",
+        "target_table_name": "subscribe_map",
+        "target_table_alias": "subscribes",
+        "target_key": "target_topic_id",
+        "enable_reverse": true
+      }
+    ]
+  }
 }

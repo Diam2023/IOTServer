@@ -9,7 +9,7 @@ CREATE TABLE `user`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT ='用户';
 
-# 本质为一个设备对多个topic
+-- 本质为一个设备对多个topic
 CREATE TABLE `device`
 (
     `device_id`               int unsigned NOT NULL AUTO_INCREMENT COMMENT '设备ID',
@@ -22,7 +22,7 @@ CREATE TABLE `device`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT ='All设备';
 
-# Only Receive device topic
+-- Only Receive device topic
 CREATE TABLE `topic`
 (
     `topic_id`         int unsigned                NOT NULL AUTO_INCREMENT COMMENT '消息id',
@@ -35,11 +35,11 @@ CREATE TABLE `topic`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT ='所有创建的主题';
 
-# 用户订阅的设备以及Topic列表id
+-- 用户订阅的设备以及Topic列表id
 CREATE TABLE `subscribe_map`
 (
     `map_id`           int unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `target_user_id`   int unsigned NOT NULL COMMENT 'user id',
+    `target_user_id`   int unsigned NOT NULL COMMENT 'User id',
     `target_device_id` int unsigned NOT NULL COMMENT 'Device id',
     `target_topic_id`  int unsigned DEFAULT '0' COMMENT 'topic id zero to all',
     PRIMARY KEY (`map_id`)
@@ -47,4 +47,30 @@ CREATE TABLE `subscribe_map`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT ='用户订阅的设备以及Topic列表id';
 
-FLUSH PRIVILEGES;
+-- 用户设置的设备别名
+CREATE TABLE `user_device_alias_map`
+(
+    `alias_map_id`     int unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `target_user_id`   int unsigned NOT NULL COMMENT 'User id',
+    `target_device_id` int unsigned NOT NULL COMMENT 'Device id',
+    `alias_name`       varchar(255) NOT NULL COMMENT 'Alias name',
+    PRIMARY KEY (`alias_map_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT ='用户设置的设备别名';
+
+-- 用户自定义的操作
+CREATE TABLE `user_device_action_map`
+(
+    `action_map_id`    int unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `target_user_id`   int unsigned NOT NULL COMMENT 'User id',
+    `target_device_id` int unsigned NOT NULL COMMENT 'Device id',
+    `action_target_topic_id`  int unsigned NOT NULL COMMENT '操作作用到设备的topic节点',
+    `action_json`      varchar(255) NOT NULL COMMENT 'Action json data',
+    PRIMARY KEY (`action_map_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT ='用户自定义的操作';
+
+FLUSH
+    PRIVILEGES;
