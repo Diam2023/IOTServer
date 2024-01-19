@@ -229,7 +229,8 @@ custom_config:
   debug_cache: false
   mqtt: {
     host: '127.0.0.1',
-    port: 1883
+    port: 1883,
+    filter_cache_update_time: 500
   }
   realm: drogonRealm
   opaque: drogonOpaque
