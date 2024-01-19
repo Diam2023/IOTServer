@@ -228,7 +228,7 @@ plugins:
 custom_config:
   debug_cache: false
   mqtt: {
-    host: 'mqtt://127.0.0.1',
+    host: '127.0.0.1',
     port: 1883
   }
   realm: drogonRealm

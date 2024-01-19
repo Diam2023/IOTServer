@@ -42,3 +42,25 @@ services:
     ports:
       - "1883:1883"
       - "9001:9001"
+
+  qsign:
+    image: hansaes/unidbg-fetch-qsign:latest
+    ports:
+      - "9888:8080"
+#    environment:
+#      ANDROID_ID: 899d93e65c486d2
+    restart: always
+    container_name: sign-compose
+
+  cqhttp:
+    build:
+      context: cqhttp
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "9889:8080"
+    volumes:
+      - "./cqhttp/cqconf/config.yml:/data/config.yml"
+      - "./cqhttp/cqconf/device.json:/data/device.json"
+
+

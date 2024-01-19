@@ -76,4 +76,6 @@ typings
 # System files
 Thumbs.db
 
+# Go Cqhttp
 
+cqconf
