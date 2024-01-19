@@ -1,12 +1,12 @@
 ## PASS 20240116
 # New Device
 PUT http://localhost:8089/device/new
-Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+Authorization: 5a510fbe-59d6-47e5-b1a6-317273d4d4e6
 Content-Type: application/json
 
 {
-  "device_sn": "ioawnmd102",
-  "device_name": "test device",
+  "device_sn": "DCDA0C4B21D0CA3F",
+  "device_name": "TD",
   "device_comment": "Test comment",
   "target_permission_level": 50
 }

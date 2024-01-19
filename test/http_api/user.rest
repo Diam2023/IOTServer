@@ -18,8 +18,8 @@ POST http://localhost:8089/user/login
 Content-Type: application/json
 
 {
-  "key": "testUser10",
-  "pwd": "pwd10"
+  "key": "admin",
+  "pwd": "admin"
 }
 
 ###
