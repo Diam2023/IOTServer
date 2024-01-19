@@ -15,6 +15,14 @@
 const static char *TOKEN_PREFIX = "TK:";
 
 /**
+ * Redis QQ ID Cache Prefix
+ */
+const static char *CQ_PREFIX = "QQ:";
+
+
+const static char* MQTT_CACHE_NAME = "mqtt:cache";
+
+/**
  * Default permission
  */
 const static uint32_t DEFAULT_PERMISSION_LEVEL = 100;
