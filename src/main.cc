@@ -8,6 +8,8 @@
 #include "MqttClient.h"
 #include <QTimer>
 
+#include "CqMqttMessageHandler.h"
+
 // Handler Exit Signal
 static void exitSignalHandler() {
     // Handle Exit Signal
@@ -54,7 +56,9 @@ int main(int argc, char **argv) {
     // Qt Core Application
     QCoreApplication app(argc, argv);
 
-    QTimer::singleShot(2000,&app,[](){
+    QTimer::singleShot(2000, &app, []() {
+        mqtt::MqttClient::instance().registerNotifyCallback(cq::CqMqttMessageHandler::getInstance());
+
         mqtt::MqttClient::instance().loadConfig(drogon::app().getCustomConfig()["mqtt"]).start();
     });
 
