@@ -3,8 +3,11 @@
 //
 
 #include "MqttClient.h"
-#include "MqttMessageHandler.h"
+#include "MqttMessageFilter.h"
 #include <QMqttMessage>
+
+#include "Tools.h"
+#include "json/json.h"
 
 namespace mqtt {
     MqttClient &MqttClient::loadConfig(const Json::Value &value) {
@@ -56,27 +59,22 @@ namespace mqtt {
         QObject::connect(clientPtr.data(), &QMqttClient::connected, this, &MqttClient::connected);
         QObject::connect(clientPtr.data(), &QMqttClient::disconnected, this, &MqttClient::disconnected);
 
-        // First
-        QObject::connect(clientPtr.data(), &QMqttClient::messageReceived, &mqtt::MqttMessageHandler::getInstance(),
-                         &mqtt::MqttMessageHandler::messageHandler);
+        // TODO TEST Data
+        registerNotifyCallback([](const MqttData &data) {
+            auto result = getDeviceSerialNumberAndSubTopic(data.first.name().toStdString());
+            if (!result.first.empty()) {
 
-        // Second
-        QObject::connect(clientPtr.data(), &QMqttClient::messageReceived,
-                         [this](const QByteArray &message, const QMqttTopicName &topic) -> void {
-                             // messageHandler将订阅所有消息，并将消息放入队列
-                             // 使用一个消费者类将该类接收到的数据按时间最后状态过滤发送到Mysql
-                             // 具体细节，消费者类
-                             // 生产者（该类）创建就更新Redis缓存的Topic然后 Task1从Redis获取应该监听的主题，并将监听主题的数据送入待发送队列，同时检查Redis数据过期时间，过期则更新
-                             // 当数据过多时增大缓冲区？
-                             // 消费者类Task实时获取消生产者的数据队列，有则更新Mysql数据
+                LOG_INFO << "Received SN: " << result.first << " Sub Topic: "
+                         << result.second;
+                LOG_INFO << data.second.toStyledString();
 
-                             Json::Value obj;
-                             Json::Reader reader;
-                             reader.parse(message.toStdString(), obj);
-                             for (auto &cb: this->callbackChain) {
-                                 cb.notify({topic, obj});
-                             }
-                         });
+            } else {
+                LOG_INFO << "Match Error!!!";
+            }
+        });
+
+        // Message Received
+        QObject::connect(clientPtr.data(), &QMqttClient::messageReceived, this, &MqttClient::messageReceived);
     }
 
     void MqttClient::stop() {
@@ -85,9 +83,41 @@ namespace mqtt {
         }
     }
 
-    template<class T>
-    void MqttClient::registerNotifyCallback(const MessageNotify &cb) {
-        callbackChain.push_back(cb);
+    void MqttClient::registerNotifyCallback(const MqttHandlerType &cb) {
+        callbacks.push_back(cb);
+    }
+
+    void MqttClient::messageReceived(const QByteArray &message, const QMqttTopicName &topic) {
+        // Filter No Device
+        if (!isDeviceTopic(topic.name().toStdString())) {
+            LOG_INFO << "Filter Non Device";
+            return;
+        }
+
+        // Filter NON Json Data
+        Json::Value tree;
+        Json::String err;
+        Json::CharReaderBuilder reader;
+        std::unique_ptr<Json::CharReader> const json_read(reader.newCharReader());
+        auto msgString = message.toStdString();
+        json_read->parse(msgString.c_str(), msgString.c_str() + msgString.length(), &tree, &err);
+
+        if (!err.empty()) {
+            LOG_INFO << "Ignore Non Json: " << topic.name().toStdString() << " msg: "
+                     << message.toStdString();
+            return;
+        }
+
+        auto data = std::make_pair(topic, tree);
+        if (!DataBaseMqttTopicFilter::getInstance().doFilter(data)) {
+            LOG_INFO << "NON Registered Device " << getDeviceSerialNumber(data.first.name().toStdString());
+            return;
+        }
+
+        // Run Handlers
+        for (auto &cb: this->callbacks) {
+            cb(data);
+        }
     }
 
 } // mqtt

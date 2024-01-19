@@ -9,28 +9,22 @@
 
 #include <QMqttClient>
 #include <QMqttTopicName>
+#include <json/value.h>
+#include "MqttClient.h"
 
 namespace mqtt {
 
-
     // Default Handler
-    class MqttMessageHandler : public QObject {
-        Q_OBJECT;
+    class MqttMessageHandler {
 
     public:
-
-        static MqttMessageHandler &getInstance() {
-            static MqttMessageHandler handler;
-            return handler;
-        }
-
         MqttMessageHandler() = default;
 
-        virtual ~MqttMessageHandler() {};
+        virtual ~MqttMessageHandler() = default;
 
-    public slots:
+        virtual void handler(const MqttData &data) = 0;
 
-        void messageHandler(const QByteArray &message, const QMqttTopicName &topic = QMqttTopicName());
+        void operator()(const MqttData &data) { handler(data); };
     };
 
 } // mqtt

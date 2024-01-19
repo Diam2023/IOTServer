@@ -16,11 +16,11 @@ namespace mqtt {
         MqttFilterCache::getInstance().init();
     }
 
-    bool DataBaseMqttTopicFilter::doFilter(const QMqttTopicName &name) {
+    bool DataBaseMqttTopicFilter::doFilter(const MqttData &data) {
 
         bool result = false;
 
-        auto serialNumber = getDeviceSerialNumber(name.name().toStdString());
+        auto serialNumber = getDeviceSerialNumber(data.first.name().toStdString());
         if (serialNumber.empty()) {
             return result;
         }

@@ -6,12 +6,13 @@
 #define IOTSERVER_MQTTMESSAGEFILTER_H
 
 #include <QMqttClient>
+#include "MqttClient.h"
 
 namespace mqtt {
     class MqttFilter : public QObject {
     Q_OBJECT;
     public:
-        virtual bool doFilter(const QMqttTopicName &) = 0;
+        virtual bool doFilter(const MqttData &) = 0;
 
         ~MqttFilter() override = default;
     };
@@ -29,7 +30,7 @@ namespace mqtt {
         DataBaseMqttTopicFilter();
 
         // Search Redis if exist
-        bool doFilter(const QMqttTopicName &) override;
+        bool doFilter(const MqttData &) override;
 
         static DataBaseMqttTopicFilter &getInstance() {
             static DataBaseMqttTopicFilter dbmtf;
@@ -38,7 +39,6 @@ namespace mqtt {
 
         ~DataBaseMqttTopicFilter() override;
     };
-
 } // mqtt
 
 #endif //IOTSERVER_MQTTMESSAGEFILTER_H
