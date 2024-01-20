@@ -65,8 +65,9 @@ CREATE TABLE `user_device_action_map`
     `action_map_id`          int unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
     `target_user_id`         int unsigned NOT NULL COMMENT 'User id',
     `target_device_id`       int unsigned NOT NULL COMMENT 'Device id',
+    `action_name`            varchar(255) NOT NULL COMMENT 'Action Name',
     `action_target_topic_id` int unsigned NOT NULL COMMENT '操作作用到设备的topic节点',
-    `action_json`            varchar(255) NOT NULL COMMENT 'Action json data',
+    `action_json`            json         NOT NULL COMMENT 'Action json data',
     PRIMARY KEY (`action_map_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4

@@ -18,6 +18,7 @@ using namespace drogon_model::iot_server;
 const std::string UserDeviceActionMap::Cols::_action_map_id = "action_map_id";
 const std::string UserDeviceActionMap::Cols::_target_user_id = "target_user_id";
 const std::string UserDeviceActionMap::Cols::_target_device_id = "target_device_id";
+const std::string UserDeviceActionMap::Cols::_action_name = "action_name";
 const std::string UserDeviceActionMap::Cols::_action_target_topic_id = "action_target_topic_id";
 const std::string UserDeviceActionMap::Cols::_action_json = "action_json";
 const std::string UserDeviceActionMap::primaryKeyName = "action_map_id";
@@ -28,8 +29,9 @@ const std::vector<typename UserDeviceActionMap::MetaData> UserDeviceActionMap::m
 {"action_map_id","uint32_t","int unsigned",4,1,1,1},
 {"target_user_id","uint32_t","int unsigned",4,0,0,1},
 {"target_device_id","uint32_t","int unsigned",4,0,0,1},
+{"action_name","std::string","varchar(255)",255,0,0,1},
 {"action_target_topic_id","uint32_t","int unsigned",4,0,0,1},
-{"action_json","std::string","varchar(255)",255,0,0,1}
+{"action_json","std::string","json",0,0,0,1}
 };
 const std::string &UserDeviceActionMap::getColumnName(size_t index) noexcept(false)
 {
@@ -52,6 +54,10 @@ UserDeviceActionMap::UserDeviceActionMap(const Row &r, const ssize_t indexOffset
         {
             targetDeviceId_=std::make_shared<uint32_t>(r["target_device_id"].as<uint32_t>());
         }
+        if(!r["action_name"].isNull())
+        {
+            actionName_=std::make_shared<std::string>(r["action_name"].as<std::string>());
+        }
         if(!r["action_target_topic_id"].isNull())
         {
             actionTargetTopicId_=std::make_shared<uint32_t>(r["action_target_topic_id"].as<uint32_t>());
@@ -64,7 +70,7 @@ UserDeviceActionMap::UserDeviceActionMap(const Row &r, const ssize_t indexOffset
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 5 > r.size())
+        if(offset + 6 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -88,9 +94,14 @@ UserDeviceActionMap::UserDeviceActionMap(const Row &r, const ssize_t indexOffset
         index = offset + 3;
         if(!r[index].isNull())
         {
-            actionTargetTopicId_=std::make_shared<uint32_t>(r[index].as<uint32_t>());
+            actionName_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 4;
+        if(!r[index].isNull())
+        {
+            actionTargetTopicId_=std::make_shared<uint32_t>(r[index].as<uint32_t>());
+        }
+        index = offset + 5;
         if(!r[index].isNull())
         {
             actionJson_=std::make_shared<std::string>(r[index].as<std::string>());
@@ -101,7 +112,7 @@ UserDeviceActionMap::UserDeviceActionMap(const Row &r, const ssize_t indexOffset
 
 UserDeviceActionMap::UserDeviceActionMap(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 5)
+    if(pMasqueradingVector.size() != 6)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -135,7 +146,7 @@ UserDeviceActionMap::UserDeviceActionMap(const Json::Value &pJson, const std::ve
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            actionTargetTopicId_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[3]].asUInt64());
+            actionName_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
@@ -143,7 +154,15 @@ UserDeviceActionMap::UserDeviceActionMap(const Json::Value &pJson, const std::ve
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            actionJson_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            actionTargetTopicId_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[4]].asUInt64());
+        }
+    }
+    if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
+    {
+        dirtyFlag_[5] = true;
+        if(!pJson[pMasqueradingVector[5]].isNull())
+        {
+            actionJson_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
 }
@@ -174,9 +193,17 @@ UserDeviceActionMap::UserDeviceActionMap(const Json::Value &pJson) noexcept(fals
             targetDeviceId_=std::make_shared<uint32_t>((uint32_t)pJson["target_device_id"].asUInt64());
         }
     }
-    if(pJson.isMember("action_target_topic_id"))
+    if(pJson.isMember("action_name"))
     {
         dirtyFlag_[3]=true;
+        if(!pJson["action_name"].isNull())
+        {
+            actionName_=std::make_shared<std::string>(pJson["action_name"].asString());
+        }
+    }
+    if(pJson.isMember("action_target_topic_id"))
+    {
+        dirtyFlag_[4]=true;
         if(!pJson["action_target_topic_id"].isNull())
         {
             actionTargetTopicId_=std::make_shared<uint32_t>((uint32_t)pJson["action_target_topic_id"].asUInt64());
@@ -184,7 +211,7 @@ UserDeviceActionMap::UserDeviceActionMap(const Json::Value &pJson) noexcept(fals
     }
     if(pJson.isMember("action_json"))
     {
-        dirtyFlag_[4]=true;
+        dirtyFlag_[5]=true;
         if(!pJson["action_json"].isNull())
         {
             actionJson_=std::make_shared<std::string>(pJson["action_json"].asString());
@@ -195,7 +222,7 @@ UserDeviceActionMap::UserDeviceActionMap(const Json::Value &pJson) noexcept(fals
 void UserDeviceActionMap::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 5)
+    if(pMasqueradingVector.size() != 6)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -228,7 +255,7 @@ void UserDeviceActionMap::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            actionTargetTopicId_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[3]].asUInt64());
+            actionName_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
@@ -236,7 +263,15 @@ void UserDeviceActionMap::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            actionJson_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            actionTargetTopicId_=std::make_shared<uint32_t>((uint32_t)pJson[pMasqueradingVector[4]].asUInt64());
+        }
+    }
+    if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
+    {
+        dirtyFlag_[5] = true;
+        if(!pJson[pMasqueradingVector[5]].isNull())
+        {
+            actionJson_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
 }
@@ -266,9 +301,17 @@ void UserDeviceActionMap::updateByJson(const Json::Value &pJson) noexcept(false)
             targetDeviceId_=std::make_shared<uint32_t>((uint32_t)pJson["target_device_id"].asUInt64());
         }
     }
-    if(pJson.isMember("action_target_topic_id"))
+    if(pJson.isMember("action_name"))
     {
         dirtyFlag_[3] = true;
+        if(!pJson["action_name"].isNull())
+        {
+            actionName_=std::make_shared<std::string>(pJson["action_name"].asString());
+        }
+    }
+    if(pJson.isMember("action_target_topic_id"))
+    {
+        dirtyFlag_[4] = true;
         if(!pJson["action_target_topic_id"].isNull())
         {
             actionTargetTopicId_=std::make_shared<uint32_t>((uint32_t)pJson["action_target_topic_id"].asUInt64());
@@ -276,7 +319,7 @@ void UserDeviceActionMap::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("action_json"))
     {
-        dirtyFlag_[4] = true;
+        dirtyFlag_[5] = true;
         if(!pJson["action_json"].isNull())
         {
             actionJson_=std::make_shared<std::string>(pJson["action_json"].asString());
@@ -340,6 +383,28 @@ void UserDeviceActionMap::setTargetDeviceId(const uint32_t &pTargetDeviceId) noe
     dirtyFlag_[2] = true;
 }
 
+const std::string &UserDeviceActionMap::getValueOfActionName() const noexcept
+{
+    const static std::string defaultValue = std::string();
+    if(actionName_)
+        return *actionName_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &UserDeviceActionMap::getActionName() const noexcept
+{
+    return actionName_;
+}
+void UserDeviceActionMap::setActionName(const std::string &pActionName) noexcept
+{
+    actionName_ = std::make_shared<std::string>(pActionName);
+    dirtyFlag_[3] = true;
+}
+void UserDeviceActionMap::setActionName(std::string &&pActionName) noexcept
+{
+    actionName_ = std::make_shared<std::string>(std::move(pActionName));
+    dirtyFlag_[3] = true;
+}
+
 const uint32_t &UserDeviceActionMap::getValueOfActionTargetTopicId() const noexcept
 {
     const static uint32_t defaultValue = uint32_t();
@@ -354,7 +419,7 @@ const std::shared_ptr<uint32_t> &UserDeviceActionMap::getActionTargetTopicId() c
 void UserDeviceActionMap::setActionTargetTopicId(const uint32_t &pActionTargetTopicId) noexcept
 {
     actionTargetTopicId_ = std::make_shared<uint32_t>(pActionTargetTopicId);
-    dirtyFlag_[3] = true;
+    dirtyFlag_[4] = true;
 }
 
 const std::string &UserDeviceActionMap::getValueOfActionJson() const noexcept
@@ -371,12 +436,12 @@ const std::shared_ptr<std::string> &UserDeviceActionMap::getActionJson() const n
 void UserDeviceActionMap::setActionJson(const std::string &pActionJson) noexcept
 {
     actionJson_ = std::make_shared<std::string>(pActionJson);
-    dirtyFlag_[4] = true;
+    dirtyFlag_[5] = true;
 }
 void UserDeviceActionMap::setActionJson(std::string &&pActionJson) noexcept
 {
     actionJson_ = std::make_shared<std::string>(std::move(pActionJson));
-    dirtyFlag_[4] = true;
+    dirtyFlag_[5] = true;
 }
 
 void UserDeviceActionMap::updateId(const uint64_t id)
@@ -389,6 +454,7 @@ const std::vector<std::string> &UserDeviceActionMap::insertColumns() noexcept
     static const std::vector<std::string> inCols={
         "target_user_id",
         "target_device_id",
+        "action_name",
         "action_target_topic_id",
         "action_json"
     };
@@ -421,6 +487,17 @@ void UserDeviceActionMap::outputArgs(drogon::orm::internal::SqlBinder &binder) c
     }
     if(dirtyFlag_[3])
     {
+        if(getActionName())
+        {
+            binder << getValueOfActionName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[4])
+    {
         if(getActionTargetTopicId())
         {
             binder << getValueOfActionTargetTopicId();
@@ -430,7 +507,7 @@ void UserDeviceActionMap::outputArgs(drogon::orm::internal::SqlBinder &binder) c
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[4])
+    if(dirtyFlag_[5])
     {
         if(getActionJson())
         {
@@ -462,6 +539,10 @@ const std::vector<std::string> UserDeviceActionMap::updateColumns() const
     {
         ret.push_back(getColumnName(4));
     }
+    if(dirtyFlag_[5])
+    {
+        ret.push_back(getColumnName(5));
+    }
     return ret;
 }
 
@@ -491,6 +572,17 @@ void UserDeviceActionMap::updateArgs(drogon::orm::internal::SqlBinder &binder) c
     }
     if(dirtyFlag_[3])
     {
+        if(getActionName())
+        {
+            binder << getValueOfActionName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[4])
+    {
         if(getActionTargetTopicId())
         {
             binder << getValueOfActionTargetTopicId();
@@ -500,7 +592,7 @@ void UserDeviceActionMap::updateArgs(drogon::orm::internal::SqlBinder &binder) c
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[4])
+    if(dirtyFlag_[5])
     {
         if(getActionJson())
         {
@@ -539,6 +631,14 @@ Json::Value UserDeviceActionMap::toJson() const
     {
         ret["target_device_id"]=Json::Value();
     }
+    if(getActionName())
+    {
+        ret["action_name"]=getValueOfActionName();
+    }
+    else
+    {
+        ret["action_name"]=Json::Value();
+    }
     if(getActionTargetTopicId())
     {
         ret["action_target_topic_id"]=getValueOfActionTargetTopicId();
@@ -562,7 +662,7 @@ Json::Value UserDeviceActionMap::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 5)
+    if(pMasqueradingVector.size() == 6)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -599,9 +699,9 @@ Json::Value UserDeviceActionMap::toMasqueradedJson(
         }
         if(!pMasqueradingVector[3].empty())
         {
-            if(getActionTargetTopicId())
+            if(getActionName())
             {
-                ret[pMasqueradingVector[3]]=getValueOfActionTargetTopicId();
+                ret[pMasqueradingVector[3]]=getValueOfActionName();
             }
             else
             {
@@ -610,13 +710,24 @@ Json::Value UserDeviceActionMap::toMasqueradedJson(
         }
         if(!pMasqueradingVector[4].empty())
         {
-            if(getActionJson())
+            if(getActionTargetTopicId())
             {
-                ret[pMasqueradingVector[4]]=getValueOfActionJson();
+                ret[pMasqueradingVector[4]]=getValueOfActionTargetTopicId();
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[5].empty())
+        {
+            if(getActionJson())
+            {
+                ret[pMasqueradingVector[5]]=getValueOfActionJson();
+            }
+            else
+            {
+                ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
         return ret;
@@ -645,6 +756,14 @@ Json::Value UserDeviceActionMap::toMasqueradedJson(
     else
     {
         ret["target_device_id"]=Json::Value();
+    }
+    if(getActionName())
+    {
+        ret["action_name"]=getValueOfActionName();
+    }
+    else
+    {
+        ret["action_name"]=Json::Value();
     }
     if(getActionTargetTopicId())
     {
@@ -692,9 +811,19 @@ bool UserDeviceActionMap::validateJsonForCreation(const Json::Value &pJson, std:
         err="The target_device_id column cannot be null";
         return false;
     }
+    if(pJson.isMember("action_name"))
+    {
+        if(!validJsonOfField(3, "action_name", pJson["action_name"], err, true))
+            return false;
+    }
+    else
+    {
+        err="The action_name column cannot be null";
+        return false;
+    }
     if(pJson.isMember("action_target_topic_id"))
     {
-        if(!validJsonOfField(3, "action_target_topic_id", pJson["action_target_topic_id"], err, true))
+        if(!validJsonOfField(4, "action_target_topic_id", pJson["action_target_topic_id"], err, true))
             return false;
     }
     else
@@ -704,7 +833,7 @@ bool UserDeviceActionMap::validateJsonForCreation(const Json::Value &pJson, std:
     }
     if(pJson.isMember("action_json"))
     {
-        if(!validJsonOfField(4, "action_json", pJson["action_json"], err, true))
+        if(!validJsonOfField(5, "action_json", pJson["action_json"], err, true))
             return false;
     }
     else
@@ -718,7 +847,7 @@ bool UserDeviceActionMap::validateMasqueradedJsonForCreation(const Json::Value &
                                                              const std::vector<std::string> &pMasqueradingVector,
                                                              std::string &err)
 {
-    if(pMasqueradingVector.size() != 5)
+    if(pMasqueradingVector.size() != 6)
     {
         err = "Bad masquerading vector";
         return false;
@@ -784,6 +913,19 @@ bool UserDeviceActionMap::validateMasqueradedJsonForCreation(const Json::Value &
             return false;
         }
       }
+      if(!pMasqueradingVector[5].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[5]))
+          {
+              if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
+                  return false;
+          }
+        else
+        {
+            err="The " + pMasqueradingVector[5] + " column cannot be null";
+            return false;
+        }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -814,14 +956,19 @@ bool UserDeviceActionMap::validateJsonForUpdate(const Json::Value &pJson, std::s
         if(!validJsonOfField(2, "target_device_id", pJson["target_device_id"], err, false))
             return false;
     }
+    if(pJson.isMember("action_name"))
+    {
+        if(!validJsonOfField(3, "action_name", pJson["action_name"], err, false))
+            return false;
+    }
     if(pJson.isMember("action_target_topic_id"))
     {
-        if(!validJsonOfField(3, "action_target_topic_id", pJson["action_target_topic_id"], err, false))
+        if(!validJsonOfField(4, "action_target_topic_id", pJson["action_target_topic_id"], err, false))
             return false;
     }
     if(pJson.isMember("action_json"))
     {
-        if(!validJsonOfField(4, "action_json", pJson["action_json"], err, false))
+        if(!validJsonOfField(5, "action_json", pJson["action_json"], err, false))
             return false;
     }
     return true;
@@ -830,7 +977,7 @@ bool UserDeviceActionMap::validateMasqueradedJsonForUpdate(const Json::Value &pJ
                                                            const std::vector<std::string> &pMasqueradingVector,
                                                            std::string &err)
 {
-    if(pMasqueradingVector.size() != 5)
+    if(pMasqueradingVector.size() != 6)
     {
         err = "Bad masquerading vector";
         return false;
@@ -864,6 +1011,11 @@ bool UserDeviceActionMap::validateMasqueradedJsonForUpdate(const Json::Value &pJ
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
+      {
+          if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
     }
@@ -929,18 +1081,6 @@ bool UserDeviceActionMap::validJsonOfField(size_t index,
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
-            if(!pJson.isUInt())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            break;
-        case 4:
-            if(pJson.isNull())
-            {
-                err="The " + fieldName + " column cannot be null";
-                return false;
-            }
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
@@ -955,6 +1095,30 @@ bool UserDeviceActionMap::validJsonOfField(size_t index,
                 return false;
             }
 
+            break;
+        case 4:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isUInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 5:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
             break;
         default:
             err="Internal error in the server";

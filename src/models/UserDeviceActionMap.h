@@ -49,6 +49,7 @@ class UserDeviceActionMap
         static const std::string _action_map_id;
         static const std::string _target_user_id;
         static const std::string _target_device_id;
+        static const std::string _action_name;
         static const std::string _action_target_topic_id;
         static const std::string _action_json;
     };
@@ -126,6 +127,15 @@ class UserDeviceActionMap
     ///Set the value of the column target_device_id
     void setTargetDeviceId(const uint32_t &pTargetDeviceId) noexcept;
 
+    /**  For column action_name  */
+    ///Get the value of the column action_name, returns the default value if the column is null
+    const std::string &getValueOfActionName() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getActionName() const noexcept;
+    ///Set the value of the column action_name
+    void setActionName(const std::string &pActionName) noexcept;
+    void setActionName(std::string &&pActionName) noexcept;
+
     /**  For column action_target_topic_id  */
     ///Get the value of the column action_target_topic_id, returns the default value if the column is null
     const uint32_t &getValueOfActionTargetTopicId() const noexcept;
@@ -144,7 +154,7 @@ class UserDeviceActionMap
     void setActionJson(std::string &&pActionJson) noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 5;  }
+    static size_t getColumnNumber() noexcept {  return 6;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -176,6 +186,7 @@ class UserDeviceActionMap
     std::shared_ptr<uint32_t> actionMapId_;
     std::shared_ptr<uint32_t> targetUserId_;
     std::shared_ptr<uint32_t> targetDeviceId_;
+    std::shared_ptr<std::string> actionName_;
     std::shared_ptr<uint32_t> actionTargetTopicId_;
     std::shared_ptr<std::string> actionJson_;
     struct MetaData
@@ -189,7 +200,7 @@ class UserDeviceActionMap
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[5]={ false };
+    bool dirtyFlag_[6]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -221,10 +232,15 @@ class UserDeviceActionMap
         }
         if(dirtyFlag_[3])
         {
-            sql += "action_target_topic_id,";
+            sql += "action_name,";
             ++parametersCount;
         }
         if(dirtyFlag_[4])
+        {
+            sql += "action_target_topic_id,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[5])
         {
             sql += "action_json,";
             ++parametersCount;
@@ -255,6 +271,11 @@ class UserDeviceActionMap
 
         }
         if(dirtyFlag_[4])
+        {
+            sql.append("?,");
+
+        }
+        if(dirtyFlag_[5])
         {
             sql.append("?,");
 

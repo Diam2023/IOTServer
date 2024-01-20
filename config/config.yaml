@@ -234,7 +234,7 @@ custom_config:
   }
   cqhttp: {
     auth: [
-#            who can use his api
+      #            who can use his api
       "2953917577"
     ],
     help: [
@@ -249,6 +249,7 @@ custom_config:
       "{list alias}               -- 查看所有设备别名",
       "{add alias [sn] [alias]}   -- 添加别名",
       "{remove alias [alias]}     -- 删除别名",
+      "{list actions}             -- 查看所有操作",
       "{{name}}                   -- 操作",
       "{del-define {name}}        -- 删除操作",
       "{define {name} {sn} {topic} {json}} -- 定义操作",
