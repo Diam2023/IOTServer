@@ -5,4 +5,7 @@
 #include "CqWebSocketPrivateChatMessageHandler.h"
 
 namespace cq {
+    void CqWebSocketPrivateChatMessageHandler::handler(const CqMessageData &) {
+        // TODO
+    }
 } // cq
