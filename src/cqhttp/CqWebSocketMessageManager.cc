@@ -4,6 +4,8 @@
 
 #include "CqWebSocketMessageManager.h"
 
+#include <drogon/drogon.h>
+
 #include "CqWebSocketPrivateChatMessageFilter.h"
 #include "CqWebSocketPrivateChatMessageHandler.h"
 
@@ -26,7 +28,9 @@ void cq::CqWebSocketMessageManager::messageIn(cq::CqMessageData &&data) {
 cq::CqWebSocketMessageManager::CqWebSocketMessageManager() : workerThread(&CqWebSocketMessageManager::worker, this) {
 }
 
-void cq::CqWebSocketMessageManager::worker() {
+[[noreturn]] void cq::CqWebSocketMessageManager::worker() {
+
+    using namespace std::chrono_literals;
 
     while (true) {
         cq::CqMessageData data;
@@ -39,6 +43,7 @@ void cq::CqWebSocketMessageManager::worker() {
             messageQueue.pop();
         } // Release Lock
 
+//        LOG_INFO << "message handler: " << data.first << " val: " << data.second.toStyledString();
 
         // Call Normal Handlers
 
@@ -49,9 +54,10 @@ void cq::CqWebSocketMessageManager::worker() {
         // Do Filter
         if (!cq::CqWebSocketPrivateChatMessageFilter::getInstance().doFilter(data)) {
             // Do Something
-            return;
         } else {
             cq::CqWebSocketPrivateChatMessageHandler::getInstance().handler(data);
         }
+
+        std::this_thread::sleep_for(500ms);
     }
 }

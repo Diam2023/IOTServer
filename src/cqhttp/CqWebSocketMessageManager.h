@@ -45,7 +45,7 @@ namespace cq {
         void registerHandler(const CqMessageHandlerType &handler);
 
         // Do not call this
-        void worker();
+        [[noreturn]] void worker();
 
         static CqWebSocketMessageManager &getInstance() {
             static CqWebSocketMessageManager manager;

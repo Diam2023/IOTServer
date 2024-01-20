@@ -13,13 +13,12 @@ namespace cq {
 
     public:
 
-        CqWebSocketPrivateChatMessageFilter() {};
+        CqWebSocketPrivateChatMessageFilter() = default;
 
         bool doFilter(const cq::CqMessageData &) override;
 
-
         ~CqWebSocketPrivateChatMessageFilter()
-        override {};
+        override = default;
 
         static CqWebSocketPrivateChatMessageFilter &getInstance() {
             static CqWebSocketPrivateChatMessageFilter filter;
