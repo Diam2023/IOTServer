@@ -7,7 +7,7 @@
 #include "MqttMessageHandler.h"
 
 namespace cq {
-    class CqMqttMessageHandler : public mqtt::MqttMessageHandler {
+    class CqMqttDeviceMessageHandler : public mqtt::MqttMessageHandler {
 
     public:
         CqMqttMessageHandler();
@@ -23,4 +23,4 @@ namespace cq {
             return cqMqttMessageHandler;
         }
     };
-};
+}

@@ -1,0 +1,16 @@
+//
+// Created by diam on 24-1-20.
+//
+
+#ifndef IOTSERVER_CQWEBSOCKETPRIVATECHATMESSAGEHANDLER_H
+#define IOTSERVER_CQWEBSOCKETPRIVATECHATMESSAGEHANDLER_H
+
+namespace cq {
+
+class CqWebSocketPrivateChatMessageHandler {
+
+};
+
+} // cq
+
+#endif //IOTSERVER_CQWEBSOCKETPRIVATECHATMESSAGEHANDLER_H

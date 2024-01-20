@@ -3,6 +3,8 @@
 
 #include "CqConnectionPool.h"
 
+#include "CqWebSocketMessageManager.h"
+
 void CqWebsocket::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
                                    const WebSocketMessageType &type) {
     Json::Value tree;
@@ -13,10 +15,8 @@ void CqWebsocket::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std:
 
     if ((type == WebSocketMessageType::Text) && err.empty()) {
         auto id = cq::CqConnectionPool::getInstance().getId(wsConnPtr);
-        // legal
-        LOG_INFO << "bot id: " << id;
-        LOG_INFO << message;
-        // LOAD Filter And Handler
+        // Load Manager
+        cq::CqWebSocketMessageManager::getInstance().messageIn({id, tree});
     }
 }
 

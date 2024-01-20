@@ -4,9 +4,7 @@
 
 #include "CqMqttMessageHandler.h"
 
-cq::CqMqttMessageHandler::CqMqttMessageHandler() {
-
-}
+cq::CqMqttMessageHandler::CqMqttMessageHandler() = default;
 
 void cq::CqMqttMessageHandler::handler(const mqtt::MqttData &data) {
 
