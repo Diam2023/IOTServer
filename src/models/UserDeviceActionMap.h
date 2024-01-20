@@ -39,6 +39,7 @@ namespace drogon_model
 namespace iot_server
 {
 class Device;
+class Topic;
 class User;
 
 class UserDeviceActionMap
@@ -168,6 +169,10 @@ class UserDeviceActionMap
     void getDevice(const drogon::orm::DbClientPtr &clientPtr,
                    const std::function<void(Device)> &rcb,
                    const drogon::orm::ExceptionCallback &ecb) const;
+    Topic getTopic(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getTopic(const drogon::orm::DbClientPtr &clientPtr,
+                  const std::function<void(Topic)> &rcb,
+                  const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<UserDeviceActionMap>;
     friend drogon::orm::BaseBuilder<UserDeviceActionMap, true, true>;

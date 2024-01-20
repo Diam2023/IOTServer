@@ -8,6 +8,7 @@
 #include "Topic.h"
 #include "Device.h"
 #include "SubscribeMap.h"
+#include "UserDeviceActionMap.h"
 #include <drogon/utils/Utilities.h>
 #include <string>
 
@@ -1030,6 +1031,42 @@ void Topic::getSubscribes(const DbClientPtr &clientPtr,
                    for (auto const &row : r)
                    {
                        ret.emplace_back(SubscribeMap(row));
+                   }
+                   rcb(ret);
+               }
+               >> ecb;
+}
+std::vector<UserDeviceActionMap> Topic::getActions(const DbClientPtr &clientPtr) const {
+    const static std::string sql = "select * from user_device_action_map where action_target_topic_id = ?";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *topicId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    std::vector<UserDeviceActionMap> ret;
+    ret.reserve(r.size());
+    for (auto const &row : r)
+    {
+        ret.emplace_back(UserDeviceActionMap(row));
+    }
+    return ret;
+}
+
+void Topic::getActions(const DbClientPtr &clientPtr,
+                       const std::function<void(std::vector<UserDeviceActionMap>)> &rcb,
+                       const ExceptionCallback &ecb) const
+{
+    const static std::string sql = "select * from user_device_action_map where action_target_topic_id = ?";
+    *clientPtr << sql
+               << *topicId_
+               >> [rcb = std::move(rcb)](const Result &r){
+                   std::vector<UserDeviceActionMap> ret;
+                   ret.reserve(r.size());
+                   for (auto const &row : r)
+                   {
+                       ret.emplace_back(UserDeviceActionMap(row));
                    }
                    rcb(ret);
                }

@@ -87,6 +87,15 @@
         "target_table_alias": "subscribes",
         "target_key": "target_topic_id",
         "enable_reverse": true
+      },
+      {
+        "type": "has many",
+        "original_table_name": "topic",
+        "original_key": "topic_id",
+        "target_table_name": "user_device_action_map",
+        "target_table_alias": "actions",
+        "target_key": "action_target_topic_id",
+        "enable_reverse": true
       }
     ]
   }

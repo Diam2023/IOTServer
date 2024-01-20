@@ -7,6 +7,7 @@
 
 #include "UserDeviceActionMap.h"
 #include "Device.h"
+#include "Topic.h"
 #include "User.h"
 #include <drogon/utils/Utilities.h>
 #include <string>
@@ -1208,6 +1209,49 @@ void UserDeviceActionMap::getDevice(const DbClientPtr &clientPtr,
                     else
                     {
                         rcb(Device(r[0]));
+                    }
+               }
+               >> ecb;
+}
+Topic UserDeviceActionMap::getTopic(const DbClientPtr &clientPtr) const {
+    const static std::string sql = "select * from topic where topic_id = ?";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *actionTargetTopicId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Topic(r[0]);
+}
+
+void UserDeviceActionMap::getTopic(const DbClientPtr &clientPtr,
+                                   const std::function<void(Topic)> &rcb,
+                                   const ExceptionCallback &ecb) const
+{
+    const static std::string sql = "select * from topic where topic_id = ?";
+    *clientPtr << sql
+               << *actionTargetTopicId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Topic(r[0]));
                     }
                }
                >> ecb;
