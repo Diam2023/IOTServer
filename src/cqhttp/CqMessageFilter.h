@@ -7,17 +7,17 @@
 #include <json/json.h>
 #include <string>
 #include <functional>
-#include "CqWebSocketMessageHandler.h"
+#include "CqMessageHandler.h"
 
 namespace cq {
 
-    class CqWebSocketMessageFilter {
+    class CqMessageFilter {
     public:
-        CqWebSocketMessageFilter() = default;
+        CqMessageFilter() = default;
 
         virtual bool doFilter(const CqMessageData &) = 0;
 
-        virtual ~CqWebSocketMessageFilter() {};
+        virtual ~CqMessageFilter() {};
     };
 
 }

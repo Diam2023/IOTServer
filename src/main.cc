@@ -9,7 +9,7 @@
 #include <QTimer>
 
 #include "CqMqttDeviceMessageHandler.h"
-#include "CqWebSocketMessageManager.h"
+#include "CqMessageManager.h"
 
 // Handler Exit Signal
 static void exitSignalHandler() {

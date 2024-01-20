@@ -2,33 +2,33 @@
 // Created by diam on 24-1-20.
 //
 
-#include "CqWebSocketMessageManager.h"
+#include "CqMessageManager.h"
 
 #include <drogon/drogon.h>
 
-#include "CqWebSocketPrivateChatMessageFilter.h"
-#include "CqWebSocketPrivateChatMessageHandler.h"
+#include "CqPrivateChatMessageFilter.h"
+#include "CqPrivateChatMessageHandler.h"
 
-void cq::CqWebSocketMessageManager::registerHandler(const cq::CqMessageHandlerType &handler) {
+void cq::CqMessageManager::registerHandler(const cq::CqMessageHandlerType &handler) {
     callbacks.push_back(handler);
 }
 
-void cq::CqWebSocketMessageManager::messageIn(const cq::CqMessageData &data) {
+void cq::CqMessageManager::messageIn(const cq::CqMessageData &data) {
     std::lock_guard<std::mutex> lg(messageQueueMutex);
     messageQueue.push(data);
     messageQueueCondVar.notify_one();
 }
 
-void cq::CqWebSocketMessageManager::messageIn(cq::CqMessageData &&data) {
+void cq::CqMessageManager::messageIn(cq::CqMessageData &&data) {
     std::lock_guard<std::mutex> lg(messageQueueMutex);
     messageQueue.push(data);
     messageQueueCondVar.notify_one();
 }
 
-cq::CqWebSocketMessageManager::CqWebSocketMessageManager() : workerThread(&CqWebSocketMessageManager::worker, this) {
+cq::CqMessageManager::CqMessageManager() : workerThread(&CqMessageManager::worker, this) {
 }
 
-[[noreturn]] void cq::CqWebSocketMessageManager::worker() {
+[[noreturn]] void cq::CqMessageManager::worker() {
 
     using namespace std::chrono_literals;
 
@@ -52,10 +52,10 @@ cq::CqWebSocketMessageManager::CqWebSocketMessageManager() : workerThread(&CqWeb
         }
 
         // Do Filter
-        if (!cq::CqWebSocketPrivateChatMessageFilter::getInstance().doFilter(data)) {
+        if (!cq::CqPrivateChatMessageFilter::getInstance().doFilter(data)) {
             // Do Something
         } else {
-            cq::CqWebSocketPrivateChatMessageHandler::getInstance().handler(data);
+            cq::CqPrivateChatMessageHandler::getInstance().handler(data);
         }
 
         std::this_thread::sleep_for(500ms);

@@ -18,9 +18,9 @@ namespace cq {
     using CqMessageHandlerType = std::function<void(const CqMessageData &)>;
 
 
-    class CqWebSocketMessageHandler {
+    class CqMessageHandler {
     public:
-        CqWebSocketMessageHandler() = default;
+        CqMessageHandler() = default;
 
         virtual void handler(const CqMessageData &) = 0;
 
@@ -28,7 +28,7 @@ namespace cq {
             handler(d);
         }
 
-        virtual ~CqWebSocketMessageHandler() {};
+        virtual ~CqMessageHandler() {};
     };
 
 }

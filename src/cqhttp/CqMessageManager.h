@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "CqWebSocketMessageHandler.h"
+#include "CqMessageHandler.h"
 
 #include <queue>
 #include <condition_variable>
@@ -15,7 +15,7 @@ namespace cq {
     /**
      * To Filter, Handler WS Message
      */
-    class CqWebSocketMessageManager {
+    class CqMessageManager {
 
     private:
         /**
@@ -32,7 +32,7 @@ namespace cq {
 
     public:
 
-        CqWebSocketMessageManager();
+        CqMessageManager();
 
         void messageIn(const cq::CqMessageData &data);
 
@@ -47,8 +47,8 @@ namespace cq {
         // Do not call this
         [[noreturn]] void worker();
 
-        static CqWebSocketMessageManager &getInstance() {
-            static CqWebSocketMessageManager manager;
+        static CqMessageManager &getInstance() {
+            static CqMessageManager manager;
             return manager;
         }
     };

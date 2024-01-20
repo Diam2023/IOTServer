@@ -3,7 +3,7 @@
 
 #include "CqConnectionPool.h"
 
-#include "CqWebSocketMessageManager.h"
+#include "CqMessageManager.h"
 
 void CqWebsocket::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
                                    const WebSocketMessageType &type) {
@@ -16,7 +16,7 @@ void CqWebsocket::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std:
     if ((type == WebSocketMessageType::Text) && err.empty()) {
         auto id = cq::CqConnectionPool::getInstance().getId(wsConnPtr);
         // Load Manager
-        cq::CqWebSocketMessageManager::getInstance().messageIn({id, tree});
+        cq::CqMessageManager::getInstance().messageIn({id, tree});
     }
 }
 
