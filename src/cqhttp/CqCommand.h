@@ -58,6 +58,7 @@ namespace cq {
         //删除别名 name
         std::regex removeDeviceAliasRegex;
 
+        std::regex listActionRegex;
         // 定义操作 {操作名} {设备名/别名} {subtopic} {JSON数据}
         std::regex makeActionRegex;
         //删除操作

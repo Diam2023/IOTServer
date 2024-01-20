@@ -6,6 +6,8 @@
 
 #include <drogon/drogon.h>
 #include "UserApi.h"
+#include "Device.h"
+#include "UserDeviceActionMap.h"
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -154,7 +156,9 @@ namespace cq {
             }
 
             auto subsMapList = topicRes.getSubscribes(dbClientPtr);
-            if (subsMapList.size() == 1) {
+            auto actionList = device.getActions(dbClientPtr);
+
+            if (subsMapList.size() <= 1 && actionList.size() <= 1) {
                 // Delete it
                 try {
                     topicMapper.deleteFutureBy(

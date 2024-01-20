@@ -8,6 +8,7 @@
 #include "CqDeviceApi.h"
 #include "CqSubscribeApi.h"
 #include "CqAliasApi.h"
+#include "CqActionApi.h"
 
 #include <future>
 #include "CqMessageManager.h"
@@ -416,6 +417,164 @@ namespace cq {
             }
 
 
+            bool listActionMatch = std::regex_match(message, listActionRegex);
+            if (listActionMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+
+                try {
+                    // start get devices
+                    auto res = cq::CqActionApi::listAction(token).get();
+
+                    if (res->empty()) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Action list Empty");
+                    } else {
+
+                        // Sort it by device id
+                        std::sort(res->begin(), res->end(), [](auto fir, auto sec) -> bool {
+                            const Device &firDevice = std::get<0>(fir);
+                            const Device &secDevice = std::get<0>(fir);
+                            if (*firDevice.getDeviceId() == *secDevice.getDeviceId()) {
+                                const Topic &firTopic = std::get<1>(fir);
+                                const Topic &secTopic = std::get<1>(fir);
+
+                                return *firTopic.getTopicId() < *secTopic.getTopicId();
+                            } else {
+                                return *firDevice.getDeviceId() < *secDevice.getDeviceId();
+                            }
+                        });
+                        std::stringstream ss;
+
+                        uint32_t prevDeviceId = 0;
+                        uint32_t prevTopicId = 0;
+
+                        for (const auto &deviceTopicAction: *res) {
+                            if (prevDeviceId != *std::get<0>(deviceTopicAction).getDeviceId()) {
+                                ss << "------DEVICE------" << std::endl;
+                                ss << "SN: " << *std::get<0>(deviceTopicAction).getDeviceSn() << std::endl;
+                                ss << "NAME: " << *std::get<0>(deviceTopicAction).getDeviceName() << std::endl;
+
+                                if (prevTopicId != *std::get<1>(deviceTopicAction).getTopicId()) {
+                                    ss << "------TOPICS-------" << std::endl;
+                                    ss << "NAME: " << *std::get<1>(deviceTopicAction).getTopicName() << std::endl;
+
+                                    ss << "------ACTIONS-------" << std::endl;
+                                    ss << "NAME: " << *std::get<2>(deviceTopicAction).getActionName() << std::endl;
+
+                                    prevTopicId = *std::get<1>(deviceTopicAction).getTopicId();
+                                } else {
+                                    ss << "NAME: " << *std::get<2>(deviceTopicAction).getActionName() << std::endl;
+                                }
+
+                                prevDeviceId = *std::get<0>(deviceTopicAction).getDeviceId();
+                            } else {
+                                if (prevTopicId != *std::get<1>(deviceTopicAction).getTopicId()) {
+                                    ss << "------TOPICS-------" << std::endl;
+                                    ss << "NAME: " << *std::get<1>(deviceTopicAction).getTopicName() << std::endl;
+
+                                    ss << "------ACTIONS-------" << std::endl;
+                                    ss << "NAME: " << *std::get<2>(deviceTopicAction).getActionName() << std::endl;
+
+                                    prevTopicId = *std::get<1>(deviceTopicAction).getTopicId();
+                                } else {
+                                    ss << "NAME: " << *std::get<2>(deviceTopicAction).getActionName() << std::endl;
+                                }
+                            }
+                        }
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, ss.str());
+                    }
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Alias List Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+            bool makeActionMatch = std::regex_match(message, makeActionRegex);
+            if (makeActionMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+
+                try {
+                    // start remove Action
+                    std::sregex_iterator action(message.cbegin(), message.cend(), makeActionRegex);
+                    cq::CqActionApi::addAction(token, action->str(1), action->str(2), action->str(3),
+                                               action->str(4)).get();
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Make Action Successful");
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Make Action Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+            bool deleteActionMatch = std::regex_match(message, deleteActionRegex);
+            if (deleteActionMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+                // TODO Add Permission Check
+
+                try {
+                    // start Delete Action
+                    std::sregex_iterator action(message.cbegin(), message.cend(), deleteActionRegex);
+                    if (cq::CqActionApi::removeAction(token, action->str(1)).get()) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Remove Action Successful");
+                    } else {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Removed");
+                    }
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Remove Action Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+
+            std::string token;
+            // Check If Non Login
+            try {
+                token = cq::CqUserApi::getLoginInfo(senderId).get();
+            } catch (const std::exception &e) {
+                // Non Login
+            }
+            if (!token.empty()) {
+                try {
+                    auto res = CqActionApi::matchAction(token, message).get();
+                    if (res) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId,
+                                                                       "Matched Action");
+                        break;
+                    }
+                } catch (const std::exception &e) {
+                    // Non Match
+                }
+            }
+
+
             cq::CqMessageManager::getInstance().messageOut(botId, senderId,
                                                            "Non Matched Command Please use help display command list");
 
@@ -438,6 +597,7 @@ namespace cq {
         addDeviceAliasRegex = std::regex("add alias (.*) (.*)");
         removeDeviceAliasRegex = std::regex("remove alias (.*)");
 
+        listActionRegex = std::regex("list actions");
         // 定义操作 {操作名} {设备名/别名} {subtopic} {JSON数据}
         makeActionRegex = std::regex("define (.*) (.*) (.*) (.*)");
         deleteActionRegex = std::regex("del-define (.*)");
