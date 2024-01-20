@@ -6,6 +6,7 @@
 
 #include "CqUserApi.h"
 #include "CqDeviceApi.h"
+#include "CqSubscribeApi.h"
 
 #include <future>
 #include "CqMessageManager.h"
@@ -184,7 +185,7 @@ namespace cq {
                     } else {
                         std::stringstream ss;
                         for (const auto &device: *res) {
-                            ss << "------" << std::endl;
+                            ss << "------DEVICE------" << std::endl;
                             ss << "SN: " << *device.getDeviceSn() << std::endl;
                             ss << "NAME: " << *device.getDeviceName();
                         }
@@ -198,6 +199,114 @@ namespace cq {
                 break;
             }
 
+
+            bool listSubscribeDeviceMessageMatch = std::regex_match(message, listSubscribeDeviceMessageRegex);
+            if (listSubscribeDeviceMessageMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+
+                try {
+                    // start get all Subscribe
+                    auto res = cq::CqSubscribeApi::listAllSubscribe(token).get();
+
+                    if (res->empty()) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Topic list Empty");
+                    } else {
+                        std::sort(res->begin(), res->end(), [](auto fir, auto sec) -> bool {
+                            const Device &firDevice = fir.first;
+                            const Device &secDevice = sec.first;
+                            return *firDevice.getDeviceId() < *secDevice.getDeviceId();
+                        });
+                        std::stringstream ss;
+
+                        uint32_t prevDeviceId = 0;
+
+                        for (const auto &deviceTopic: *res) {
+                            if (prevDeviceId != *deviceTopic.first.getDeviceId()) {
+                                ss << "------DEVICE------" << std::endl;
+                                ss << "SN: " << *deviceTopic.first.getDeviceSn() << std::endl;
+                                ss << "NAME: " << *deviceTopic.first.getDeviceName() << std::endl;
+                                ss << "------TOPIC-------" << std::endl;
+                                ss << "NAME: " << *deviceTopic.second.getTopicName() << std::endl;
+                                prevDeviceId = *deviceTopic.first.getDeviceId();
+                            } else {
+                                ss << "NAME: " << *deviceTopic.second.getTopicName() << std::endl;
+                            }
+                        }
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, ss.str());
+                    }
+                } catch (const std::exception &e) {
+                    std::string errMsg = "List Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+
+            bool subscribeDeviceMessageMatch = std::regex_match(message, subscribeDeviceMessageRegex);
+            if (subscribeDeviceMessageMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+                // TODO Add Permission Check
+
+                try {
+                    // start Subscribe
+                    std::sregex_iterator subscribe(message.cbegin(), message.cend(), subscribeDeviceMessageRegex);
+                    cq::CqSubscribeApi::subscribeDeviceTopic(token, subscribe->str(1), subscribe->str(2)).get();
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Subscribe Successful");
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Subscribe Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+            // unsubscribeDeviceMessage
+            bool unsubscribeDeviceMessageMatch = std::regex_match(message, unsubscribeDeviceMessageRegex);
+            if (unsubscribeDeviceMessageMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+
+                try {
+                    // start Unsubscribe
+                    std::sregex_iterator unsubscribe(message.cbegin(), message.cend(), unsubscribeDeviceMessageRegex);
+                    if (cq::CqSubscribeApi::unsubscribeDeviceTopic(token, unsubscribe->str(1),
+                                                                   unsubscribe->str(2)).get()
+                            ) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Unsubscribe Successful");
+                    } else {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Unsubscribed");
+                    }
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Unsubscribe Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
 
             cq::CqMessageManager::getInstance().messageOut(botId, senderId,
                                                            "Non Matched Command Please use help display command list");

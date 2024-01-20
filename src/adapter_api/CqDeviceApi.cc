@@ -8,6 +8,9 @@
 #include "UserApi.h"
 #include <drogon/drogon.h>
 
+#include "SubscribeMap.h"
+#include "Topic.h"
+
 using namespace drogon;
 using namespace drogon::orm;
 //using namespace drogon::nosql;
@@ -40,6 +43,16 @@ namespace cq {
         drogon::app().getLoop()->queueInLoop([prom, sn]() {
             auto dbClientPtr = app().getDbClient();
             Mapper<Device> deviceMapper(dbClientPtr);
+            Mapper<SubscribeMap> subscribeMapper(dbClientPtr);
+            Mapper<Topic> topicMapper(dbClientPtr);
+
+            // TODO Wait Test
+
+            auto device = deviceMapper.findFutureOne(Criteria(Device::Cols::_device_sn, CompareOperator::EQ, sn)).get();
+            const auto &deviceId = device.getDeviceId();
+            subscribeMapper.deleteBy(Criteria(SubscribeMap::Cols::_target_device_id, CompareOperator::EQ, *deviceId));
+            topicMapper.deleteBy(Criteria(Topic::Cols::_target_device_id, CompareOperator::EQ, *deviceId));
+
             deviceMapper.deleteBy(Criteria(Device::Cols::_device_sn, CompareOperator::EQ, sn), [prom](const auto &r) {
                 prom->set_value(r > 0);
             }, [prom](const auto &e) {
