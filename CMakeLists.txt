@@ -19,6 +19,7 @@ aux_source_directory(src/models MODEL_SRC)
 aux_source_directory(src/service SERVICE_SRC)
 aux_source_directory(src/cqhttp CQ_SRC)
 aux_source_directory(src/api API_SRC)
+aux_source_directory(src/adapter_api ADAPTER_API_SRC)
 aux_source_directory(src/common COMMON_SRC)
 
 add_executable(
@@ -44,6 +45,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/api
         ${CMAKE_CURRENT_SOURCE_DIR}/src/common
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cqhttp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/adapter_api
 )
 
 
@@ -58,6 +60,7 @@ target_sources(${PROJECT_NAME}
         ${CQ_SRC}
         ${API_SRC}
         ${COMMON_SRC}
+        ${ADAPTER_API_SRC}
 )
 
 
