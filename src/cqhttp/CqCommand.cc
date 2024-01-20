@@ -327,7 +327,7 @@ namespace cq {
         listSubscribeDeviceMessageRegex = std::regex("list subscribes");
 
         listDeviceAliasRegex = std::regex("list alias");
-        addDeviceAliasRegex = std::regex("add alias (.*)");
+        addDeviceAliasRegex = std::regex("add alias (.*) (.*)");
         removeDeviceAliasRegex = std::regex("remove alias (.*)");
 
         // 定义操作 {操作名} {设备名/别名} {subtopic} {JSON数据}

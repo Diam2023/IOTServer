@@ -247,7 +247,7 @@ custom_config:
       "{unsubscribe [sn] [topic]} -- 取消订阅设备消息",
       "{list subscribes}          -- 查看所有订阅消息",
       "{list alias}               -- 查看所有设备别名",
-      "{add alias [alias]}        -- 添加别名",
+      "{add alias [sn] [alias]}   -- 添加别名",
       "{remove alias [alias]}     -- 删除别名",
       "{{name}}                   -- 操作",
       "{del-define {name}}        -- 删除操作",

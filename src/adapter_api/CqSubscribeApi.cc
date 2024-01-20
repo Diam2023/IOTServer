@@ -45,21 +45,6 @@ namespace cq {
             } catch (const std::exception &e) {
                 prom->set_exception(current_exception());
             }
-
-//            subscribeMapper.findBy(Criteria(SubscribeMap::Cols::_target_user_id,
-//                                            CompareOperator::EQ, uid),
-//                                   [prom, dbClientPtr, resVec](const auto &r) {
-//                                       for (const SubscribeMap &subs: r) {
-//
-//                                           auto t = subs.getTopic(dbClientPtr);
-//                                           auto d = t.getDevice(dbClientPtr);
-//                                           resVec->emplace_back(d, t);
-//                                       }
-//
-//                                       prom->set_value(resVec);
-//                                   }, [prom](const auto &e) {
-//                        prom->set_exception(current_exception());
-//                    });
         });
 
         return prom->get_future();
