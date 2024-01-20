@@ -70,19 +70,19 @@ namespace cq {
                     }, [prom, token](const RedisException &e) {
                         LOG_WARN << e.what();
 //                        prom->set_exception(std::current_exception());
-                    }, "set %s%s %u", QK_PREFIX, qqId.c_str(), token.c_str());
+                    }, "set %s%s %s", QK_PREFIX, qqId.c_str(), token.c_str());
 
                     redisClientPtr->execCommandAsync([](const RedisResult &r) {
                     }, [prom, token](const RedisException &e) {
                         LOG_WARN << e.what();
 //                        prom->set_exception(std::current_exception());
-                    }, "set %s%s %u", QB_PREFIX, qqId.c_str(), botId.c_str());
+                    }, "set %s%s %s", QB_PREFIX, qqId.c_str(), botId.c_str());
 
                     redisClientPtr->execCommandAsync([](const RedisResult &r) {
                     }, [prom, token](const RedisException &e) {
                         LOG_WARN << e.what();
 //                        prom->set_exception(std::current_exception());
-                    }, "set %s%s %u", UQ_PREFIX, uid.c_str(), qqId.c_str());
+                    }, "set %s%s %s", UQ_PREFIX, uid.c_str(), qqId.c_str());
                     prom->set_value(token);
                 }
             } catch (const std::exception &e) {
