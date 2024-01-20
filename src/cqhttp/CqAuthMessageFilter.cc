@@ -23,5 +23,7 @@ namespace cq {
         if (findResult != authedIdList.cend()) {
             return true;
         }
+
+        return false;
     }
 } // cq
