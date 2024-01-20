@@ -5,9 +5,22 @@
 #ifndef IOTSERVER_CQNOFILTERMESSAGE_H
 #define IOTSERVER_CQNOFILTERMESSAGE_H
 
+#include "common.h"
 
-class CqNoFilterMessage {
+#include "CqMessageHandler.h"
 
+namespace cq {
+
+
+    class CqNoFilterMessage : public virtual CqMessageHandler {
+
+    public:
+        CqNoFilterMessage() = default;
+
+        void handler(const cq::CqMessageData &) override;
+
+    SINGLETON_INTERFACE(CqNoFilterMessage);
+    };
 };
 
 

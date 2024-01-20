@@ -8,6 +8,7 @@
 
 #include "CqPrivateChatMessageFilter.h"
 #include "CqPrivateChatMessageHandler.h"
+#include "CqNoFilterMessage.h"
 
 void cq::CqMessageManager::registerHandler(const cq::CqMessageHandlerType &handler) {
     callbacks.push_back(handler);
@@ -43,20 +44,24 @@ cq::CqMessageManager::CqMessageManager() : workerThread(&CqMessageManager::worke
             messageQueue.pop();
         } // Release Lock
 
-//        LOG_INFO << "message handler: " << data.first << " val: " << data.second.toStyledString();
-
         // Call Normal Handlers
 
         for (const auto &handler: callbacks) {
             handler(data);
         }
 
-        // Do Filter
-        if (!cq::CqPrivateChatMessageFilter::getInstance().doFilter(data)) {
-            // Do Something
-        } else {
-            cq::CqPrivateChatMessageHandler::getInstance().handler(data);
-        }
+        do {
+            // Do Filter
+
+            // Private Chat Message Filter
+            if (cq::CqPrivateChatMessageFilter::getInstance().doFilter(data)) {
+                cq::CqPrivateChatMessageHandler::getInstance().handler(data);
+                break;
+            }
+
+            cq::CqNoFilterMessage::getInstance().handler(data);
+        } while (false);
+
 
         std::this_thread::sleep_for(500ms);
     }
