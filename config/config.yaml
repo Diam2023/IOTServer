@@ -232,6 +232,11 @@ custom_config:
     port: 1883,
     filter_cache_update_time: 500
   }
+  cqhttp: {
+    help: [
+      ""
+    ]
+  }
   realm: drogonRealm
   opaque: drogonOpaque
   credentials:

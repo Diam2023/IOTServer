@@ -28,6 +28,11 @@ namespace cq {
         std::mutex messageQueueMutex;
         std::condition_variable messageQueueCondVar;
 
+//        // Message out queue
+//        std::queue<CqMessageData> messageOutQueue;
+//        std::mutex messageOutQueueMutex;
+//        std::condition_variable messageOutQueueCondVar;
+
         std::thread workerThread;
 
     public:
@@ -37,6 +42,14 @@ namespace cq {
         void messageIn(const cq::CqMessageData &data);
 
         void messageIn(cq::CqMessageData &&data);
+
+        /**
+         * Message output
+         * @param botId
+         * @param targetId
+         * @param message
+         */
+        void messageOut(const std::string &botId, const std::string &targetId, const std::string &message);
 
         /**
          * Do Not Use This Api in multi-thread

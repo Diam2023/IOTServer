@@ -9,6 +9,7 @@
 #include "CqPrivateChatMessageFilter.h"
 #include "CqPrivateChatMessageHandler.h"
 #include "CqNoFilterMessage.h"
+#include "CqConnectionPool.h"
 
 void cq::CqMessageManager::registerHandler(const cq::CqMessageHandlerType &handler) {
     callbacks.push_back(handler);
@@ -64,5 +65,23 @@ cq::CqMessageManager::CqMessageManager() : workerThread(&CqMessageManager::worke
 
 
         std::this_thread::sleep_for(500ms);
+    }
+}
+
+void
+cq::CqMessageManager::messageOut(const std::string &botId, const std::string &targetId, const std::string &message) {
+    // TODO use worker thread
+    auto ptr = cq::CqConnectionPool::getInstance().getOutPtr(botId);
+    if (ptr) {
+        int64_t tid = std::stoll(targetId);
+        Json::Value jsonData;
+        jsonData["action"] = "send_private_msg";
+        jsonData["params"]["message_type"] = "private";
+        jsonData["params"]["user_id"] = tid;
+        jsonData["params"]["message"] = message;
+        jsonData["params"]["auto_escape"] = true;
+        ptr->send(jsonData.toStyledString());
+    } else {
+        LOG_WARN << "Send Error!";
     }
 }

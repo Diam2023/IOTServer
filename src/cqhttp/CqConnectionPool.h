@@ -38,6 +38,13 @@ namespace cq {
 
         std::string getId(const drogon::WebSocketConnectionPtr &);
 
+        /**
+         * get outPtr use bot id
+         * @param botId bot id
+         * @return bot ws connetion ptr
+         */
+        drogon::WebSocketConnectionPtr getOutPtr(const std::string &botId);
+
         static CqConnectionPool &getInstance() {
             static CqConnectionPool pool;
             return pool;

@@ -35,4 +35,16 @@ namespace cq {
 
         return "";
     }
+
+    drogon::WebSocketConnectionPtr CqConnectionPool::getOutPtr(const std::string &botId) {
+        const auto result = std::find_if(connectionPool.cbegin(), connectionPool.cend(),
+                                         [botId](const auto &conn) -> bool {
+                                             return (botId == conn.first);
+                                         });
+        if (result != connectionPool.end()) {
+            return (*result).second;
+        }
+
+        return {};
+    }
 } // cq

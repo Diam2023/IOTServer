@@ -5,6 +5,7 @@
 #include "CqPrivateChatMessageHandler.h"
 
 #include <drogon/drogon.h>
+#include "CqCommand.h"
 
 namespace cq {
     void CqPrivateChatMessageHandler::handler(const CqMessageData &data) {
@@ -14,11 +15,9 @@ namespace cq {
 
         do {
 
-
-            if (!data.second["sender"]["user_id"].isString() || !data.second["message"].isString()) {
+            if (!data.second["sender"]["user_id"].isNumeric() || !data.second["message"].isString()) {
                 break;
             }
-
 
             senderId = data.second["sender"]["user_id"].asString();
             receivedMessage = data.second["message"].asString();
@@ -28,8 +27,15 @@ namespace cq {
             }
 
             // TODO Call login or another here
-            LOG_INFO << "private message received: " << data.first << " sender: " << senderId << " msg: "
-                     << receivedMessage;
+//            LOG_INFO << "private message received: " << data.first << " sender: " << senderId << " msg: "
+//                     << receivedMessage;
+
+            auto commandData = std::make_tuple(data.first, senderId, receivedMessage);
+            CqCommand::getInstance().pushCommand(commandData);
+
+//            switch () {
+
+//            }
 
         } while (false);
 
