@@ -7,6 +7,7 @@
 #include "CqUserApi.h"
 #include "CqDeviceApi.h"
 #include "CqSubscribeApi.h"
+#include "CqAliasApi.h"
 
 #include <future>
 #include "CqMessageManager.h"
@@ -307,6 +308,113 @@ namespace cq {
                 }
                 break;
             }
+
+            bool addDeviceAliasMatch = std::regex_match(message, addDeviceAliasRegex);
+            if (addDeviceAliasMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+
+                try {
+                    // start remove device
+                    std::sregex_iterator alias(message.cbegin(), message.cend(), addDeviceAliasRegex);
+                    cq::CqAliasApi::addAlias(token, alias->str(1), alias->str(2)).get();
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Add Alias Successful");
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Add Alias Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+            bool removeDeviceAliasMatch = std::regex_match(message, removeDeviceAliasRegex);
+            if (removeDeviceAliasMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+                // TODO Add Permission Check
+
+                try {
+                    // start add device
+                    std::sregex_iterator device(message.cbegin(), message.cend(), removeDeviceAliasRegex);
+                    if (cq::CqAliasApi::removeAlias(token, device->str(1)).get()) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Remove Alias Successful");
+                    } else {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Removed");
+                    }
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Remove Alias Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+            bool listDeviceAliasMatch = std::regex_match(message, listDeviceAliasRegex);
+            if (listDeviceAliasMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+
+                try {
+                    // start get devices
+                    auto res = cq::CqAliasApi::listAlias(token).get();
+
+                    if (res->empty()) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Alias list Empty");
+                    } else {
+
+                        // Sort it by device id
+                        std::sort(res->begin(), res->end(), [](auto fir, auto sec) -> bool {
+                            const Device &firDevice = fir.first;
+                            const Device &secDevice = sec.first;
+                            return *firDevice.getDeviceId() < *secDevice.getDeviceId();
+                        });
+                        std::stringstream ss;
+
+                        uint32_t prevDeviceId = 0;
+
+                        for (const auto &deviceAlias: *res) {
+                            if (prevDeviceId != *deviceAlias.first.getDeviceId()) {
+                                ss << "------DEVICE------" << std::endl;
+                                ss << "SN: " << *deviceAlias.first.getDeviceSn() << std::endl;
+                                ss << "NAME: " << *deviceAlias.first.getDeviceName() << std::endl;
+                                ss << "------ALIAS-------" << std::endl;
+                                ss << "NAME: " << *deviceAlias.second.getAliasName() << std::endl;
+                                prevDeviceId = *deviceAlias.first.getDeviceId();
+                            } else {
+                                ss << "NAME: " << *deviceAlias.second.getAliasName() << std::endl;
+                            }
+                        }
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, ss.str());
+                    }
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Alias List Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
 
             cq::CqMessageManager::getInstance().messageOut(botId, senderId,
                                                            "Non Matched Command Please use help display command list");
