@@ -240,9 +240,9 @@ custom_config:
     help: [
       "{login [Usr] [Pwd]}        -- 登入",
       "{logout}                   -- 登出",
-      "{add device [sn]}          -- 添加设备",
+      "{add device [sn] [name]}          -- 添加设备",
       "{remove device [sn]        -- 删除设备",
-      "{list all device}          -- 查看所有设备",
+      "{list devices}             -- 查看所有设备",
       "{subscribe [sn] [topic]}   -- 订阅设备消息",
       "{unsubscribe [sn] [topic]} -- 取消订阅设备消息",
       "{list subscribes}          -- 查看所有订阅消息",

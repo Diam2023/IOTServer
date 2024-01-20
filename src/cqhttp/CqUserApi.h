@@ -37,13 +37,6 @@ namespace cq {
 
         static std::future<bool> logout(const std::string &qqId);
 
-
-        void addDevice();
-
-        void removeDevice();
-
-        void listDevices();
-
         void subscribeDeviceMessage();
 
         void unsubscribeDeviceMessage();

@@ -5,6 +5,7 @@
 #include "CqCommand.h"
 
 #include "CqUserApi.h"
+#include "CqDeviceApi.h"
 
 #include <future>
 #include "CqMessageManager.h"
@@ -87,15 +88,12 @@ namespace cq {
             bool logoutMatch = std::regex_match(message, logoutRegex);
             if (logoutMatch) {
 
-                std::string token;
-                // Check If logged in
+                // Check If Non login
                 try {
-                    token = cq::CqUserApi::getLoginInfo(senderId).get();
-                    if (token.empty()) {
-                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
-                        break;
-                    }
+                    cq::CqUserApi::getLoginInfo(senderId).get();
                 } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
                 }
 
                 try {
@@ -103,12 +101,103 @@ namespace cq {
                     cq::CqUserApi::logout(senderId).get();
                     cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Logout Successful");
                 } catch (const std::exception &e) {
-                    std::string errMsg = "Login Failed";
+                    std::string errMsg = "Login Failed: ";
                     errMsg.append(e.what());
                     cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
                 }
                 break;
             }
+
+            bool addDeviceMatch = std::regex_match(message, addDeviceRegex);
+            if (addDeviceMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+                // TODO Add Permission Check
+
+                try {
+                    // start add device
+                    std::sregex_iterator device(message.cbegin(), message.cend(), addDeviceRegex);
+                    cq::CqDeviceApi::addDevice(device->str(1), device->str(2)).get();
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Add Successful");
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Add Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+            bool removeDeviceMatch = std::regex_match(message, removeDeviceRegex);
+            if (removeDeviceMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+
+                try {
+                    // start remove device
+                    std::sregex_iterator device(message.cbegin(), message.cend(), removeDeviceRegex);
+                    if (cq::CqDeviceApi::removeDevice(device->str(1)).get()
+                            ) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Remove Successful");
+                    } else {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Removed");
+                    }
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Remove Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+            bool listDeviceMatch = std::regex_match(message, listDeviceRegex);
+            if (listDeviceMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+
+                try {
+                    // start get devices
+                    auto res = cq::CqDeviceApi::listDevices().get();
+
+                    if (res->empty()) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Device list Empty");
+                    } else {
+                        std::stringstream ss;
+                        for (const auto &device: *res) {
+                            ss << "------" << std::endl;
+                            ss << "SN: " << *device.getDeviceSn() << std::endl;
+                            ss << "NAME: " << *device.getDeviceName();
+                        }
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, ss.str());
+                    }
+                } catch (const std::exception &e) {
+                    std::string errMsg = "List Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
 
             cq::CqMessageManager::getInstance().messageOut(botId, senderId,
                                                            "Non Matched Command Please use help display command list");
@@ -120,9 +209,9 @@ namespace cq {
         loginRegex = std::regex("login (.*) (.*)");
         logoutRegex = std::regex("logout");
 
-        addDeviceRegex = std::regex("add device (.*)");
+        addDeviceRegex = std::regex("add device (.*) (.*)");
         removeDeviceRegex = std::regex("remove device (.*)");
-        listDeviceRegex = std::regex("list all device");
+        listDeviceRegex = std::regex("list devices");
 
         subscribeDeviceMessageRegex = std::regex("subscribe (.*) (.*)");
         unsubscribeDeviceMessageRegex = std::regex("unsubscribe (.*) (.*)");

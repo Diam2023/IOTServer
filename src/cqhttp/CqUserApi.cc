@@ -40,7 +40,7 @@ namespace cq {
             auto redisClientPtr = app().getRedisClient();
             redisClientPtr->execCommandAsync([prom](const RedisResult &r) {
                 if (r.type() != RedisResultType::kString) {
-                    prom->set_value("");
+                    prom->set_exception(std::make_exception_ptr(RedisException(RedisErrorCode::kNone, "Non Login")));
                 } else {
                     prom->set_value(r.asString());
                 }
