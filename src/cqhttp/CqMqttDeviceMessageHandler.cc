@@ -2,10 +2,10 @@
 // Created by diam on 24-1-19.
 //
 
-#include "CqMqttMessageHandler.h"
+#include "CqMqttDeviceMessageHandler.h"
 
-cq::CqMqttMessageHandler::CqMqttMessageHandler() = default;
+cq::CqMqttDeviceMessageHandler::CqMqttDeviceMessageHandler() = default;
 
-void cq::CqMqttMessageHandler::handler(const mqtt::MqttData &data) {
+void cq::CqMqttDeviceMessageHandler::handler(const mqtt::MqttData &data) {
 
 }

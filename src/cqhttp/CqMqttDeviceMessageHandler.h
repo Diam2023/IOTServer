@@ -10,7 +10,7 @@ namespace cq {
     class CqMqttDeviceMessageHandler : public mqtt::MqttMessageHandler {
 
     public:
-        CqMqttMessageHandler();
+        CqMqttDeviceMessageHandler();
 
         /**
          * Message Handler
@@ -18,8 +18,8 @@ namespace cq {
          */
         void handler(const mqtt::MqttData &data) override;
 
-        static CqMqttMessageHandler &getInstance() {
-            static CqMqttMessageHandler cqMqttMessageHandler;
+        static CqMqttDeviceMessageHandler &getInstance() {
+            static CqMqttDeviceMessageHandler cqMqttMessageHandler;
             return cqMqttMessageHandler;
         }
     };
