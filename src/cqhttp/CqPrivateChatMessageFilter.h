@@ -5,6 +5,7 @@
 #pragma once
 
 #include "CqMessageFilter.h"
+#include "common.h"
 
 namespace cq {
 
@@ -20,10 +21,7 @@ namespace cq {
         ~CqPrivateChatMessageFilter()
         override = default;
 
-        static CqPrivateChatMessageFilter &getInstance() {
-            static CqPrivateChatMessageFilter filter;
-            return filter;
-        }
+    SINGLETON_INTERFACE(CqPrivateChatMessageFilter);
 
     };
 

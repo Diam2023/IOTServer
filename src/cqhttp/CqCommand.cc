@@ -8,6 +8,8 @@
 
 #include <future>
 #include "CqMessageManager.h"
+#include <drogon/drogon.h>
+#include <sstream>
 
 namespace cq {
 
@@ -46,22 +48,43 @@ namespace cq {
 
         try {
             do {
+                if (std::regex_match(message, helpRegex)) {
+                    std::stringstream ss;
+                    // show help message
+                    const auto helpMessageArray = drogon::app().getCustomConfig()["cqhttp"]["help"];
+                    for (const Json::Value &msg: helpMessageArray) {
+                        ss << msg.asString() << std::endl;
+                    }
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, ss.str());
+                    break;
+                }
+
 
                 bool loginMatch = std::regex_match(message, loginRegex);
                 if (loginMatch) {
-                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Test response");
-
-//                    if (cq::CqUserApi::getLoginInfo(senderId).get().empty()) {
-//                        std::sregex_iterator login(message.cbegin(), message.cend(), loginRegex);
-//                        auto token = cq::CqUserApi::login(botId, senderId, login->str(1), login->str(2)).get();
-//                    }
-
+                    if (cq::CqUserApi::getLoginInfo(senderId).get().empty()) {
+                        std::sregex_iterator login(message.cbegin(), message.cend(), loginRegex);
+                        auto token = cq::CqUserApi::login(botId, senderId, login->str(1), login->str(2)).get();
+                        if (token.empty()) {
+                            break;
+                        } else {
+                            cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login Error");
+                        }
+                    } else {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Already Logged In");
+                    }
                     break;
                 }
+
+                cq::CqMessageManager::getInstance().messageOut(botId, senderId,
+                                                               "Non Matched Command Please use help display command list");
+
             } while (false);
 
         } catch (const std::exception &e) {
-
+            std::string errMessage = "Action Failed:";
+            errMessage.append(e.what());
+            cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMessage);
         }
     }
 
@@ -73,17 +96,17 @@ namespace cq {
         removeDeviceRegex = std::regex("remove device (.*)");
         listDeviceRegex = std::regex("list all device");
 
-        subscribeDeviceMessageRegex = std::regex("subscribe message (.*)");
-        unsubscribeDeviceMessageRegex = std::regex("unsubscribe message (.*)");
-        listSubscribeDeviceMessageRegex = std::regex("list unsubscribe message");
+        subscribeDeviceMessageRegex = std::regex("subscribe (.*) (.*)");
+        unsubscribeDeviceMessageRegex = std::regex("unsubscribe (.*) (.*)");
+        listSubscribeDeviceMessageRegex = std::regex("list subscribes");
 
-        listDeviceAliasRegex = std::regex("list devices alias");
-        addDeviceAliasRegex = std::regex("add device alias (.*)");
-        removeDeviceAliasRegex = std::regex("remove device alias (.*)");
+        listDeviceAliasRegex = std::regex("list alias");
+        addDeviceAliasRegex = std::regex("add alias (.*)");
+        removeDeviceAliasRegex = std::regex("remove alias (.*)");
 
         // 定义操作 {操作名} {设备名/别名} {subtopic} {JSON数据}
         makeActionRegex = std::regex("define (.*) (.*) (.*) (.*)");
-        deleteActionRegex = std::regex("logout");
+        deleteActionRegex = std::regex("del-define (.*)");
 
         helpRegex = std::regex("help");
     }

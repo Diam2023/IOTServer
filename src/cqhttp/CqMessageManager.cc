@@ -7,9 +7,10 @@
 #include <drogon/drogon.h>
 
 #include "CqPrivateChatMessageFilter.h"
-#include "CqPrivateChatMessageHandler.h"
+#include "CqAuthedMessageHandler.h"
 #include "CqNoFilterMessage.h"
 #include "CqConnectionPool.h"
+#include "CqAuthMessageFilter.h"
 
 void cq::CqMessageManager::registerHandler(const cq::CqMessageHandlerType &handler) {
     callbacks.push_back(handler);
@@ -56,8 +57,12 @@ cq::CqMessageManager::CqMessageManager() : workerThread(&CqMessageManager::worke
 
             // Private Chat Message Filter
             if (cq::CqPrivateChatMessageFilter::getInstance().doFilter(data)) {
-                cq::CqPrivateChatMessageHandler::getInstance().handler(data);
-                break;
+                if (cq::CqAuthMessageFilter::getInstance().doFilter(data)) {
+                    cq::CqAuthedMessageHandler::getInstance().handler(data);
+                    break;
+                } else {
+                    // Non Auth
+                }
             }
 
             cq::CqNoFilterMessage::getInstance().handler(data);

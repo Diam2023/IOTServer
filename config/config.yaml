@@ -233,8 +233,26 @@ custom_config:
     filter_cache_update_time: 500
   }
   cqhttp: {
+    auth: [
+#            who can use his api
+      "2953917577"
+    ],
     help: [
-      ""
+      "{login [Usr] [Pwd]}        -- 登入",
+      "{logout}                   -- 登出",
+      "{add device [sn]}          -- 添加设备",
+      "{remove device [sn]        -- 删除设备",
+      "{list all device}          -- 查看所有设备",
+      "{subscribe [sn] [topic]}   -- 订阅设备消息",
+      "{unsubscribe [sn] [topic]} -- 取消订阅设备消息",
+      "{list subscribes}          -- 查看所有订阅消息",
+      "{list alias}               -- 查看所有设备别名",
+      "{add alias [alias]}        -- 添加别名",
+      "{remove alias [alias]}     -- 删除别名",
+      "{{name}}                   -- 操作",
+      "{del-define {name}}        -- 删除操作",
+      "{define {name} {sn} {topic} {json}} -- 定义操作",
+      "{help} -- 显示这段消息",
     ]
   }
   realm: drogonRealm

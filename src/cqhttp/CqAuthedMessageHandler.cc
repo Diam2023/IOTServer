@@ -2,13 +2,13 @@
 // Created by diam on 24-1-20.
 //
 
-#include "CqPrivateChatMessageHandler.h"
+#include "CqAuthedMessageHandler.h"
 
 #include <drogon/drogon.h>
 #include "CqCommand.h"
 
 namespace cq {
-    void CqPrivateChatMessageHandler::handler(const CqMessageData &data) {
+    void CqAuthedMessageHandler::handler(const CqMessageData &data) {
 
         std::string senderId;
         std::string receivedMessage;
