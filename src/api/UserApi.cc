@@ -66,8 +66,9 @@ namespace api {
 
         std::shared_ptr<std::promise<bool>> prom = std::make_shared<std::promise<bool>>();
 
+        // TODO Wait Test
         redisClientPtr->execCommandAsync([prom](const RedisResult &r) {
-            if ((r.type() != RedisResultType::kInteger) && (r.asInteger() != 1)) {
+            if ((r.type() != RedisResultType::kInteger) || (r.asInteger() != 1)) {
                 prom->set_value(false);
             } else {
                 prom->set_value(true);

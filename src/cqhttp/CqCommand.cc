@@ -44,48 +44,76 @@ namespace cq {
         auto senderId = std::get<1>(data);
         auto message = std::get<2>(data);
 
-        // Check Logged in
 
-        try {
-            do {
-                if (std::regex_match(message, helpRegex)) {
-                    std::stringstream ss;
-                    // show help message
-                    const auto helpMessageArray = drogon::app().getCustomConfig()["cqhttp"]["help"];
-                    for (const Json::Value &msg: helpMessageArray) {
-                        ss << msg.asString() << std::endl;
-                    }
-                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, ss.str());
-                    break;
+        do {
+            // Help
+            if (std::regex_match(message, helpRegex)) {
+                std::stringstream ss;
+                // show help message
+                const auto helpMessageArray = drogon::app().getCustomConfig()["cqhttp"]["help"];
+                for (const Json::Value &msg: helpMessageArray) {
+                    ss << msg.asString() << std::endl;
                 }
+                cq::CqMessageManager::getInstance().messageOut(botId, senderId, ss.str());
+                break;
+            }
 
+            // Login
+            bool loginMatch = std::regex_match(message, loginRegex);
+            if (loginMatch) {
 
-                bool loginMatch = std::regex_match(message, loginRegex);
-                if (loginMatch) {
-                    if (cq::CqUserApi::getLoginInfo(senderId).get().empty()) {
-                        std::sregex_iterator login(message.cbegin(), message.cend(), loginRegex);
-                        auto token = cq::CqUserApi::login(botId, senderId, login->str(1), login->str(2)).get();
-                        if (token.empty()) {
-                            break;
-                        } else {
-                            cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login Error");
-                        }
-                    } else {
+                // Check If logged in
+                try {
+                    if (!cq::CqUserApi::getLoginInfo(senderId).get().empty()) {
                         cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Already Logged In");
+                        break;
                     }
-                    break;
+                } catch (const std::exception &e) {
                 }
 
-                cq::CqMessageManager::getInstance().messageOut(botId, senderId,
-                                                               "Non Matched Command Please use help display command list");
+                try {
+                    // Get Login argument usr and pwd
+                    std::sregex_iterator login(message.cbegin(), message.cend(), loginRegex);
+                    // start login
+                    auto token = cq::CqUserApi::login(botId, senderId, login->str(1), login->str(2)).get();
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, token);
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login Successful");
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login Failed");
+                }
+                break;
+            }
 
-            } while (false);
+            bool logoutMatch = std::regex_match(message, logoutRegex);
+            if (logoutMatch) {
 
-        } catch (const std::exception &e) {
-            std::string errMessage = "Action Failed:";
-            errMessage.append(e.what());
-            cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMessage);
-        }
+                std::string token;
+                // Check If logged in
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                    if (token.empty()) {
+                        cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                        break;
+                    }
+                } catch (const std::exception &e) {
+                }
+
+                try {
+                    // start logout
+                    cq::CqUserApi::logout(senderId).get();
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Logout Successful");
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Login Failed";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
+
+            cq::CqMessageManager::getInstance().messageOut(botId, senderId,
+                                                           "Non Matched Command Please use help display command list");
+
+        } while (false);
     }
 
     CqCommand::CqCommand() : commandWorkThread(&CqCommand::handlerCommand, this) {

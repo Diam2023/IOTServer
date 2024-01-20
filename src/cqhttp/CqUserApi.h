@@ -16,6 +16,12 @@ namespace cq {
     class CqUserApi {
 
     public:
+
+        /**
+         * Get Logged in token
+         * @param qqId
+         * @return
+         */
         static std::future<std::string> getLoginInfo(const std::string &qqId);
 
         /**
@@ -29,7 +35,7 @@ namespace cq {
         static std::future<std::string>
         login(const std::string &botId, const std::string &qqId, const std::string &usr, const std::string &pwd);
 
-        void logout();
+        static std::future<bool> logout(const std::string &qqId);
 
 
         void addDevice();

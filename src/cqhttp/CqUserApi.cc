@@ -35,25 +35,92 @@ namespace cq {
     std::future<std::string> CqUserApi::getLoginInfo(const std::string &qqId) {
 
         // Use IO Loop
-        return std::future<std::string>();
+        auto prom = std::make_shared<std::promise<std::string>>();
+        drogon::app().getLoop()->queueInLoop([prom, qqId]() {
+            auto redisClientPtr = app().getRedisClient();
+            redisClientPtr->execCommandAsync([prom](const RedisResult &r) {
+                if (r.type() != RedisResultType::kString) {
+                    prom->set_value("");
+                } else {
+                    prom->set_value(r.asString());
+                }
+            }, [prom](const RedisException &e) {
+                LOG_WARN << e.what();
+                prom->set_exception(std::current_exception());
+            }, "get %s%s", QK_PREFIX, qqId.c_str());
+        });
+
+        return prom->get_future();
     }
 
     std::future<std::string> CqUserApi::login(const std::string &botId, const std::string &qqId, const std::string &usr,
                                               const std::string &pwd) {
         auto prom = std::make_shared<std::promise<std::string>>();
-        drogon::app().getLoop()->queueInLoop([prom, usr, pwd]() {
+        drogon::app().getLoop()->queueInLoop([prom, usr, pwd, qqId, botId]() {
             try {
                 auto token = api::UserApi::login(usr, pwd).get();
                 if (token.empty()) {
                     prom->set_value(token);
                 } else {
                     // first Successful
+                    auto uid = api::UserApi::getUserId(token).get();
+
+                    auto redisClientPtr = app().getRedisClient();
+                    redisClientPtr->execCommandAsync([](const RedisResult &r) {
+                    }, [prom, token](const RedisException &e) {
+                        LOG_WARN << e.what();
+//                        prom->set_exception(std::current_exception());
+                    }, "set %s%s %u", QK_PREFIX, qqId.c_str(), token.c_str());
+
+                    redisClientPtr->execCommandAsync([](const RedisResult &r) {
+                    }, [prom, token](const RedisException &e) {
+                        LOG_WARN << e.what();
+//                        prom->set_exception(std::current_exception());
+                    }, "set %s%s %u", QB_PREFIX, qqId.c_str(), botId.c_str());
+
+                    redisClientPtr->execCommandAsync([](const RedisResult &r) {
+                    }, [prom, token](const RedisException &e) {
+                        LOG_WARN << e.what();
+//                        prom->set_exception(std::current_exception());
+                    }, "set %s%s %u", UQ_PREFIX, uid.c_str(), qqId.c_str());
+                    prom->set_value(token);
                 }
             } catch (const std::exception &e) {
                 prom->set_exception(std::make_exception_ptr(e));
             }
 
         });
+
+        return prom->get_future();
+    }
+
+    std::future<bool> CqUserApi::logout(const string &qqId) {
+        auto prom = std::make_shared<std::promise<bool>>();
+
+        auto token = getLoginInfo(qqId).get();
+
+        if (token.empty()) {
+            prom->set_value(false);
+            return prom->get_future();
+        }
+
+        try {
+            api::UserApi::logout(token).get();
+        } catch (const RedisException &e) {
+            // TODO Handle This
+        }
+
+        auto redisClientPtr = app().getRedisClient();
+
+        redisClientPtr->execCommandAsync([prom](const RedisResult &r) {
+            if ((r.type() != RedisResultType::kInteger) || (r.asInteger() != 1)) {
+                prom->set_exception(std::make_exception_ptr(RedisException(RedisErrorCode::kNone, "Unknown Err")));
+            } else {
+                prom->set_value(true);
+            }
+        }, [prom](const RedisException &e) {
+            prom->set_exception(current_exception());
+        }, "del %s%s", QK_PREFIX, qqId.c_str());
 
         return prom->get_future();
     }
