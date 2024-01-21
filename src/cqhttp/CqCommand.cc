@@ -469,10 +469,12 @@ namespace cq {
 
                                     ss << "------ACTIONS-------" << std::endl;
                                     ss << "NAME: " << *std::get<2>(deviceTopicAction).getActionName() << std::endl;
+                                    ss << "JSON: " << *std::get<2>(deviceTopicAction).getActionJson() << std::endl;
 
                                     prevTopicId = *std::get<1>(deviceTopicAction).getTopicId();
                                 } else {
                                     ss << "NAME: " << *std::get<2>(deviceTopicAction).getActionName() << std::endl;
+                                    ss << "JSON: " << *std::get<2>(deviceTopicAction).getActionJson() << std::endl;
                                 }
 
                                 prevDeviceId = *std::get<0>(deviceTopicAction).getDeviceId();
@@ -483,10 +485,12 @@ namespace cq {
 
                                     ss << "------ACTIONS-------" << std::endl;
                                     ss << "NAME: " << *std::get<2>(deviceTopicAction).getActionName() << std::endl;
+                                    ss << "JSON: " << *std::get<2>(deviceTopicAction).getActionJson() << std::endl;
 
                                     prevTopicId = *std::get<1>(deviceTopicAction).getTopicId();
                                 } else {
                                     ss << "NAME: " << *std::get<2>(deviceTopicAction).getActionName() << std::endl;
+                                    ss << "JSON: " << *std::get<2>(deviceTopicAction).getActionJson() << std::endl;
                                 }
                             }
                         }
@@ -555,6 +559,31 @@ namespace cq {
                 break;
             }
 
+            // direct message
+            bool launchMessageMatch = std::regex_match(message, launchMessageRegex);
+            if (launchMessageMatch) {
+
+                std::string token;
+                // Check If Non Login
+                try {
+                    token = cq::CqUserApi::getLoginInfo(senderId).get();
+                } catch (const std::exception &e) {
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Login First!");
+                    break;
+                }
+
+                try {
+                    // start remove Action
+                    std::sregex_iterator action(message.cbegin(), message.cend(), launchMessageRegex);
+                    cq::CqActionApi::launchAction(action->str(1), action->str(2), action->str(3));
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Launch Successful");
+                } catch (const std::exception &e) {
+                    std::string errMsg = "Launch Error: ";
+                    errMsg.append(e.what());
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId, errMsg);
+                }
+                break;
+            }
 
             std::string token;
             // Check If Non Login
@@ -602,6 +631,7 @@ namespace cq {
         // 定义操作 {操作名} {设备名/别名} {subtopic} {JSON数据}
         makeActionRegex = std::regex("define (.*) (.*) (.*) (.*)");
         deleteActionRegex = std::regex("del-define (.*)");
+        launchMessageRegex = std::regex("launch (.*) (.*) (.*)");
 
         helpRegex = std::regex("help");
     }

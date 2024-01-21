@@ -12,6 +12,7 @@
 #include "Device.h"
 #include "Topic.h"
 #include "SubscribeMap.h"
+#include "MqttMessagePublisher.h"
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -242,5 +243,10 @@ namespace cq {
             }
         });
         return prom->get_future();
+    }
+
+    void
+    CqActionApi::launchAction(const string &sn, const string &topic, const string &json) {
+        mqtt::MqttMessagePublisher::getInstance().sendMessage({sn, topic, 0, json});
     }
 } // cq

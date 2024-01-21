@@ -61,6 +61,18 @@ namespace cq {
          */
         static std::future<mqtt::MqttMessagePublisherPackage>
         matchAction(const std::string &token, const std::string &action);
+
+        /**
+         * Direct Send Message
+         * @param token
+         * @param sn
+         * @param topic
+         * @param json
+         * @return
+         */
+        static void
+        launchAction(const std::string &sn, const std::string &topic,
+                     const std::string &json);
     };
 
 } // cq

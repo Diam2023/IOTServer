@@ -8,19 +8,22 @@
 
 #### User Interface
 
-| command              | action    |
-|----------------------|-----------|
-| 登入{usr} {pwd}        | LoginAPI  |
-| 登出                   | LogoutAPI |
-| 添加设备{name} {sn}      |           |
-| 删除设备{name}           |           |
-| 查看所有设备               |           |
+[//]: # (TODO)
+
+| command           | action    |
+|-------------------|-----------|
+| 登入{usr} {pwd}     | LoginAPI  |
+| 登出                | LogoutAPI |
+| 添加设备{name} {sn}   |           |
+| 删除设备{name}        |           |
+| 查看所有设备            |           |
 | 订阅设备{name} {`topic`} |           |
 | 取消订阅{name} {`topic`} |           |
-| 查看订阅{name}           |           |
-| 设备别名{name}           |           |
-| 添加别名{name}           |           |
-| 删除别名{name}           |           |
+| 查看所有订阅消息          |           |
+| 查看所有设备别名          |           |
+| 设备别名{name}        |           |
+| 添加别名{name}        |           |
+| 删除别名{name}        |           |
 
 #### Custom Define Action
 

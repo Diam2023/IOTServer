@@ -63,6 +63,8 @@ namespace cq {
         std::regex makeActionRegex;
         //删除操作
         std::regex deleteActionRegex;
+        // 以Qos0直接发布消息
+        std::regex launchMessageRegex;
 
         //name打开
         //name关闭

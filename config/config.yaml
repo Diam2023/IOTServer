@@ -253,6 +253,7 @@ custom_config:
       "{{name}}                   -- 操作",
       "{del-define {name}}        -- 删除操作",
       "{define {name} {sn} {topic} {json}} -- 定义操作",
+      "{launch {sn} {topic} {json}} -- 以Qos0直接发布消息",
       "{help} -- 显示这段消息",
     ]
   }
