@@ -60,20 +60,6 @@ namespace mqtt {
         QObject::connect(clientPtr.data(), &QMqttClient::connected, this, &MqttClient::connected);
         QObject::connect(clientPtr.data(), &QMqttClient::disconnected, this, &MqttClient::disconnected);
 
-        // TODO TEST Data
-        registerNotifyCallback([](const MqttData &data) {
-            auto result = getDeviceSerialNumberAndSubTopic(data.first.name().toStdString());
-            if (!result.first.empty()) {
-
-                LOG_INFO << "Received SN: " << result.first << " Sub Topic: "
-                         << result.second;
-                LOG_INFO << data.second.toStyledString();
-
-            } else {
-                LOG_INFO << "Match Error!!!";
-            }
-        });
-
         // Message Received
         QObject::connect(clientPtr.data(), &QMqttClient::messageReceived, this, &MqttClient::messageReceived);
 
