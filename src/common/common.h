@@ -15,11 +15,6 @@
 const static char *TOKEN_PREFIX = "TK:";
 
 /**
- * Redis QQ ID Cache Prefix
- */
-const static char *CQ_PREFIX = "CQ:";
-
-/**
  * Redis QQ ID to Token Map
  */
 const static char *QK_PREFIX = "QK:";
