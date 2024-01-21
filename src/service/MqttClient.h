@@ -27,16 +27,14 @@ namespace mqtt {
     // Mqtt Client
     class MqttClient final : public QObject {
     private:
-        QMqttClient* clientPtr;
+
+        QScopedPointer<QMqttClient> clientPtr;
 
         std::vector<MqttHandlerType> callbacks;
 
         std::atomic<bool> isConnected;
 
     public:
-
-        void moveToThread(QThread *thread);
-
         bool checkIsConnected() { return isConnected; };
 
         MqttClient();

@@ -15,6 +15,8 @@
 #include <drogon/drogon.h>
 #include <sstream>
 
+#include "MqttMessagePublisher.h"
+
 namespace cq {
 
     void CqCommand::pushCommand(const CqCommandData &command) {
@@ -564,11 +566,10 @@ namespace cq {
             if (!token.empty()) {
                 try {
                     auto res = CqActionApi::matchAction(token, message).get();
-                    if (res) {
-                        cq::CqMessageManager::getInstance().messageOut(botId, senderId,
-                                                                       "Matched Action");
-                        break;
-                    }
+                    mqtt::MqttMessagePublisher::getInstance().sendMessage(res);
+                    cq::CqMessageManager::getInstance().messageOut(botId, senderId,
+                                                                   "Action pushed");
+                    break;
                 } catch (const std::exception &e) {
                     // Non Match
                 }

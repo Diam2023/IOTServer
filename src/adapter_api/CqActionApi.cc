@@ -200,8 +200,21 @@ namespace cq {
         return prom->get_future();
     }
 
-    std::future<bool> CqActionApi::matchAction(const string &token, const string &action) {
-        auto prom = std::make_shared<std::promise<bool>>();
+    static uint8_t qosStringToUint(const std::string &qos) {
+        uint8_t qosNum = 0;
+        if (qos == "QOS0") {
+            qosNum = 0;
+        } else if (qos == "QOS1") {
+            qosNum = 1;
+        } else if (qos == "QOS2") {
+            qosNum = 2;
+        }
+        return qosNum;
+    }
+
+    std::future<mqtt::MqttMessagePublisherPackage>
+    CqActionApi::matchAction(const string &token, const string &action) {
+        auto prom = std::make_shared<std::promise<mqtt::MqttMessagePublisherPackage>>();
         drogon::app().getLoop()->queueInLoop([prom, token, action]() {
             auto dbClientPtr = app().getDbClient();
 
@@ -215,15 +228,15 @@ namespace cq {
             Mapper<UserDeviceActionMap> userDeviceActionMapper(dbClientPtr);
 
             try {
-                auto res = userDeviceActionMapper.findFutureBy(
+                auto res = userDeviceActionMapper.findFutureOne(
                         Criteria(UserDeviceActionMap::Cols::_target_user_id, CompareOperator::EQ, uid) &&
                         Criteria(UserDeviceActionMap::Cols::_action_name, CompareOperator::EQ, action)
                 ).get();
-                if (!res.empty()) {
-                    prom->set_value(true);
-                } else {
-                    prom->set_exception(std::make_exception_ptr(Failure("Not Found")));
-                }
+                auto topic = res.getTopic(dbClientPtr);
+                auto device = res.getDevice(dbClientPtr);
+
+                prom->set_value(std::make_tuple(*device.getDeviceSn(), *topic.getTopicName(),
+                                                qosStringToUint(*topic.getTopicQos()), *res.getActionJson()));
             } catch (const std::exception &e) {
                 prom->set_exception(current_exception());
             }

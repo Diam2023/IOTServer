@@ -13,6 +13,7 @@
 #include "UserDeviceActionMap.h"
 #include "Topic.h"
 #include "Device.h"
+#include "MqttClient.h"
 
 using namespace drogon_model::iot_server;
 
@@ -58,11 +59,8 @@ namespace cq {
          * @param action
          * @return
          */
-        static std::future<bool> matchAction(const std::string &token, const std::string &action);
-
-        static std::future<bool> callAction(const std::string &token, const std::string &action);
-
-        static std::future<bool> matchAndCallAction(const std::string &token, const std::string &action);
+        static std::future<mqtt::MqttMessagePublisherPackage>
+        matchAction(const std::string &token, const std::string &action);
     };
 
 } // cq
