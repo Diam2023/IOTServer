@@ -47,6 +47,7 @@ namespace mqtt {
 
     void MqttClient::start() {
         // TODO Add SSL
+
         clientPtr->setAutoKeepAlive(true);
 
         clientPtr->connectToHost();
@@ -54,10 +55,12 @@ namespace mqtt {
         LOG_INFO << "Mqtt Start";
     }
 
-    MqttClient::MqttClient() : isConnected(false), clientPtr(new QMqttClient(this)) {
+    MqttClient::MqttClient() : isConnected(false) {
 
-        QObject::connect(clientPtr.data(), &QMqttClient::connected, this, &MqttClient::connected);
-        QObject::connect(clientPtr.data(), &QMqttClient::disconnected, this, &MqttClient::disconnected);
+        clientPtr = new QMqttClient(this);
+
+        QObject::connect(clientPtr, &QMqttClient::connected, this, &MqttClient::connected);
+        QObject::connect(clientPtr, &QMqttClient::disconnected, this, &MqttClient::disconnected);
 
         // TODO TEST Data
         registerNotifyCallback([](const MqttData &data) {
@@ -74,12 +77,15 @@ namespace mqtt {
         });
 
         // Message Received
-        QObject::connect(clientPtr.data(), &QMqttClient::messageReceived, this, &MqttClient::messageReceived);
+        QObject::connect(clientPtr, &QMqttClient::messageReceived, this, &MqttClient::messageReceived);
+
+
     }
 
     void MqttClient::stop() {
         if (isConnected || clientPtr->state() == QMqttClient::Connected) {
             clientPtr->disconnectFromHost();
+            isConnected = false;
         }
     }
 
@@ -118,6 +124,30 @@ namespace mqtt {
         for (auto &cb: this->callbacks) {
             cb(data);
         }
+    }
+
+    void MqttClient::publish(const MqttMessagePublisherPackage &pkg) {
+        if (!isConnected) {
+            LOG_WARN << "Mqtt No Ready";
+            return;
+        }
+        std::stringstream ss;
+        ss << "devices/";
+        // SN
+        ss << std::get<0>(pkg) << "/";
+        // TOPIC
+        ss << std::get<1>(pkg);
+
+        QString topic = QString::fromStdString(ss.str());
+        QString json = QString::fromStdString(std::get<3>(pkg));
+        quint8 qos = std::get<2>(pkg);
+
+        clientPtr->publish(topic, json.toUtf8(), qos);
+    }
+
+    void MqttClient::moveToThread(QThread *thread) {
+        QObject::moveToThread(thread);
+        clientPtr->moveToThread(thread);
     }
 
 } // mqtt

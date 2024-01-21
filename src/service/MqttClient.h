@@ -19,17 +19,23 @@ namespace mqtt {
     // MqttData Disrupt
     using MqttHandlerType = std::function<void(const MqttData &)>;
 
+    /**
+     * DeviceSN Topic Qos Json
+     */
+    using MqttMessagePublisherPackage = std::tuple<std::string, std::string, uint8_t, std::string>;
 
     // Mqtt Client
     class MqttClient final : public QObject {
     private:
-        QScopedPointer<QMqttClient> clientPtr;
+        QMqttClient* clientPtr;
 
         std::vector<MqttHandlerType> callbacks;
 
         std::atomic<bool> isConnected;
 
     public:
+
+        void moveToThread(QThread *thread);
 
         bool checkIsConnected() { return isConnected; };
 
@@ -39,7 +45,6 @@ namespace mqtt {
 
         MqttClient &loadConfig(const Json::Value &value) noexcept(false);
 
-        void start();
 
         void stop();
 
@@ -52,6 +57,10 @@ namespace mqtt {
             static MqttClient client;
             return client;
         };
+
+        void start();
+
+        void publish(const MqttMessagePublisherPackage& pkg);
 
     public slots:
 
