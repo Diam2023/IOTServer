@@ -40,7 +40,7 @@ namespace cq {
             } // Release Lock
             matchCommand(data);
 
-            std::this_thread::sleep_for(50ms);
+            std::this_thread::sleep_for(10ms);
         }
     }
 

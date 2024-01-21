@@ -24,6 +24,8 @@ namespace cq {
         static std::future<bool> removeDevice(const std::string &sn);
 
         static std::future<std::shared_ptr<std::vector<Device>>> listDevices();
+
+        static std::future<Device> getDevice(const std::string &sn);
     };
 
 } // cq

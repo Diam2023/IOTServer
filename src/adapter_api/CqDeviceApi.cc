@@ -80,4 +80,21 @@ namespace cq {
 
         return prom->get_future();
     }
+
+    std::future<Device> CqDeviceApi::getDevice(const std::string &sn) {
+
+        auto prom = std::make_shared<std::promise<Device>>();
+
+        drogon::app().getLoop()->queueInLoop([prom, sn]() {
+            auto dbClientPtr = app().getDbClient();
+            Mapper<Device> deviceMapper(dbClientPtr);
+            deviceMapper.findOne(Criteria(Device::Cols::_device_sn, CompareOperator::EQ, sn), [prom](const auto &r) { ;
+                prom->set_value(r);
+            }, [prom](const auto &e) {
+                prom->set_exception(std::current_exception());
+            });
+        });
+
+        return prom->get_future();
+    }
 } // cq

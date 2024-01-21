@@ -18,6 +18,14 @@ namespace cq {
          */
         void handler(const mqtt::MqttData &data) override;
 
+        /**
+         * To Format Dis play Json
+         * @param data
+         * @param deviceName device name
+         * @return
+         */
+        static std::string convertVisual(const mqtt::MqttData &data, const std::string &deviceName);
+
         static CqMqttDeviceMessageHandler &getInstance() {
             static CqMqttDeviceMessageHandler cqMqttMessageHandler;
             return cqMqttMessageHandler;

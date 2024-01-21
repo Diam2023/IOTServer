@@ -122,6 +122,10 @@ namespace cq {
             prom->set_exception(current_exception());
         }, "del %s%s", QK_PREFIX, qqId.c_str());
 
+        redisClientPtr->execCommandAsync([prom](const RedisResult &r) {
+        }, [prom](const RedisException &e) {
+        }, "del %s%s", QB_PREFIX, qqId.c_str());
+
         return prom->get_future();
     }
 } // cq
