@@ -5,7 +5,7 @@
 #ifndef IOTSERVER_CQUSERAPI_H
 #define IOTSERVER_CQUSERAPI_H
 
-#include "common.h"
+#include "Common.h"
 
 #include "CqCommand.h"
 

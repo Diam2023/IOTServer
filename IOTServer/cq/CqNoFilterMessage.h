@@ -5,7 +5,7 @@
 #ifndef IOTSERVER_CQNOFILTERMESSAGE_H
 #define IOTSERVER_CQNOFILTERMESSAGE_H
 
-#include "common.h"
+#include "Common.h"
 
 #include "CqMessageHandler.h"
 

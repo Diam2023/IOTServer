@@ -6,7 +6,7 @@
 
 #include <drogon/HttpAppFramework.h>
 #include "LoginFilter.h"
-#include "common.h"
+#include "Common.h"
 #include "UserApi.h"
 
 void LoginFilter::doFilter(const HttpRequestPtr &req,

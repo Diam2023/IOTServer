@@ -2,7 +2,7 @@
 
 #include "User.h"
 #include <json/value.h>
-#include "common.h"
+#include "Common.h"
 #include "UserApi.h"
 
 using namespace drogon::orm;

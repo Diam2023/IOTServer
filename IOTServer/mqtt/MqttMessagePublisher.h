@@ -5,7 +5,7 @@
 #ifndef IOTSERVER_MQTTMESSAGEPUBLISHER_H
 #define IOTSERVER_MQTTMESSAGEPUBLISHER_H
 
-#include "common.h"
+#include "Common.h"
 
 #include <tuple>
 #include <string>

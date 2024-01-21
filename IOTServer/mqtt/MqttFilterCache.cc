@@ -7,7 +7,7 @@
 #include <drogon/HttpAppFramework.h>
 
 #include "Device.h"
-#include "common.h"
+#include "Common.h"
 
 using namespace drogon;
 using namespace drogon::orm;

@@ -12,19 +12,23 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 # Adding Source Code
-aux_source_directory(src/controllers CTL_SRC)
-aux_source_directory(src/filters FILTER_SRC)
-aux_source_directory(src/plugins PLUGIN_SRC)
-aux_source_directory(src/models MODEL_SRC)
-aux_source_directory(src/service SERVICE_SRC)
-aux_source_directory(src/cqhttp CQ_SRC)
-aux_source_directory(src/api API_SRC)
-aux_source_directory(src/adapter_api ADAPTER_API_SRC)
-aux_source_directory(src/common COMMON_SRC)
+aux_source_directory(IOTServer/models MODEL_SRC)
+
+aux_source_directory(IOTServer/mqtt MQTT_SRC)
+
+aux_source_directory(IOTServer/http/controllers HTTP_SRC)
+aux_source_directory(IOTServer/http/filters HTTP_SRC)
+
+aux_source_directory(IOTServer/api/cq API_SRC)
+aux_source_directory(IOTServer/api/http API_SRC)
+
+aux_source_directory(IOTServer/cq CQ_SRC)
+
+aux_source_directory(IOTServer/common COMMON_SRC)
 
 add_executable(
         ${PROJECT_NAME}
-        src/main.cc
+        IOTServer/main.cc
 )
 
 find_package(Qt5 COMPONENTS Core Network Mqtt REQUIRED) # Qt COMPONENTS
@@ -40,27 +44,26 @@ drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/models
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/service
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/api
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/common
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/cqhttp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/adapter_api
+        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/models
+        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/http/controllers
+        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/http/filters
+        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/api/cq
+        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/api/http
+        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/mqtt
+        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/cq
 )
 
 
 target_sources(${PROJECT_NAME}
         PRIVATE
         ${SRC_DIR}
-        ${CTL_SRC}
-        ${FILTER_SRC}
-        ${PLUGIN_SRC}
-        ${MODEL_SRC}
-        ${SERVICE_SRC}
-        ${CQ_SRC}
         ${API_SRC}
+        ${HTTP_SRC}
+        ${MQTT_SRC}
+        ${MODEL_SRC}
         ${COMMON_SRC}
-        ${ADAPTER_API_SRC}
+        ${CQ_SRC}
 )
 
 

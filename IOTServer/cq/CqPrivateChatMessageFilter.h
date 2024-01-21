@@ -5,7 +5,7 @@
 #pragma once
 
 #include "CqMessageFilter.h"
-#include "common.h"
+#include "Common.h"
 
 namespace cq {
 

@@ -9,7 +9,7 @@
 #include <drogon/HttpAppFramework.h>
 
 #include "UserApi.h"
-#include "common.h"
+#include "Common.h"
 
 using namespace drogon;
 using namespace drogon::nosql;

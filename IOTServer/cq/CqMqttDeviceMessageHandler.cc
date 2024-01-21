@@ -11,7 +11,7 @@
 #include "SubscribeMap.h"
 #include "Topic.h"
 
-#include "common.h"
+#include "Common.h"
 #include "CqMessageManager.h"
 
 #include <string>
