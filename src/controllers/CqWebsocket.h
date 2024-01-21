@@ -16,6 +16,6 @@ public:
     void handleConnectionClosed(const WebSocketConnectionPtr &) override;
 
     WS_PATH_LIST_BEGIN
-        WS_PATH_ADD("/qq/receive");
+        WS_PATH_ADD("/qq/receive", "drogon::LocalHostFilter");
     WS_PATH_LIST_END
 };
