@@ -50,6 +50,16 @@
 | delete | DELETE       | <pre lang="json"><code>{<br/>  "alias": "MyRoom"<br/>}</pre></code>                                      | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>400 Request Body Err<br/>500 |                                                                                     |
 | all    | GET          | NAN                                                                                                      | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>500                          | <pre><code lang="json">\{<br/>  "devices":[],<br/>  "aliases":[]<br/>}</code></pre> |
 
+#### Action Api
+
+> base dir `action/`
+
+| Path   | Request Type | Request Body                                                                                                                                                         | Header               | Status                                                                 | Response Body                                                                                           |
+|--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| new    | PUT          | <pre lang="json"><code>{<br/>  "action_name": "TA1",<br/>  "device_sn": "TESESNDDT",<br/>  "topic_name": "testTopic1",<br/>  "action_json": {...}<br/>}</code></pre> | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>400 Request Body Err<br/>500 |                                                                                                         |
+| delete | DELETE       | <pre lang="json"><code>{<br/>  "action_name": "TA1"<br/>}</code></pre>                                                                                               | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>400 Request Body Err<br/>500 |                                                                                                         |
+| all    | GET          | NAN                                                                                                                                                                  | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>500                          | <pre><code lang="json">\{<br/>  "devices":[],<br/>  "aliases":[],<br/>  "actions":[]<br/>}</code></pre> |
+
 ### GoCQHttp
 
 #### User Interface

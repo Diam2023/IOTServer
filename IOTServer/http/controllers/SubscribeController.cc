@@ -2,8 +2,6 @@
 
 #include "User.h"
 #include <json/value.h>
-#include "Topic.h"
-#include "SubscribeMap.h"
 #include "Device.h"
 #include "SubscribeApi.h"
 

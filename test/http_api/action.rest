@@ -1,0 +1,35 @@
+# PASS
+# add Action
+PUT http://localhost:8089/api/action/new
+Authorization: b151d87c-b6b9-4337-9d9f-fbc231a87a7a
+Content-Type: application/json
+
+{
+  "action_name": "TA1",
+  "device_sn": "TESESNDDT",
+  "topic_name": "testTopic1",
+  "action_json": {
+    "test": "vtest1"
+  }
+}
+
+###
+
+# PASS
+# Get All Action device
+GET http://localhost:8089/api/action/all
+Authorization: b151d87c-b6b9-4337-9d9f-fbc231a87a7a
+
+###
+
+# PASS 20240116
+# remove action from user sub
+DELETE http://localhost:8089/api/action/delete
+Authorization: b151d87c-b6b9-4337-9d9f-fbc231a87a7a
+Content-Type: application/json
+
+{
+  "action_name": "TA1"
+}
+
+###
