@@ -1,9 +1,8 @@
 //
 // Created by diam on 24-1-20.
 //
+#pragma once
 
-#ifndef IOTSERVER_CQSUBSCRIBEAPI_H
-#define IOTSERVER_CQSUBSCRIBEAPI_H
 
 #include <string>
 
@@ -14,11 +13,9 @@
 #include "Topic.h"
 #include "Device.h"
 
-using namespace drogon_model::iot_server;
+namespace api {
 
-namespace cq {
-
-    class CqSubscribeApi {
+    class SubscribeApi {
 
     public:
 
@@ -27,7 +24,7 @@ namespace cq {
          * @param token
          * @return
          */
-        static std::future<std::shared_ptr<std::vector<std::pair<Device, Topic>>>>
+        static std::future<std::shared_ptr<std::vector<std::pair<drogon_model::iot_server::Device, drogon_model::iot_server::Topic>>>>
         listAllSubscribe(const std::string &token);
 
 
@@ -57,7 +54,4 @@ namespace cq {
         static std::future<bool>
         unsubscribeDeviceTopic(const std::string &token, const std::string &sn, const std::string &topic);
     };
-
-} // cq
-
-#endif //IOTSERVER_CQSUBSCRIBEAPI_H
+};

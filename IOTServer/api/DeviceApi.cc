@@ -2,7 +2,7 @@
 // Created by diam on 24-1-20.
 //
 
-#include "CqDeviceApi.h"
+#include "DeviceApi.h"
 
 #include "DeviceApi.h"
 #include "UserApi.h"
@@ -16,31 +16,35 @@ using namespace drogon::orm;
 //using namespace drogon::nosql;
 using namespace drogon_model::iot_server;
 
-namespace cq {
+namespace api {
 
-    std::future<bool> CqDeviceApi::addDevice(const std::string &sn, const std::string &name) {
+    std::future<bool> DeviceApi::addDevice(const std::string &sn, const std::string &name) {
 
         auto prom = std::make_shared<std::promise<bool>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, sn, name]() {
+        drogon::app().getLoop()->runInLoop([prom, sn, name]() {
             Device device;
             device.setDeviceSn(sn);
             device.setDeviceName(name);
-            try {
-                prom->set_value(api::DeviceApi::newDevice(device).get());
-            } catch (const std::exception &e) {
+
+            auto dbClientPtr = app().getDbClient();
+            Mapper<Device> deviceMapper(dbClientPtr);
+            deviceMapper.insert(device, [prom](const auto &d) {
+                prom->set_value(true);
+            }, [prom](const auto &e) {
                 prom->set_exception(std::current_exception());
-            }
+
+            });
         });
 
         return prom->get_future();
     }
 
-    std::future<bool> CqDeviceApi::removeDevice(const std::string &sn) {
+    std::future<bool> DeviceApi::removeDevice(const std::string &sn) {
 
         auto prom = std::make_shared<std::promise<bool>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, sn]() {
+        drogon::app().getLoop()->runInLoop([prom, sn]() {
             auto dbClientPtr = app().getDbClient();
             Mapper<Device> deviceMapper(dbClientPtr);
             Mapper<SubscribeMap> subscribeMapper(dbClientPtr);
@@ -63,11 +67,11 @@ namespace cq {
         return prom->get_future();
     }
 
-    std::future<std::shared_ptr<std::vector<Device>>> CqDeviceApi::listDevices() {
+    std::future<std::shared_ptr<std::vector<Device>>> DeviceApi::listDevices() {
 
         auto prom = std::make_shared<std::promise<std::shared_ptr<std::vector<Device>>>>();
 
-        drogon::app().getLoop()->queueInLoop([prom]() {
+        drogon::app().getLoop()->runInLoop([prom]() {
             auto dbClientPtr = app().getDbClient();
             Mapper<Device> deviceMapper(dbClientPtr);
             deviceMapper.findAll([prom](const auto &r) {
@@ -81,11 +85,11 @@ namespace cq {
         return prom->get_future();
     }
 
-    std::future<Device> CqDeviceApi::getDevice(const std::string &sn) {
+    std::future<Device> DeviceApi::getDevice(const std::string &sn) {
 
         auto prom = std::make_shared<std::promise<Device>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, sn]() {
+        drogon::app().getLoop()->runInLoop([prom, sn]() {
             auto dbClientPtr = app().getDbClient();
             Mapper<Device> deviceMapper(dbClientPtr);
             deviceMapper.findOne(Criteria(Device::Cols::_device_sn, CompareOperator::EQ, sn), [prom](const auto &r) { ;
@@ -97,4 +101,4 @@ namespace cq {
 
         return prom->get_future();
     }
-} // cq
+};

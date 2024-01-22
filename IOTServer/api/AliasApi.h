@@ -10,11 +10,9 @@
 
 #include "UserDeviceAliasMap.h"
 
-using namespace drogon_model::iot_server;
 
-namespace cq {
-
-    class CqAliasApi {
+namespace api {
+    class AliasApi {
 
     public:
 
@@ -41,10 +39,9 @@ namespace cq {
          * @param token
          * @return
          */
-        static std::future<std::shared_ptr<std::vector<std::pair<Device, UserDeviceAliasMap>>>>
+        static std::future<std::shared_ptr<std::vector<std::pair<drogon_model::iot_server::Device, drogon_model::iot_server::UserDeviceAliasMap>>>>
         listAlias(const std::string &token);
     };
 
-} // cq
 
-
+};

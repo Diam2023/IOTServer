@@ -2,7 +2,7 @@
 // Created by diam on 24-1-20.
 //
 
-#include "CqActionApi.h"
+#include "ActionApi.h"
 
 
 #include <drogon/drogon.h>
@@ -19,14 +19,15 @@ using namespace drogon::orm;
 using namespace drogon_model::iot_server;
 using namespace std;
 
-namespace cq {
-    std::future<bool> CqActionApi::addAction(const std::string &token, const std::string &name, const std::string &sn,
-                                             const std::string &topic, const std::string &json) {
+namespace api {
+
+    std::future<bool> ActionApi::addAction(const std::string &token, const std::string &name, const std::string &sn,
+                                           const std::string &topic, const std::string &json) {
 
 
         auto prom = std::make_shared<std::promise<bool>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, token, name, sn, topic, json]() {
+        drogon::app().getLoop()->runInLoop([prom, token, name, sn, topic, json]() {
             auto dbClientPtr = app().getDbClient();
 
             std::string uid;
@@ -89,10 +90,10 @@ namespace cq {
         return prom->get_future();
     }
 
-    std::future<bool> CqActionApi::removeAction(const string &token, const string &action) {
+    std::future<bool> ActionApi::removeAction(const string &token, const string &action) {
         auto prom = std::make_shared<std::promise<bool>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, token, action]() {
+        drogon::app().getLoop()->runInLoop([prom, token, action]() {
             auto dbClientPtr = app().getDbClient();
 
             std::string uid;
@@ -166,12 +167,12 @@ namespace cq {
     }
 
     std::future<std::shared_ptr<std::vector<std::tuple<Device, Topic, UserDeviceActionMap>>>>
-    CqActionApi::listAction(const string &token) {
+    ActionApi::listAction(const string &token) {
 
         auto prom = std::make_shared<std::promise<std::shared_ptr<std::vector<std::tuple<Device, Topic, UserDeviceActionMap>>>>>();
         auto resVec = std::make_shared<std::vector<std::tuple<Device, Topic, UserDeviceActionMap>>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, resVec, token]() {
+        drogon::app().getLoop()->runInLoop([prom, resVec, token]() {
             auto dbClientPtr = app().getDbClient();
 
             std::string uid;
@@ -214,9 +215,9 @@ namespace cq {
     }
 
     std::future<mqtt::MqttMessagePublisherPackage>
-    CqActionApi::matchAction(const string &token, const string &action) {
+    ActionApi::matchAction(const string &token, const string &action) {
         auto prom = std::make_shared<std::promise<mqtt::MqttMessagePublisherPackage>>();
-        drogon::app().getLoop()->queueInLoop([prom, token, action]() {
+        drogon::app().getLoop()->runInLoop([prom, token, action]() {
             auto dbClientPtr = app().getDbClient();
 
             std::string uid;
@@ -246,7 +247,7 @@ namespace cq {
     }
 
     void
-    CqActionApi::launchAction(const string &sn, const string &topic, const string &json) {
+    ActionApi::launchAction(const string &sn, const string &topic, const string &json) {
         mqtt::MqttMessagePublisher::getInstance().sendMessage({sn, topic, 0, json});
     }
-} // cq
+};

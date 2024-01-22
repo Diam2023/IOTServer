@@ -2,7 +2,7 @@
 // Created by diam on 24-1-20.
 //
 
-#include "CqSubscribeApi.h"
+#include "SubscribeApi.h"
 
 #include <drogon/drogon.h>
 #include "UserApi.h"
@@ -15,14 +15,15 @@ using namespace drogon::nosql;
 using namespace drogon_model::iot_server;
 using namespace std;
 
-namespace cq {
+namespace api {
+
     std::future<std::shared_ptr<std::vector<std::pair<Device, Topic>>>>
-    CqSubscribeApi::listAllSubscribe(const string &token) {
+    SubscribeApi::listAllSubscribe(const string &token) {
 
         auto prom = std::make_shared<std::promise<std::shared_ptr<std::vector<std::pair<Device, Topic>>>>>();
         auto resVec = std::make_shared<std::vector<std::pair<Device, Topic>>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, resVec, token]() {
+        drogon::app().getLoop()->runInLoop([prom, resVec, token]() {
             auto dbClientPtr = app().getDbClient();
 
             std::string uid;
@@ -52,11 +53,11 @@ namespace cq {
         return prom->get_future();
     }
 
-    std::future<bool> CqSubscribeApi::subscribeDeviceTopic(const string &token, const string &sn, const string &topic) {
+    std::future<bool> SubscribeApi::subscribeDeviceTopic(const string &token, const string &sn, const string &topic) {
 
         auto prom = std::make_shared<std::promise<bool>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, token, sn, topic]() {
+        drogon::app().getLoop()->runInLoop([prom, token, sn, topic]() {
             auto dbClientPtr = app().getDbClient();
 
             std::string uid;
@@ -119,10 +120,10 @@ namespace cq {
     }
 
     std::future<bool>
-    CqSubscribeApi::unsubscribeDeviceTopic(const string &token, const string &sn, const string &topic) {
+    SubscribeApi::unsubscribeDeviceTopic(const string &token, const string &sn, const string &topic) {
         auto prom = std::make_shared<std::promise<bool>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, token, sn, topic]() {
+        drogon::app().getLoop()->runInLoop([prom, token, sn, topic]() {
             auto dbClientPtr = app().getDbClient();
 
             std::string uid;
@@ -186,4 +187,4 @@ namespace cq {
 
         return prom->get_future();
     }
-} // cq
+};

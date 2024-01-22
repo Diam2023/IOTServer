@@ -2,7 +2,7 @@
 // Created by diam on 24-1-20.
 //
 
-#include "CqAliasApi.h"
+#include "AliasApi.h"
 
 #include <drogon/drogon.h>
 #include "UserApi.h"
@@ -13,12 +13,14 @@ using namespace drogon::nosql;
 using namespace drogon_model::iot_server;
 using namespace std;
 
-namespace cq {
-    std::future<bool> CqAliasApi::addAlias(const string &token, const string &sn, const string &alias) {
+namespace api {
+
+
+    std::future<bool> AliasApi::addAlias(const string &token, const string &sn, const string &alias) {
 
         auto prom = std::make_shared<std::promise<bool>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, token, sn, alias]() {
+        drogon::app().getLoop()->runInLoop([prom, token, sn, alias]() {
 
             std::string uid;
             try {
@@ -59,11 +61,11 @@ namespace cq {
         return prom->get_future();
     }
 
-    std::future<bool> CqAliasApi::removeAlias(const string &token, const string &alias) {
+    std::future<bool> AliasApi::removeAlias(const string &token, const string &alias) {
 
         auto prom = std::make_shared<std::promise<bool>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, token, alias]() {
+        drogon::app().getLoop()->runInLoop([prom, token, alias]() {
 
             std::string uid;
             try {
@@ -90,12 +92,12 @@ namespace cq {
     }
 
     std::future<std::shared_ptr<std::vector<std::pair<Device, UserDeviceAliasMap>>>>
-    CqAliasApi::listAlias(const string &token) {
+    AliasApi::listAlias(const string &token) {
 
         auto prom = std::make_shared<std::promise<std::shared_ptr<std::vector<std::pair<Device, UserDeviceAliasMap>>>>>();
         auto resVec = std::make_shared<std::vector<std::pair<Device, UserDeviceAliasMap>>>();
 
-        drogon::app().getLoop()->queueInLoop([prom, token, resVec]() {
+        drogon::app().getLoop()->runInLoop([prom, token, resVec]() {
 
             std::string uid;
             try {
@@ -125,4 +127,5 @@ namespace cq {
 
         return prom->get_future();
     }
-} // cq
+
+};

@@ -18,14 +18,14 @@ namespace cq {
     public:
 
         /**
-         * Get Logged in token
+         * Only CQ Get Logged in token
          * @param qqId
          * @return
          */
-        static std::future<std::string> getLoginInfo(const std::string &qqId);
+        static std::future<std::string> getCqLoginInfo(const std::string &qqId);
 
         /**
-         * Login
+         * Only CQ Login
          * @param botId
          * @param qqId
          * @param usr
@@ -33,9 +33,9 @@ namespace cq {
          * @return token
          */
         static std::future<std::string>
-        login(const std::string &botId, const std::string &qqId, const std::string &usr, const std::string &pwd);
+        cqLogin(const std::string &botId, const std::string &qqId, const std::string &usr, const std::string &pwd);
 
-        static std::future<bool> logout(const std::string &qqId);
+        static std::future<bool> cqLogout(const std::string &qqId);
 
     SINGLETON_INTERFACE(CqUserApi);
 

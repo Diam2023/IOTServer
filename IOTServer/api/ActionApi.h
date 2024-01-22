@@ -2,8 +2,7 @@
 // Created by diam on 24-1-20.
 //
 
-#ifndef IOTSERVER_CQACTIONAPI_H
-#define IOTSERVER_CQACTIONAPI_H
+#pragma once
 
 #include <string>
 
@@ -15,14 +14,11 @@
 #include "Device.h"
 #include "MqttClient.h"
 
-using namespace drogon_model::iot_server;
+namespace api {
 
-namespace cq {
-
-    class CqActionApi {
+    class ActionApi {
 
     public:
-
 
         /**
          * define a action
@@ -50,7 +46,7 @@ namespace cq {
          * @param token
          * @return
          */
-        static std::future<std::shared_ptr<std::vector<std::tuple<Device, Topic, UserDeviceActionMap>>>>
+        static std::future<std::shared_ptr<std::vector<std::tuple<drogon_model::iot_server::Device, drogon_model::iot_server::Topic, drogon_model::iot_server::UserDeviceActionMap>>>>
         listAction(const std::string &token);
 
         /**
@@ -75,6 +71,4 @@ namespace cq {
                      const std::string &json);
     };
 
-} // cq
-
-#endif //IOTSERVER_CQACTIONAPI_H
+};
