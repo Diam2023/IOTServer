@@ -14,6 +14,8 @@
 #include "MqttMessagePublisher.h"
 #include <QSharedPointer>
 
+#include "DeviceMessageNotify.h"
+
 static QSharedPointer<QTimer> publisherWorkerPtr;
 
 // Handler Exit Signal
@@ -70,6 +72,7 @@ int main(int argc, char **argv) {
         // https://forum.qt.io/topic/109138/qmqttclient-connection-not-made-from-another-thread 方案不适用
         // 最后解决方案Client在QtEventLoop中启动 Publish也在事件循环中调用
         mqtt::MqttClient::instance().registerNotifyCallback(cq::CqMqttDeviceMessageHandler::getInstance());
+        mqtt::MqttClient::instance().registerNotifyCallback(DeviceMessageNotifyHandler::getInstance());
 
         // Load Mqtt Launch Mqtt start!
         mqtt::MqttClient::instance().loadConfig(drogon::app().getCustomConfig()["mqtt"]).start();
