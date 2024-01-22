@@ -6,14 +6,18 @@
 
 ### Http
 
-> base dir `/api/`
+> root dir `/api/`
 
-| path          | type   | json                                                      | header               | response |
-|---------------|--------|-----------------------------------------------------------|----------------------|----------|
-| user/register | Put    | { <br/> "user_name": "", <br/> "user_password": "" <br/>} | NAN                  |          |
-| user/login    | POST   | { <br/> "key": "name/id", <br/> "pwd": "pwd" <br/>}       | NAN                  | token    |
-| user/info     | GET    | NAN                                                       | Authorization: token |          |
-| user/logout   | DELETE | NAN                                                       | Authorization: token |          |
+#### User Api
+
+> base dir `user/`
+
+| Path     | Request Type | Request Body                                                                                 | Header               | Status                                                | Response                                                                                                                                                                                       |
+|----------|--------------|----------------------------------------------------------------------------------------------|----------------------|-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| register | PUT          | <pre lang="json"><code>{<br/>  "user_name": "",<br/>  "user_password": ""<br/>}</code></pre> | NAN                  | 200 Successful<br/>500                                |                                                                                                                                                                                                |
+| login    | POST         | <pre lang="json"><code>{<br/>  "key": "name/id",<br/>  "pwd": "pwd" <br/>}</pre></code>      | NAN                  | 203 Need Authorize<br/>200 Successful<br/>401         | token                                                                                                                                                                                          |
+| info     | GET          | NAN                                                                                          | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>401<br/>400 | <pre><code lang="json">{<br/>  "user":{<br/>    "user_id": 2,<br/>    "user_name": "testUser10",<br/>    "user_password": "",<br/>    "user_permission_level": 100 <br/>  }<br/>}</code></pre> |
+| logout   | DELETE       | NAN                                                                                          | Authorization: token | 200 Successful<br/>500                                |                                                                                                                                                                                                |
 
 ### GoCQHttp
 
