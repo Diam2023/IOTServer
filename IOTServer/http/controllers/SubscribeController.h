@@ -4,13 +4,13 @@
 
 using namespace drogon;
 
-class TopicController : public drogon::HttpController<TopicController> {
+class SubscribeController : public drogon::HttpController<SubscribeController> {
 public:
     METHOD_LIST_BEGIN
 
-        ADD_METHOD_TO(TopicController::newTopic, "/topic/new", Put, "LoginFilter", "AdminFilter");
-        ADD_METHOD_TO(TopicController::deleteTopic, "/topic/delete", Delete, "LoginFilter", "AdminFilter");
-        ADD_METHOD_TO(TopicController::getAllTopic, "/topic/all", Get, "LoginFilter");
+        ADD_METHOD_TO(SubscribeController::newTopic, "/topic/new", Put, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(SubscribeController::deleteTopic, "/topic/delete", Delete, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(SubscribeController::getAllTopic, "/topic/all", Get, "LoginFilter");
 
     METHOD_LIST_END
 

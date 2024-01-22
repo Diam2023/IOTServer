@@ -1,4 +1,4 @@
-#include "TopicController.h"
+#include "SubscribeController.h"
 
 #include "User.h"
 #include <json/value.h>
@@ -9,7 +9,7 @@ using namespace drogon::nosql;
 using namespace drogon_model::iot_server;
 
 // Add definition of your processing function here
-void TopicController::newTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+void SubscribeController::newTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
 //    HttpStatusCode resCode;
 //    Json::Value resJson;
 //
@@ -38,7 +38,7 @@ void TopicController::newTopic(const HttpRequestPtr &req, std::function<void(con
 //    callback(resp);
 }
 
-void TopicController::deleteTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+void SubscribeController::deleteTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
 //    HttpStatusCode resCode;
 //    Json::Value resJson;
 //
@@ -72,7 +72,7 @@ void TopicController::deleteTopic(const HttpRequestPtr &req, std::function<void(
 //    callback(resp);
 }
 
-void TopicController::getAllTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+void SubscribeController::getAllTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
 //    auto dbClientPtr = app().getDbClient();
 //    Mapper<Topic> topicMapper(dbClientPtr);
 //
