@@ -20,7 +20,7 @@ aux_source_directory(IOTServer/http/controllers HTTP_SRC)
 aux_source_directory(IOTServer/http/filters HTTP_SRC)
 
 aux_source_directory(IOTServer/api/cq API_SRC)
-aux_source_directory(IOTServer/api/http API_SRC)
+aux_source_directory(IOTServer/api API_SRC)
 
 aux_source_directory(IOTServer/cq CQ_SRC)
 
@@ -48,7 +48,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/http/controllers
         ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/http/filters
         ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/api/cq
-        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/api/http
+        ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/api
         ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/common
         ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/mqtt
         ${CMAKE_CURRENT_SOURCE_DIR}/IOTServer/cq
