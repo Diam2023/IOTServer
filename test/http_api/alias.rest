@@ -1,0 +1,29 @@
+## PASS 20240116
+# New Alias
+PUT http://localhost:8089/api/alias/new
+Authorization: b151d87c-b6b9-4337-9d9f-fbc231a87a7a
+Content-Type: application/json
+
+{
+  "device_sn": "DTESTSNDATA",
+  "alias": "我的房间"
+}
+
+###
+
+## PASS 20240116
+# Delete Alias
+DELETE http://localhost:8089/api/alias/delete
+Authorization: b151d87c-b6b9-4337-9d9f-fbc231a87a7a
+Content-Type: application/json
+
+{
+  "alias": "我的房间"
+}
+
+###
+
+## PASS 20240116
+# Get All User Device Alias
+GET http://localhost:8089/api/alias/all
+Authorization: b151d87c-b6b9-4337-9d9f-fbc231a87a7a

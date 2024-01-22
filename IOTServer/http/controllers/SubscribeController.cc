@@ -36,6 +36,7 @@ void SubscribeController::newTopic(const HttpRequestPtr &req, std::function<void
 //    auto resp = resJson.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(resJson);
 //    resp->setStatusCode(resCode);
 //    callback(resp);
+
 }
 
 void SubscribeController::deleteTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {

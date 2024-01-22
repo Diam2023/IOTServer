@@ -30,6 +30,16 @@
 | info   | GET          | <pre lang="json"><code>{<br/>  "device_sn": "DTESTSNDATA"<br/>}</pre></code>                                                                                                       | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>400 Request Body Err<br/>500 | <pre><code lang="json">{<br/>  "device_id": 2,<br/>  "device_name": "Name",<br/>  "device_sn": "",<br/>  "target_permission_level": 50 <br/>}</code></pre>     |
 | all    | GET          | NAN                                                                                                                                                                                | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>500                          | <pre><code lang="json">\[{<br/>  "device_id": 2,<br/>  "device_name": "Name",<br/>  "device_sn": "",<br/>  "target_permission_level": 50 <br/>}\]</code></pre> |
 
+#### Alias Api
+
+| Path   | Request Type | Request Body                                                                                             | Header               | Status                                                                 | Response Body                                                                       |
+|--------|--------------|----------------------------------------------------------------------------------------------------------|----------------------|------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| new    | PUT          | <pre lang="json"><code>{<br/>  "device_sn": "DTESTSNDATA",<br/>  "alias": "testAlias"<br/>}</code></pre> | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>400 Request Body Err<br/>500 |                                                                                     |
+| delete | DELETE       | <pre lang="json"><code>{<br/>  "alias": "MyRoom"<br/>}</pre></code>                                      | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>400 Request Body Err<br/>500 |                                                                                     |
+| all    | GET          | NAN                                                                                                      | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>500                          | <pre><code lang="json">\{<br/>  "devices":[],<br/>  "aliases":[]<br/>}</code></pre> |
+
+
+
 ### GoCQHttp
 
 #### User Interface
