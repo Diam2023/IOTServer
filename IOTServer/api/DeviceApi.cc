@@ -18,15 +18,11 @@ using namespace drogon_model::iot_server;
 
 namespace api {
 
-    std::future<bool> DeviceApi::addDevice(const std::string &sn, const std::string &name) {
+    std::future<bool> DeviceApi::addDevice(const drogon_model::iot_server::Device &device) {
 
         auto prom = std::make_shared<std::promise<bool>>();
 
-        drogon::app().getLoop()->runInLoop([prom, sn, name]() {
-            Device device;
-            device.setDeviceSn(sn);
-            device.setDeviceName(name);
-
+        drogon::app().getLoop()->runInLoop([prom, device]() {
             auto dbClientPtr = app().getDbClient();
             Mapper<Device> deviceMapper(dbClientPtr);
             deviceMapper.insert(device, [prom](const auto &d) {
@@ -49,8 +45,6 @@ namespace api {
             Mapper<Device> deviceMapper(dbClientPtr);
             Mapper<SubscribeMap> subscribeMapper(dbClientPtr);
             Mapper<Topic> topicMapper(dbClientPtr);
-
-            // TODO Wait Test
 
             auto device = deviceMapper.findFutureOne(Criteria(Device::Cols::_device_sn, CompareOperator::EQ, sn)).get();
             const auto &deviceId = device.getDeviceId();

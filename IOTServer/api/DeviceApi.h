@@ -16,7 +16,7 @@ namespace api {
     class DeviceApi {
     public:
 
-        static std::future<bool> addDevice(const std::string &sn, const std::string &name);
+        static std::future<bool> addDevice(const drogon_model::iot_server::Device &device);
 
         static std::future<bool> removeDevice(const std::string &sn);
 

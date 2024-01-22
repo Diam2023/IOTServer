@@ -1,31 +1,43 @@
 ## PASS 20240116
 # New Device
-PUT http://localhost:8089/device/new
-Authorization: 5a510fbe-59d6-47e5-b1a6-317273d4d4e6
+PUT http://localhost:8089/api/device/new
+Authorization: f0601362-b247-4313-a255-feffa65b5e41
 Content-Type: application/json
 
 {
-  "device_sn": "DCDA0C4B21D0CA3F",
+  "device_sn": "DTESTSNDATA",
   "device_name": "TD",
   "device_comment": "Test comment",
-  "target_permission_level": 50
+  "target_permission_level": 1
 }
 
 ###
 
 ## PASS 20240116
 # Get All Device
-GET http://localhost:8089/device/all
-Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+GET http://localhost:8089/api/device/all
+Authorization: f0601362-b247-4313-a255-feffa65b5e41
+
+###
+
+## PASS 20240116
+# Get Target Device
+GET http://localhost:8089/api/device/info
+Authorization: f0601362-b247-4313-a255-feffa65b5e41
+Content-Type: application/json
+
+{
+  "device_sn": "DTESTSNDATA"
+}
 
 ###
 
 ## PASS 20240116
 # Delete Device
-DELETE http://localhost:8089/device/delete
-Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+DELETE http://localhost:8089/api/device/delete
+Authorization: f0601362-b247-4313-a255-feffa65b5e41
 Content-Type: application/json
 
 {
-  "device_id": 2
+  "device_sn": 2
 }

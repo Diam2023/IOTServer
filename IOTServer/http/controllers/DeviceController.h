@@ -11,7 +11,7 @@ public:
         ADD_METHOD_TO(DeviceController::newDevice, "/api/device/new", Put, "LoginFilter", "AdminFilter");
         ADD_METHOD_TO(DeviceController::deleteDevice, "/api/device/delete", Delete, "LoginFilter", "AdminFilter");
         ADD_METHOD_TO(DeviceController::getAllDevice, "/api/device/all", Get, "LoginFilter");
-        ADD_METHOD_TO(DeviceController::getDevice, "/api/device", Get, "LoginFilter");
+        ADD_METHOD_TO(DeviceController::getDevice, "/api/device/info", Get, "LoginFilter");
 
     METHOD_LIST_END
 
@@ -35,4 +35,11 @@ public:
      * @param callback
      */
     void getAllDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+    /**
+     * Search Target Device
+     * @param req request Device Serial Number
+     * @param callback
+     */
+    void getDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 };

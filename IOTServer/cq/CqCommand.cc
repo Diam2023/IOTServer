@@ -131,7 +131,10 @@ namespace cq {
                 try {
                     // start add device
                     std::sregex_iterator device(message.cbegin(), message.cend(), addDeviceRegex);
-                    api::DeviceApi::addDevice(device->str(1), device->str(2)).get();
+                    drogon_model::iot_server::Device deviceModel;
+                    deviceModel.setDeviceSn(device->str(1));
+                    deviceModel.setDeviceName(device->str(2));
+                    api::DeviceApi::addDevice(deviceModel).get();
                     cq::CqMessageManager::getInstance().messageOut(botId, senderId, "Add Successful");
                 } catch (const std::exception &e) {
                     std::string errMsg = "Add Error: ";
@@ -193,7 +196,7 @@ namespace cq {
                         for (const auto &device: *res) {
                             ss << "------DEVICE------" << std::endl;
                             ss << "SN: " << *device.getDeviceSn() << std::endl;
-                            ss << "NAME: " << *device.getDeviceName();
+                            ss << "NAME: " << *device.getDeviceName() << std::endl;
                         }
                         cq::CqMessageManager::getInstance().messageOut(botId, senderId, ss.str());
                     }
