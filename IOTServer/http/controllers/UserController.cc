@@ -114,7 +114,7 @@ void UserController::getInfo(const HttpRequestPtr &req, std::function<void(const
 
         // Mask pwd
         resUser.setUserPassword("");
-        resJson["user"] = resUser.toJson();
+        resJson = resUser.toJson();
         resCode = k200OK;
     } catch (const RedisException &e) {
         resCode = k401Unauthorized;
