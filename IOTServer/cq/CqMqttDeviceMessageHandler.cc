@@ -5,7 +5,7 @@
 #include "CqMqttDeviceMessageHandler.h"
 #include "Tools.h"
 
-#include "CqDeviceApi.h"
+#include "DeviceApi.h"
 
 #include "Device.h"
 #include "SubscribeMap.h"

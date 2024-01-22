@@ -69,7 +69,7 @@ cq::CqMessageManager::CqMessageManager() : workerThread(&CqMessageManager::worke
         } while (false);
 
 
-        std::this_thread::sleep_for(10ms);
+        std::this_thread::sleep_for(1ms);
     }
 }
 
