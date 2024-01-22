@@ -12,8 +12,8 @@ public:
     METHOD_LIST_BEGIN
 
         ADD_METHOD_TO(UserController::newUser, "/user/register", Put);
-        ADD_METHOD_TO(UserController::login, "/user/login", Post);
-        ADD_METHOD_TO(UserController::logout, "/user/logout", Delete, "LoginFilter");
+        ADD_METHOD_TO(UserController::login, "/user/cqLogin", Post);
+        ADD_METHOD_TO(UserController::logout, "/user/cqLogout", Delete, "LoginFilter");
         ADD_METHOD_TO(UserController::getInfo, "/user/info", Get, "LoginFilter");
         // Delete User admin permission
 
@@ -35,14 +35,14 @@ public:
     void newUser(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     /**
-     * Http login
+     * Http cqLogin
      * @param req request
      * @param callback response callback
      */
     void login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     /**
-     * Http logout
+     * Http cqLogout
      * @param req request
      * @param callback response callback
      */
