@@ -62,6 +62,8 @@ int main(int argc, char **argv) {
     // Qt Core Application
     QCoreApplication app(argc, argv);
 
+    cq::CqMessageManager::getInstance();
+
     QTimer::singleShot(500, &app, [&app]() {
         // 因为QMqttClient依赖于socket所以在不同线程中启动与发布会出现 qsocketnotifier: socket notifiers cannot be enabled or disabled from another thread 问题
         // 但是QMqttClient在其他线程启动后不工作，status卡在Connecting也不抛出错误 所以很头疼
