@@ -8,9 +8,10 @@ class SubscribeController : public drogon::HttpController<SubscribeController> {
 public:
     METHOD_LIST_BEGIN
 
-        ADD_METHOD_TO(SubscribeController::newTopic, "/api/topic/new", Put, "LoginFilter", "AdminFilter");
-        ADD_METHOD_TO(SubscribeController::deleteTopic, "/api/topic/delete", Delete, "LoginFilter", "AdminFilter");
-        ADD_METHOD_TO(SubscribeController::getAllTopic, "/api/topic/all", Get, "LoginFilter");
+        ADD_METHOD_TO(SubscribeController::newSubscribe, "/api/subscribe/new", Put, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(SubscribeController::deleteSubscribe, "/api/subscribe/delete", Delete, "LoginFilter",
+                      "AdminFilter");
+        ADD_METHOD_TO(SubscribeController::getAllSubscribe, "/api/subscribe/all", Get, "LoginFilter");
 
     METHOD_LIST_END
 
@@ -19,19 +20,19 @@ public:
      * @param req
      * @param callback
      */
-    void newTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+    void newSubscribe(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     /**
      * Delete Topic From Topic Table
      * @param req
      * @param callback
      */
-    void deleteTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+    void deleteSubscribe(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     /**
      * Get All Topic For Device
      * @param req
      * @param callback
      */
-    void getAllTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+    void getAllSubscribe(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 };

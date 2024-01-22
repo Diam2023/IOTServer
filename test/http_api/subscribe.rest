@@ -1,43 +1,32 @@
 # PASS 20240116
 # add device
-PUT http://localhost:8089/user/device/add
-Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+PUT http://localhost:8089/api/subscribe/new
+Authorization: b151d87c-b6b9-4337-9d9f-fbc231a87a7a
 Content-Type: application/json
 
 {
-  "device_id": 4
+  "device_sn": "TESESNDDT",
+  "topic": "TestTopic"
 }
 
 ###
 
 # PASS 20240116
 # Get All Subscribed device
-GET http://localhost:8089/user/device/getAll
-Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+GET http://localhost:8089/api/subscribe/all
+Authorization: b151d87c-b6b9-4337-9d9f-fbc231a87a7a
 
 ###
-
-# TODO Retest when full topic ok
-# Get target device topic info
-GET http://localhost:8089/user/device/get
-Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
-Content-Type: application/json
-
-{
-  "device_id": 3
-}
-
-###
-
 
 # PASS 20240116
 # remove device from user sub
-DELETE http://localhost:8089/user/device/remove
-Authorization: 3a9c2557-1202-4587-9366-aa13ffa3f370
+DELETE http://localhost:8089/api/subscribe/delete
+Authorization: b151d87c-b6b9-4337-9d9f-fbc231a87a7a
 Content-Type: application/json
 
 {
-  "device_id": 4
+  "device_sn": "TESESNDDT",
+  "topic": "TestTopic"
 }
 
 ###

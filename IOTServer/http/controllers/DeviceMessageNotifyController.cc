@@ -1,4 +1,4 @@
-#include "DeviceMessageNotify.h"
+#include "DeviceMessageNotifyController.h"
 
 void DeviceMessageNotify::handleNewMessage(const WebSocketConnectionPtr& wsConnPtr, std::string &&message, const WebSocketMessageType &type)
 {

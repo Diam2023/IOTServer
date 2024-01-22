@@ -3,115 +3,107 @@
 #include "User.h"
 #include <json/value.h>
 #include "Topic.h"
+#include "SubscribeMap.h"
+#include "Device.h"
+#include "SubscribeApi.h"
 
 using namespace drogon::orm;
 using namespace drogon::nosql;
 using namespace drogon_model::iot_server;
 
-// Add definition of your processing function here
-void SubscribeController::newTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
-//    HttpStatusCode resCode;
-//    Json::Value resJson;
-//
-//    do {
-//        auto jsonBody = req->getJsonObject();
-//        if (jsonBody->empty()) {
-//            resCode = k400BadRequest;
-//            break;
-//        }
-//
-//
-//        try {
-//            // New Device
-//            api::TopicApi::newTopic(Topic(*jsonBody)).get();
-//
-//            resCode = k200OK;
-//        } catch (const DrogonDbException &e) {
-//            resCode = k400BadRequest;
-//        } catch (const std::exception &e) {
-//            resCode = k500InternalServerError;
-//        }
-//    } while (false);
-//
-//    auto resp = resJson.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(resJson);
-//    resp->setStatusCode(resCode);
-//    callback(resp);
+void
+SubscribeController::newSubscribe(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto &token = req->getHeader("Authorization");
 
+    HttpStatusCode resCode;
+    Json::Value resJson;
+
+    do {
+        auto jsonBody = req->getJsonObject();
+        if (!*jsonBody || jsonBody->empty()) {
+            resCode = k400BadRequest;
+            break;
+        }
+        auto deviceSn = (*jsonBody)["device_sn"];
+        auto topicName = (*jsonBody)["topic"];
+        try {
+
+            // New Subs
+            api::SubscribeApi::subscribeDeviceTopic(token, deviceSn.asString(), topicName.asString()).get();
+
+            resCode = k200OK;
+        } catch (const std::exception &e) {
+            resCode = k500InternalServerError;
+        }
+    } while (false);
+
+    auto resp = resJson.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(resJson);
+    resp->setStatusCode(resCode);
+    callback(resp);
 }
 
-void SubscribeController::deleteTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
-//    HttpStatusCode resCode;
-//    Json::Value resJson;
-//
-//    do {
-//        auto jsonBody = req->getJsonObject();
-//        if (jsonBody->empty()) {
-//            resCode = k400BadRequest;
-//            break;
-//        }
-//
-//        auto topicId = (*jsonBody)["topic_id"];
-//        if (topicId.empty() || !topicId.isNumeric()) {
-//            resCode = k400BadRequest;
-//            break;
-//        }
-//
-//        try {
-//            // New Device
-//            api::TopicApi::deleteTopic(topicId.asUInt()).get();
-//
-//            resCode = k200OK;
-//        } catch (const DrogonDbException &e) {
-//            resCode = k400BadRequest;
-//        } catch (const std::exception &e) {
-//            resCode = k500InternalServerError;
-//        }
-//    } while (false);
-//
-//    auto resp = resJson.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(resJson);
-//    resp->setStatusCode(resCode);
-//    callback(resp);
+void
+SubscribeController::deleteSubscribe(const HttpRequestPtr &req,
+                                     std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto &token = req->getHeader("Authorization");
+
+    HttpStatusCode resCode;
+    Json::Value resJson;
+
+    do {
+        auto jsonBody = req->getJsonObject();
+        if (jsonBody->empty()) {
+            resCode = k400BadRequest;
+            break;
+        }
+        auto deviceSn = (*jsonBody)["device_sn"];
+        auto topicName = (*jsonBody)["topic"];
+        try {
+
+            // un Subs
+            api::SubscribeApi::unsubscribeDeviceTopic(token, deviceSn.asString(), topicName.asString()).get();
+
+            resCode = k200OK;
+        } catch (const std::exception &e) {
+            resCode = k500InternalServerError;
+        }
+    } while (false);
+
+    auto resp = resJson.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(resJson);
+    resp->setStatusCode(resCode);
+    callback(resp);
 }
 
-void SubscribeController::getAllTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
-//    auto dbClientPtr = app().getDbClient();
-//    Mapper<Topic> topicMapper(dbClientPtr);
-//
-//    Json::Value jsonDeviceId;
-//
-//    if (req->contentType() == ContentType::CT_APPLICATION_JSON) {
-//        auto reqJsonObj = req->getJsonObject();
-//        jsonDeviceId = (*reqJsonObj)["device_id"];
-//    }
-//
-//    auto future = jsonDeviceId.empty() ? topicMapper.findFutureAll() : topicMapper.findFutureBy(
-//            Criteria(Topic::Cols::_target_device_id, CompareOperator::EQ, jsonDeviceId.asString()));
-//
-//    Json::Value jsonValue;
-//    Json::Value topicsJson;
-//
-//    HttpStatusCode resCode;
-//
-//    try {
-//        auto topics = future.get();
-//        // TODO Need To Filter If user Permission lower than device
-//        for (auto &topic: topics) {
-//            topicsJson.append(topic.toJson());
-//        }
-//
-//        if (!jsonDeviceId.empty()) {
-//            jsonValue["device_id"] = jsonDeviceId;
-//        }
-//
-//        jsonValue["topics"] = topicsJson;
-//        resCode = k200OK;
-//    } catch (const UnexpectedRows &e) {
-//        resCode = k404NotFound;
-//    } catch (const std::exception &e) {
-//        resCode = k500InternalServerError;
-//    }
-//
-//    auto resp = resCode == k200OK ? HttpResponse::newHttpJsonResponse(jsonValue) : HttpResponse::newHttpResponse();
-//    resp->setStatusCode(resCode);
-//    callback(resp);
+void
+SubscribeController::getAllSubscribe(const HttpRequestPtr &req,
+                                     std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto &token = req->getHeader("Authorization");
+
+    HttpStatusCode resCode;
+    Json::Value resJson;
+
+    try {
+        // List Subs
+        auto deviceTopicList = api::SubscribeApi::listAllSubscribe(token).get();
+
+        if (!deviceTopicList->empty()) {
+            // Sort it by device id
+            std::sort(deviceTopicList->begin(), deviceTopicList->end(), [](auto fir, auto sec) -> bool {
+                const drogon_model::iot_server::Device &firDevice = fir.first;
+                const drogon_model::iot_server::Device &secDevice = sec.first;
+                return *firDevice.getDeviceId() < *secDevice.getDeviceId();
+            });
+            for (const auto &deviceTopics: *deviceTopicList) {
+                resJson["devices"].append(deviceTopics.first.toJson());
+                resJson["topics"].append(deviceTopics.second.toJson());
+            }
+        }
+        resCode = k200OK;
+    } catch (const std::exception &e) {
+        resCode = k500InternalServerError;
+    }
+
+    auto resp = resJson.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(resJson);
+    resp->setStatusCode(resCode);
+    callback(resp);
 }
