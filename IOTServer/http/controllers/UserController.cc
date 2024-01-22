@@ -160,7 +160,7 @@ void UserController::newUser(const HttpRequestPtr &req, std::function<void(const
 //    callback(resp);
 }
 
-void UserController::addDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+//void UserController::addDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
 //    auto token = req->getHeader("Authorization");
 //
 //    auto reqJsonObj = req->getJsonObject();
@@ -195,9 +195,9 @@ void UserController::addDevice(const HttpRequestPtr &req, std::function<void(con
 //    resp->setStatusCode(resCode);
 //
 //    callback(resp);
-}
-
-void UserController::removeDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+//}
+//
+//void UserController::removeDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
 //    auto token = req->getHeader("Authorization");
 //
 //    auto reqJsonObj = req->getJsonObject();
@@ -232,9 +232,9 @@ void UserController::removeDevice(const HttpRequestPtr &req, std::function<void(
 //    resp->setStatusCode(resCode);
 //
 //    callback(resp);
-}
+//}
 
-void UserController::getAllDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+//void UserController::getAllDevice(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
 //    auto userId = req->getHeader("uid");
 //
 //    auto reqJsonObj = req->getJsonObject();
@@ -283,9 +283,9 @@ void UserController::getAllDevice(const HttpRequestPtr &req, std::function<void(
 //    auto resp = jsonValue.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(jsonValue);
 //    resp->setStatusCode(resCode);
 //    callback(resp);
-}
-
-void UserController::addTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+//}
+//
+//void UserController::addTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
 //    auto token = req->getHeader("Authorization");
 //
 //    auto reqJsonObj = req->getJsonObject();
@@ -325,9 +325,9 @@ void UserController::addTopic(const HttpRequestPtr &req, std::function<void(cons
 //    resp->setStatusCode(resCode);
 //
 //    callback(resp);
-}
-
-void UserController::removeTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+//}
+//
+//void UserController::removeTopic(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
 //    auto token = req->getHeader("Authorization");
 //
 //    auto reqJsonObj = req->getJsonObject();
@@ -367,4 +367,4 @@ void UserController::removeTopic(const HttpRequestPtr &req, std::function<void(c
 //    resp->setStatusCode(resCode);
 //
 //    callback(resp);
-}
+//}

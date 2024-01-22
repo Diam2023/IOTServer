@@ -8,9 +8,10 @@ class DeviceController : public drogon::HttpController<DeviceController> {
 public:
     METHOD_LIST_BEGIN
 
-        ADD_METHOD_TO(DeviceController::newDevice, "/device/new", Put, "LoginFilter", "AdminFilter");
-        ADD_METHOD_TO(DeviceController::deleteDevice, "/device/delete", Delete, "LoginFilter", "AdminFilter");
-        ADD_METHOD_TO(DeviceController::getAllDevice, "/device/all", Get, "LoginFilter");
+        ADD_METHOD_TO(DeviceController::newDevice, "/api/device/new", Put, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(DeviceController::deleteDevice, "/api/device/delete", Delete, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(DeviceController::getAllDevice, "/api/device/all", Get, "LoginFilter");
+        ADD_METHOD_TO(DeviceController::getDevice, "/api/device", Get, "LoginFilter");
 
     METHOD_LIST_END
 

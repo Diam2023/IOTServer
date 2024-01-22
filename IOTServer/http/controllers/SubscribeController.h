@@ -8,9 +8,9 @@ class SubscribeController : public drogon::HttpController<SubscribeController> {
 public:
     METHOD_LIST_BEGIN
 
-        ADD_METHOD_TO(SubscribeController::newTopic, "/topic/new", Put, "LoginFilter", "AdminFilter");
-        ADD_METHOD_TO(SubscribeController::deleteTopic, "/topic/delete", Delete, "LoginFilter", "AdminFilter");
-        ADD_METHOD_TO(SubscribeController::getAllTopic, "/topic/all", Get, "LoginFilter");
+        ADD_METHOD_TO(SubscribeController::newTopic, "/api/topic/new", Put, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(SubscribeController::deleteTopic, "/api/topic/delete", Delete, "LoginFilter", "AdminFilter");
+        ADD_METHOD_TO(SubscribeController::getAllTopic, "/api/topic/all", Get, "LoginFilter");
 
     METHOD_LIST_END
 
