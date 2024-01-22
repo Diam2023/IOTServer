@@ -4,6 +4,38 @@
 
 ## Community API
 
+### GoCQHttp
+
+#### User Interface
+
+[//]: # (TODO)
+
+| command              | action    |
+|----------------------|-----------|
+| 登入{usr} {pwd}        | LoginAPI  |
+| 登出                   | LogoutAPI |
+| 添加设备{name} {sn}      |           |
+| 删除设备{name}           |           |
+| 查看所有设备               |           |
+| 订阅设备{name} {`topic`} |           |
+| 取消订阅{name} {`topic`} |           |
+| 查看所有订阅消息             |           |
+| 查看所有设备别名             |           |
+| 设备别名{name}           |           |
+| 添加别名{name}           |           |
+| 删除别名{name}           |           |
+
+#### Custom Define Action
+
+> 定义操作 {操作名} {设备名/别名} {subtopic} {JSON数据}
+
+It will publish JSON data to device topic When call {操作名}
+
+| command   | announcement |
+|-----------|--------------|
+| 定义操作{}    |              |
+| 删除操作{操作名} |              |
+
 ### Http
 
 > root dir `/api/`
@@ -59,40 +91,6 @@
 | new    | PUT          | <pre lang="json"><code>{<br/>  "action_name": "TA1",<br/>  "device_sn": "TESESNDDT",<br/>  "topic_name": "testTopic1",<br/>  "action_json": {...}<br/>}</code></pre> | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>400 Request Body Err<br/>500 |                                                                                                         |
 | delete | DELETE       | <pre lang="json"><code>{<br/>  "action_name": "TA1"<br/>}</code></pre>                                                                                               | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>400 Request Body Err<br/>500 |                                                                                                         |
 | all    | GET          | NAN                                                                                                                                                                  | Authorization: token | 203 Need Authorize<br/>200 Successful<br/>500                          | <pre><code lang="json">\{<br/>  "devices":[],<br/>  "aliases":[],<br/>  "actions":[]<br/>}</code></pre> |
-
-### GoCQHttp
-
-#### User Interface
-
-[//]: # (TODO)
-
-| command              | action    |
-|----------------------|-----------|
-| 登入{usr} {pwd}        | LoginAPI  |
-| 登出                   | LogoutAPI |
-| 添加设备{name} {sn}      |           |
-| 删除设备{name}           |           |
-| 查看所有设备               |           |
-| 订阅设备{name} {`topic`} |           |
-| 取消订阅{name} {`topic`} |           |
-| 查看所有订阅消息             |           |
-| 查看所有设备别名             |           |
-| 设备别名{name}           |           |
-| 添加别名{name}           |           |
-| 删除别名{name}           |           |
-
-#### Custom Define Action
-
-> 定义操作 {操作名} {设备名/别名} {subtopic} {JSON数据}
-
-It will publish JSON data to device topic When call {操作名}
-
-| command   | announcement |
-|-----------|--------------|
-| 定义操作{}    |              |
-| 删除操作{操作名} |              |
-
-### Http
 
 ### Gotify
 
