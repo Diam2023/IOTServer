@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { HomeComponent } from './home/home.component';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
+import { DataStorge } from './utils/DataStorge';
+import routeConfig from './routes';
+import { AppCache } from './utils/AppCache';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    HomeComponent, 
+    HomeComponent,
     RouterModule
   ],
   template: `
@@ -22,6 +25,16 @@ import { RouterModule } from '@angular/router';
   </main>`,
   styleUrls: ['./app.component.css'],
 })
+
+
 export class AppComponent {
   title = 'homes';
+  constructor(private appCache: AppCache, private route: Router) {
+
+    if (appCache.isLoggedIn())
+    {
+      this.route.navigate(['/login']);
+    }
+  }
+
 }
