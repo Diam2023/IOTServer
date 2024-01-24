@@ -14,11 +14,11 @@ import { AppCache } from './utils/AppCache';
   ],
   template: `
   <main>
+      <header class="main-nav">
     <a [routerLink]="['/']">
-      <header class="brand-name">
-        <img class="brand-logo" src="/assets/logo.svg" alt="logo" aria-hidden="true">
-      </header>
+        <h1 class="main-title">IOTServer</h1>
     </a>
+      </header>
     <section class="content">
       <router-outlet></router-outlet>
     </section>
@@ -31,10 +31,12 @@ export class AppComponent {
   title = 'homes';
   constructor(private appCache: AppCache, private route: Router) {
 
-    if (appCache.isLoggedIn())
+    if (!appCache.isLoggedIn())
     {
       this.route.navigate(['/login']);
     }
+
+    console.log("Logged In Cache:" + appCache.getToken());
   }
 
 }

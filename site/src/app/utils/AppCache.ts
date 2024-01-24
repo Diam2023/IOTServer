@@ -9,7 +9,6 @@ export class AppCache
 {
     constructor(private cacheStorage: DataStorge)
     {
-        
     }
 
     public setToken(token: String) {
@@ -22,6 +21,6 @@ export class AppCache
 
     public isLoggedIn(): boolean
     {
-        return (this.getToken().length != 0);
+        return this.getToken().length > 0;
     }
 }
