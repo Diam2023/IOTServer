@@ -1,0 +1,46 @@
+.listing {
+    background: var(--accent-color);
+    border-radius: 30px;
+    padding-bottom: 20px;
+    padding-top: 10px;
+
+    transition: .2s;
+}
+
+.listing:hover {
+    box-shadow: 2px 5px 4px rgba(0, 0, 0, .5);
+}
+
+.listing-heading {
+    color: var(--primary-color);
+    padding: 10px 20px 0 20px;
+}
+
+.listing-sn {
+    padding: 10px 20px;
+}
+
+.listing-permission
+{
+    padding: 10px 20px;
+}
+
+/* .listing-sn::before {
+    content: url("/assets/location-pin.svg") / "";
+} */
+
+section.listing .listing-heading {
+    padding-left: 20px;
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+section.listing .listing-heading::before {
+    content: "\203A  ";
+    margin-left: 5px;
+}
+
+.listing a
+{
+    text-decoration: none;
+}

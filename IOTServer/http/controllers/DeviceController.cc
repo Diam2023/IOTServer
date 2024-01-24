@@ -20,7 +20,7 @@ void DeviceController::newDevice(const HttpRequestPtr &req, std::function<void(c
 
     do {
         auto jsonBody = req->getJsonObject();
-        if (jsonBody->empty()) {
+        if (!*jsonBody || jsonBody->empty()) {
             resCode = k400BadRequest;
             break;
         }

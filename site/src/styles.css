@@ -36,3 +36,12 @@ app-root {
   display: block;
 
 }
+
+a:link,
+a:visited {
+  text-decoration: none;
+}
+
+a {
+  text-decoration: none;
+}

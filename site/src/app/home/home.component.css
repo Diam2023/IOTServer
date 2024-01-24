@@ -1,40 +1,113 @@
 .results {
-    display: grid;
-    column-gap: 14px;
-    row-gap: 14px;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 400px));
-    margin-top: 50px;
-    justify-content: space-around;
+  display: grid;
+  column-gap: 14px;
+  row-gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 400px));
+  margin-top: 50px;
+  justify-content: space-around;
+}
+
+input[type="text"] {
+  border: solid 1px var(--primary-color);
+  padding: 10px;
+  border-radius: 8px;
+  margin-right: 4px;
+  display: inline-block;
+  width: 30%;
+}
+
+button {
+  padding: 10px;
+  border: solid 1px var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+}
+
+@media (min-width: 500px) and (max-width: 768px) {
+  .results {
+    grid-template-columns: repeat(2, 1fr);
   }
-  
+
   input[type="text"] {
-    border: solid 1px var(--primary-color);
-    padding: 10px;
-    border-radius: 8px;
-    margin-right: 4px;
-    display: inline-block;
-    width: 30%;
+    width: 70%;
   }
-  
-  button {
-    padding: 10px;
-    border: solid 1px var(--primary-color);
-    background: var(--primary-color);
-    color: white;
-    border-radius: 8px;
+}
+
+@media (max-width: 499px) {
+  .results {
+    grid-template-columns: 1fr;
   }
-  
-  @media (min-width: 500px) and (max-width: 768px) {
-    .results {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    input[type="text"] {
-        width: 70%;
-    }   
-  }
-  
-  @media (max-width: 499px) {
-    .results {
-        grid-template-columns: 1fr;
-    }    
-  }
+}
+
+
+.listing {
+  background: var(--accent-color);
+  border-radius: 30px;
+  padding-bottom: 20px;
+  padding-top: 10px;
+
+  transition: .2s;
+}
+
+.listing:hover {
+  box-shadow: 2px 5px 4px rgba(0, 0, 0, .5);
+}
+
+.listing-add-device {
+  color: var(--primary-color);
+  text-align: center;
+  height: 100%;
+  margin: auto;
+  padding: 20px;
+  color: #2d5e0c;
+}
+
+.new-device {
+  display: none;
+}
+
+.new-device-mask {
+  transition: .3s;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  height: 100vh;
+  width: 100vw;
+
+  background-color: rgba(41, 41, 41, 0.31);
+  z-index: 10;
+}
+
+.new-device-frame {
+  position: fixed;
+  max-width: 400px;
+  max-height: 750px;
+  width: 50vw;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: bisque;
+  z-index: 100;
+}
+
+.new-device-frame * {
+  display: block;
+}
+
+.new-device-title {
+  text-align: center;
+  margin: 2em auto;
+}
+
+.new-device-frame input {
+  width: 80%;
+  height: auto;
+  margin: 1em auto;
+}
+
+.new-device-frame button {
+  width: 70%;
+  margin: 1.5em auto;
+}
