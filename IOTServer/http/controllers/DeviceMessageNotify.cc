@@ -4,6 +4,7 @@
 #include "SubscribeMap.h"
 #include "Device.h"
 #include "Topic.h"
+#include "UserApi.h"
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -17,21 +18,30 @@ struct Subscriber {
 void DeviceMessageNotify::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
                                            const WebSocketMessageType &type) {
     // Ignore
+    // Auth
+    if (type == WebSocketMessageType::Text) {
+        try {
+            Subscriber subscriber;
+            subscriber.uid = api::UserApi::getUserId(message).get();
+            subscriber.sid = DeviceMessageNotify::getNotifyService().subscribe(subscriber.uid,
+                                                                               [wsConnPtr](const std::string &topic,
+                                                                                           const mqtt::MqttData &data) {
+                                                                                   Json::Value value;
+                                                                                   value["topic"] = data.first.name().toStdString();
+                                                                                   value["json"] = data.second.toStyledString();
+                                                                                   wsConnPtr->send(
+                                                                                           value.toStyledString());
+                                                                               });
+            wsConnPtr->setContext(std::make_shared<Subscriber>(subscriber));
+        } catch (const std::exception &e) {
+            LOG_WARN << "Auth Error: " << e.what();
+        }
+    }
+
 }
 
 void
 DeviceMessageNotify::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
-    Subscriber subscriber;
-    subscriber.uid = req->getHeader("uid");
-    subscriber.sid = DeviceMessageNotify::getNotifyService().subscribe(subscriber.uid,
-                                             [wsConnPtr](const std::string &topic,
-                                                         const mqtt::MqttData &data) {
-                                                 Json::Value value;
-                                                 value["topic"] = data.first.name().toStdString();
-                                                 value["json"] = data.second.toStyledString();
-                                                 wsConnPtr->send(value.toStyledString());
-                                             });
-    wsConnPtr->setContext(std::make_shared<Subscriber>(subscriber));
 }
 
 void DeviceMessageNotify::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {

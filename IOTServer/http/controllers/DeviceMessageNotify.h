@@ -20,7 +20,7 @@ public:
     void handleConnectionClosed(const WebSocketConnectionPtr &) override;
 
     WS_PATH_LIST_BEGIN
-        WS_PATH_ADD("/api/device/notify", "drogon::IntranetIpFilter", "LoginFilter");
+        WS_PATH_ADD("/api/device/notify", "drogon::IntranetIpFilter");
     WS_PATH_LIST_END
 
     static PubSubService<mqtt::MqttData> &getNotifyService() {

@@ -9,6 +9,7 @@ import { DeviceService } from '../service/device.service';
 import { Device } from '../model/device';
 import { DeviceItemComponent } from '../device-item/device-item.component';
 import { FormsModule, NgModel } from '@angular/forms';
+import { NotifyService } from '../service/notify.service';
 
 @Component({
   selector: 'app-home',
@@ -77,7 +78,10 @@ export class HomeComponent {
     }
   }
 
-  constructor(private appCache: AppCache, private route: Router) {
+  constructor(private appCache: AppCache, private route: Router, private notifyService: NotifyService) {
+    notifyService.messages.subscribe(msg => {
+      console.log(msg);
+    });
 
     // this.filteredLocationList = this.housingLocationList;
     // Fetch All Device
