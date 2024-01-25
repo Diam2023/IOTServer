@@ -3,6 +3,7 @@
 
 #include "ActionApi.h"
 #include "UserDeviceActionMap.h"
+#include "MqttMessagePublisher.h"
 
 void ActionController::newAction(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     auto &token = req->getHeader("Authorization");
@@ -101,6 +102,34 @@ ActionController::getAllAction(const HttpRequestPtr &req, std::function<void(con
         resCode = k200OK;
     } catch (const std::exception &e) {
         resCode = k500InternalServerError;
+    }
+
+    auto resp = resJson.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(resJson);
+    resp->setStatusCode(resCode);
+    callback(resp);
+}
+
+void ActionController::callAction(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto &token = req->getHeader("Authorization");
+
+    HttpStatusCode resCode;
+    Json::Value resJson;
+
+    try {
+        auto jsonBody = req->getJsonObject();
+        if (!*jsonBody || jsonBody->empty()) {
+            auto resp = HttpResponse::newHttpResponse();
+            resp->setStatusCode(k400BadRequest);
+            callback(resp);
+            return;
+        }
+
+        auto action = (*jsonBody)["action"];
+
+        auto res = api::ActionApi::matchAction(token, action.asString()).get();
+        mqtt::MqttMessagePublisher::getInstance().sendMessage(res);
+    } catch (const std::exception &e) {
+        resCode = k404NotFound;
     }
 
     auto resp = resJson.empty() ? HttpResponse::newHttpResponse() : HttpResponse::newHttpJsonResponse(resJson);

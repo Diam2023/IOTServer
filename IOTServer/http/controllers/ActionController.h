@@ -12,6 +12,8 @@ public:
         ADD_METHOD_TO(ActionController::deleteAction, "/api/action/delete", Delete, "LoginFilter");
         ADD_METHOD_TO(ActionController::getAllAction, "/api/action/all", Get, "LoginFilter");
 
+        ADD_METHOD_TO(ActionController::callAction, "/api/action/call", Get, "LoginFilter");
+
     METHOD_LIST_END
 
     /**
@@ -35,4 +37,5 @@ public:
      */
     void getAllAction(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
+    void callAction(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 };
