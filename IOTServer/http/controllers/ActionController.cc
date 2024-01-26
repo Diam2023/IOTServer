@@ -128,6 +128,7 @@ void ActionController::callAction(const HttpRequestPtr &req, std::function<void(
 
         auto res = api::ActionApi::matchAction(token, action.asString()).get();
         mqtt::MqttMessagePublisher::getInstance().sendMessage(res);
+        resCode = k200OK;
     } catch (const std::exception &e) {
         resCode = k404NotFound;
     }
