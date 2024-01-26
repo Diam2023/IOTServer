@@ -8,7 +8,7 @@ import { MessageService } from 'primeng/api';
   standalone: true,
   imports: [],
   template: `
-  <button (click)="sendAction()">{{ actionItem.action_name }}</button>
+  <button class="aciton-btn" (click)="sendAction()">{{ actionItem.action_name }}</button>
   `,
   styleUrl: './action-item.component.css'
 })

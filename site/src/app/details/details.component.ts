@@ -11,13 +11,11 @@ import { ActionItemComponent } from "../action-item/action-item.component";
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ActionItemComponent],
   template: `
-  <section>
     <section class="action-list">
-      <app-action-item *ngFor="let actionItem of actionList" [actionItem]="actionItem"></app-action-item>
-    </section>
+      <app-action-item class="action-item" *ngFor="let actionItem of actionList" [actionItem]="actionItem"></app-action-item>
     <!-- <button>添加行为</button>
     <button (click)="del()">删除设备</button> -->
-  </section>
+    </section>
   `,
   styleUrl: './details.component.css'
 })

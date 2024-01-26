@@ -1,0 +1,16 @@
+.aciton-btn {
+    display: block;
+    height: 20vh;
+    max-height: 4em;
+    width: 80vw;
+    max-width: 20em;
+    border-radius: 2em;
+    background-color: skyblue;
+    box-shadow: 1px 3px 3px rgb(196, 172, 172);
+    animation: .5s;
+}
+
+.aciton-btn:hover
+{
+    box-shadow: 2px 4px 4px rgb(196, 172, 172);
+}
