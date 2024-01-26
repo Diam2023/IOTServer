@@ -15,8 +15,8 @@ import { ActionItemComponent } from "../action-item/action-item.component";
     <section class="action-list">
       <app-action-item *ngFor="let actionItem of actionList" [actionItem]="actionItem"></app-action-item>
     </section>
-    <button>添加行为</button>
-    <button>删除设备</button>
+    <!-- <button>添加行为</button>
+    <button (click)="del()">删除设备</button> -->
   </section>
   `,
   styleUrl: './details.component.css'

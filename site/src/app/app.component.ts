@@ -40,6 +40,10 @@ export class AppComponent {
 
   notifyService: NotifyService | undefined;
 
+  public snedMessage(sum: string, msg: string) {
+    this.messageService.add({ severity: 'info', summary: sum, detail: msg, });
+  }
+
   constructor(private appCache: AppCache, private route: Router, private messageService: MessageService, private primengConfig: PrimeNGConfig) {
     this.primengConfig.ripple = true;
 
@@ -59,10 +63,14 @@ export class AppComponent {
         //   element.device_sn == res.topic;
         // }
 
-        if (res.status) {
-          this.messageService.add({ severity: 'info', summary: msg.topic, detail: '开灯', });
+        if (res.status == undefined) {
+          this.messageService.add({ severity: 'info', summary: msg.topic, detail: msg.json, });
         } else {
-          this.messageService.add({ severity: 'info', summary: msg.topic, detail: '关灯', });
+          if (res.status) {
+            this.messageService.add({ severity: 'info', summary: msg.topic, detail: '开灯', });
+          } else {
+            this.messageService.add({ severity: 'info', summary: msg.topic, detail: '关灯', });
+          }
         }
       });
     }

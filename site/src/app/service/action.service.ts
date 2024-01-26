@@ -12,6 +12,7 @@ export class ActionService {
   getAllApiUrl = "http://localhost:8089/api/action/all";
   newActionApiUrl = "http://localhost:8089/api/action/new";
   deleteActionApiUrl = "http://localhost:8089/api/action/delete";
+  callActionApiUrl = "http://localhost:8089/api/action/call";
 
   actionAll: ActionAll | undefined;
 
@@ -29,13 +30,38 @@ export class ActionService {
   constructor(private appCache: AppCache) {
   }
 
-  public async callAction(sn: String): Promise<Boolean> {
-    const data = await fetch(this.getAllApiUrl,
+  public async deleteAction(name: String) :Promise<Boolean>
+  {
+    let action = {
+      "action_name": name
+    }
+
+    const data = await fetch(this.deleteActionApiUrl,
       {
-        method: "GET",
+        method: "DELETE",
         headers: {
+          "Content-Type": "application/json",
           "Authorization": this.appCache.getToken().toString(),
         },
+        body: JSON.stringify(action)
+      });
+    return data.ok;
+  }
+
+  public async callAction(name: String): Promise<Boolean> {
+
+    let call = {
+      "action": name
+    }
+
+    const data = await fetch(this.callActionApiUrl,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": this.appCache.getToken().toString(),
+        },
+        body: JSON.stringify(call)
       });
     return data.ok;
   }
