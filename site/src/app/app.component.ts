@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { HomeComponent } from './home/home.component';
-import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
-import { DataStorge } from './utils/DataStorge';
-import routeConfig from './routes';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AppCache } from './utils/AppCache';
 
 @Component({
@@ -10,7 +8,8 @@ import { AppCache } from './utils/AppCache';
   standalone: true,
   imports: [
     HomeComponent,
-    RouterModule
+    RouterModule,
+    RouterLink
   ],
   template: `
   <main>

@@ -1,15 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, NgModule, OnInit, inject } from '@angular/core';
 import { HousingLocationComponent } from '../housing-location/housing-location.component';
 import { CommonModule } from '@angular/common';
-import { HousingLocation } from '../housinglocation';
-import { HousingService } from '../housing.service';
 import { AppCache } from '../utils/AppCache';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { DeviceService } from '../service/device.service';
 import { Device } from '../model/device';
 import { DeviceItemComponent } from '../device-item/device-item.component';
 import { FormsModule, NgModel } from '@angular/forms';
 import { NotifyService } from '../service/notify.service';
+import { ToastModule } from 'primeng/toast';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
 
 @Component({
   selector: 'app-home',
@@ -18,9 +18,16 @@ import { NotifyService } from '../service/notify.service';
     CommonModule,
     HousingLocationComponent,
     DeviceItemComponent,
-    FormsModule
+    FormsModule,
+    ToastModule,
+    RouterModule,
+    RouterLink
+  ],
+  providers: [
+    MessageService
   ],
   template: `
+  <p-toast></p-toast>
   <section class="new-device">
     <div class="new-device-mask" (click)="hideNewDevice()">
     </div>
@@ -48,7 +55,6 @@ export class HomeComponent {
 
   deviceService: DeviceService = inject(DeviceService);
   deviceList: Device[] = [];
-
 
   newDeviceName: String = '';
   newDeviceSN: String = '';
@@ -78,18 +84,29 @@ export class HomeComponent {
     }
   }
 
-  constructor(private appCache: AppCache, private route: Router, private notifyService: NotifyService) {
+  constructor(private appCache: AppCache, private route: Router, private notifyService: NotifyService, private messageService: MessageService, private primengConfig: PrimeNGConfig) {
+    this.primengConfig.ripple = true;
     notifyService.messages.subscribe(msg => {
-      console.log(msg);
+      // TODO Splite device SN and display device name
+      let res = JSON.parse(msg.json);
+      for (let index = 0; index < this.deviceList.length; index++) {
+        const element = this.deviceList[index];
+        element.device_sn == res.topic;
+      }
+
+      if (res.status) {
+        this.messageService.add({ severity: 'info', summary: msg.topic, detail: '開燈', });
+      } else {
+        this.messageService.add({ severity: 'info', summary: msg.topic, detail: '關燈', });
+      }
     });
 
-    // this.filteredLocationList = this.housingLocationList;
     // Fetch All Device
     this.deviceService.getAllDevice().then(d => {
       this.deviceList = d;
     }).catch(e => {
       console.error(e);
-      alert("获取设备失败！")
+      alert("获取设备失败！" + e);
     });
   }
 }
