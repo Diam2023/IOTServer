@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { HomeComponent } from './home/home.component';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AppCache } from './utils/AppCache';
+import { ToastModule } from 'primeng/toast';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
+import { NotifyService } from './service/notify.service';
+import { WebsocketService } from './service/websocket.service';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +13,11 @@ import { AppCache } from './utils/AppCache';
   imports: [
     HomeComponent,
     RouterModule,
-    RouterLink
+    RouterLink,
+    ToastModule,
+  ],
+  providers: [
+    MessageService
   ],
   template: `
   <main>
@@ -18,6 +26,7 @@ import { AppCache } from './utils/AppCache';
         <h1 class="main-title">IOTServer</h1>
     </a>
       </header>
+    <p-toast></p-toast>
     <section class="content">
       <router-outlet></router-outlet>
     </section>
@@ -28,10 +37,37 @@ import { AppCache } from './utils/AppCache';
 
 export class AppComponent {
   title = 'homes';
-  constructor(private appCache: AppCache, private route: Router) {
 
-    if (!appCache.isLoggedIn())
-    {
+  notifyService: NotifyService | undefined;
+
+  constructor(private appCache: AppCache, private route: Router, private messageService: MessageService, private primengConfig: PrimeNGConfig) {
+    this.primengConfig.ripple = true;
+
+    if (this.notifyService == undefined) {
+      if (this.appCache.isLoggedIn()) {
+        console.log("init ws notify");
+        this.notifyService = new NotifyService(new WebsocketService(this.appCache), this.appCache);
+      }
+    }
+
+    if (this.notifyService != undefined) {
+      this.notifyService.messages.subscribe(msg => {
+        // TODO Splite device SN and display device name
+        let res = JSON.parse(msg.json);
+        // for (let index = 0; index < this.deviceList.length; index++) {
+        //   const element = this.deviceList[index];
+        //   element.device_sn == res.topic;
+        // }
+
+        if (res.status) {
+          this.messageService.add({ severity: 'info', summary: msg.topic, detail: '开灯', });
+        } else {
+          this.messageService.add({ severity: 'info', summary: msg.topic, detail: '关灯', });
+        }
+      });
+    }
+
+    if (!appCache.isLoggedIn()) {
       this.route.navigate(['/login']);
     }
 

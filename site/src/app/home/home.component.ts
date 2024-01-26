@@ -18,16 +18,9 @@ import { MessageService, PrimeNGConfig } from 'primeng/api';
     CommonModule,
     HousingLocationComponent,
     DeviceItemComponent,
-    FormsModule,
-    ToastModule,
-    RouterModule,
-    RouterLink
-  ],
-  providers: [
-    MessageService
+    FormsModule
   ],
   template: `
-  <p-toast></p-toast>
   <section class="new-device">
     <div class="new-device-mask" (click)="hideNewDevice()">
     </div>
@@ -84,23 +77,7 @@ export class HomeComponent {
     }
   }
 
-  constructor(private appCache: AppCache, private route: Router, private notifyService: NotifyService, private messageService: MessageService, private primengConfig: PrimeNGConfig) {
-    this.primengConfig.ripple = true;
-    notifyService.messages.subscribe(msg => {
-      // TODO Splite device SN and display device name
-      let res = JSON.parse(msg.json);
-      for (let index = 0; index < this.deviceList.length; index++) {
-        const element = this.deviceList[index];
-        element.device_sn == res.topic;
-      }
-
-      if (res.status) {
-        this.messageService.add({ severity: 'info', summary: msg.topic, detail: '開燈', });
-      } else {
-        this.messageService.add({ severity: 'info', summary: msg.topic, detail: '關燈', });
-      }
-    });
-
+  constructor(private appCache: AppCache, private route: Router) {
     // Fetch All Device
     this.deviceService.getAllDevice().then(d => {
       this.deviceList = d;

@@ -13,8 +13,6 @@ export class ActionService {
   newActionApiUrl = "http://localhost:8089/api/action/new";
   deleteActionApiUrl = "http://localhost:8089/api/action/delete";
 
-
-
   actionAll: ActionAll | undefined;
 
   private async getAllAction(): Promise<ActionAll> {
@@ -29,6 +27,17 @@ export class ActionService {
   };
 
   constructor(private appCache: AppCache) {
+  }
+
+  public async callAction(sn: String): Promise<Boolean> {
+    const data = await fetch(this.getAllApiUrl,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": this.appCache.getToken().toString(),
+        },
+      });
+    return data.ok;
   }
 
   public async getActions(sn: String): Promise<Array<Action>> {

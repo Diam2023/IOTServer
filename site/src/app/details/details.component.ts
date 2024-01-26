@@ -33,7 +33,7 @@ export class DetailsComponent {
   constructor(private router: Router) {
     const sn = String(this.route.snapshot.params['sn']);
     if (sn.length <= 0) {
-    this.router.navigate(['/']);
+      this.router.navigate(['/']);
     }
 
     this.actionService.getActions(sn).then(actions => {
