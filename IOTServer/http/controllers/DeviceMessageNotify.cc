@@ -45,8 +45,13 @@ DeviceMessageNotify::handleNewConnection(const HttpRequestPtr &req, const WebSoc
 }
 
 void DeviceMessageNotify::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
-    auto &s = wsConnPtr->getContextRef<Subscriber>();
-    DeviceMessageNotify::getNotifyService().unsubscribe(s.uid, s.sid);
+    try {
+        auto &s = wsConnPtr->getContextRef<Subscriber>();
+        DeviceMessageNotify::getNotifyService().unsubscribe(s.uid, s.sid);
+    } catch (const std::exception& e)
+    {
+
+    }
 }
 
 void DeviceMessageNotifyHandler::handler(const mqtt::MqttData &data) {
