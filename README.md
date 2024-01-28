@@ -2,6 +2,42 @@
 
 ---
 
+
+## Usage
+
+### Install Drogon
+
+> https://github.com/drogonframework/drogon/wiki/ENG-02-Installation
+
+#### Arch
+
+```bash
+yay -S drogon
+```
+
+Database Environment Request
+* MySQL (MariaDB)
+* Redis
+
+
+### Install QtMqtt
+
+> https://github.com/KurtPattyn/QtMqtt
+
+#### Arch 
+```bash
+yay -S qt5-mqtt
+```
+
+---
+
+### Docker 
+```bash
+cd docker 
+docker compose run *
+# docker compose stop
+```
+
 ## Community API
 
 ### GoCQHttp

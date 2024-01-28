@@ -73,6 +73,10 @@ int main(int argc, char **argv) {
         // 最后解决方案Client在QtEventLoop中启动 Publish也在事件循环中调用
         mqtt::MqttClient::instance().registerNotifyCallback(cq::CqMqttDeviceMessageHandler::getInstance());
         mqtt::MqttClient::instance().registerNotifyCallback(DeviceMessageNotifyHandler::getInstance());
+        mqtt::MqttClient::instance().registerNotifyCallback([](const auto &r){
+            // DEBUG
+            LOG_INFO << r.second.toStyledString();
+        });
 
         // Load Mqtt Launch Mqtt start!
         mqtt::MqttClient::instance().loadConfig(drogon::app().getCustomConfig()["mqtt"]).start();
