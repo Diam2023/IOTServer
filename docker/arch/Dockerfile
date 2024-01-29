@@ -37,3 +37,4 @@ WORKDIR $SERVER_ROOT
 
 RUN ./build.sh
 
+CMD [ "/install/IOTServer/build/IOTServer" ]
