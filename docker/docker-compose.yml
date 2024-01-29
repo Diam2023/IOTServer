@@ -60,7 +60,4 @@ services:
     ports:
       - "9889:8080"
     volumes:
-      - "./cqhttp/cqconf/config.yml:/data/config.yml"
-      - "./cqhttp/cqconf/device.json:/data/device.json"
-
-
+      - "./cqhttp/cqconf:/data"
