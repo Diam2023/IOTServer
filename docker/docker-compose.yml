@@ -6,8 +6,9 @@ services:
 #      context: mysql
 #      dockerfile: Dockerfile
     image: mysql:8.2.0
-    extra_hosts:
-      - host.docker.internal:host-gateway
+    network_mode: host
+#    extra_hosts:
+#      - host.docker.internal:host-gateway
     ports:
       - "3306:3306"
     environment:
@@ -27,8 +28,9 @@ services:
     build:
       context: redis
       dockerfile: Dockerfile
-    extra_hosts:
-      - host.docker.internal:host-gateway
+    #extra_hosts:
+    #  - host.docker.internal:host-gateway
+    network_mode: host
     ports:
       - "6379:6379"
     container_name: redis-compose
@@ -37,8 +39,9 @@ services:
       - "./redis/db/:/data"
 
   mosquitto:
-    extra_hosts:
-      - host.docker.internal:host-gateway
+    #extra_hosts:
+    #  - host.docker.internal:host-gateway
+    network_mode: host
     build:
       context: mosquitto
       dockerfile: Dockerfile
@@ -50,8 +53,9 @@ services:
       - "9001:9001"
 
   qsign:
-    extra_hosts:
-      - host.docker.internal:host-gateway
+    #extra_hosts:
+    #  - host.docker.internal:host-gateway
+    network_mode: host
     image: hansaes/unidbg-fetch-qsign:latest
     ports:
       - "9888:8080"
@@ -62,8 +66,9 @@ services:
 
 # use https://qsign.loli.vet/ if error
   cqhttp:
-    extra_hosts:
-      - host.docker.internal:host-gateway
+    #extra_hosts:
+    #  - host.docker.internal:host-gateway
+    network_mode: host
     build:
       context: cqhttp
       dockerfile: Dockerfile
@@ -78,8 +83,9 @@ services:
       context: iotserver
       dockerfile: Dockerfile
     container_name: iotserver
-    extra_hosts:
-      - host.docker.internal:host-gateway
+    network_mode: host
+    #extra_hosts:
+    #  - host.docker.internal:host-gateway
     ports:
       - "8089:8089"
     restart: always
