@@ -1,23 +1,41 @@
 # IOT Server Project
 
----
+## Pre Config
+* config/config.yaml
+  * https://github.com/drogonframework/drogon/wiki/ENG-10-Configuration-Filehttps://github.com/drogonframework/drogon/wiki/ENG-10-Configuration-Filehttps://github.com/drogonframework/drogon/wiki/ENG-10-Configuration-File
+* docker/cqhttp/cqconf/config.yml
+  * https://docs.go-cqhttp.org/guide/config.html
+* docker/mosquitto/mosquitto.conf
 
+## Use Docker
+```shell
 
-## Usage
+git clone -b docker https://github.com/Diam2023/IOTServer
+# Or switch to
+cd docker 
+docker compose run *
+# use -d if need
+# docker compose stop
 
-### Install Drogon
-
-> https://github.com/drogonframework/drogon/wiki/ENG-02-Installation
-
-#### Arch
-
-```bash
-yay -S drogon
 ```
 
-Database Environment Request
+## Manual Install
+
+Request
 * MySQL (MariaDB)
 * Redis
+* yaml-cpp
+
+### Yaml-Cpp
+#### Arch
+```shell
+yay -S yaml-cpp
+```
+
+#### Debian
+```shell
+sudo apt install libyaml-cpp-dev
+```
 
 
 ### Install QtMqtt
@@ -25,19 +43,65 @@ Database Environment Request
 > https://github.com/KurtPattyn/QtMqtt
 
 #### Arch 
-```bash
+```shell
 yay -S qt5-mqtt
 ```
 
----
+#### Debian
+```shell
 
-### Docker 
-```bash
-cd docker 
-docker compose run *
-# docker compose stop
+git clone -b 5.12.3 git://code.qt.io/qt/qtmqtt.git qtmqtt
+
+cd qtmqtt
+
+mkdir build
+
+cd build
+
+qmake ..
+
+make
+
+sudo make install
+
 ```
 
+### Install Drogon
+
+> https://github.com/drogonframework/drogon/wiki/ENG-02-Installation
+
+#### Arch
+```shell
+yay -S drogon
+```
+#### Debian
+
+```shell
+
+git clone https://github.com/drogonframework/drogon
+
+cd drogon
+
+./build
+```
+### Install Drogon
+
+> https://github.com/drogonframework/drogon/wiki/ENG-02-Installation
+
+#### Arch
+```shell
+yay -S drogon
+```
+#### Debian
+
+```shell
+
+git clone https://github.com/drogonframework/drogon
+
+cd drogon
+
+./build
+```
 ## Community API
 
 ### GoCQHttp
