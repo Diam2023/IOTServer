@@ -6,7 +6,7 @@ ENV CC=gcc \
     RANLIB=gcc-ranlib \
     IROOT=/install
 
-RUN pacman -Syu --noconfirm && pacman -S --needed base-devel cmake git c-ares hiredis jsoncpp mariadb yay qt5-mqtt yarn --noconfirm
+RUN pacman -Syu --noconfirm && pacman -S --needed base-devel cmake git c-ares hiredis jsoncpp mariadb yay qt5-mqtt yarn yaml-cpp --noconfirm
 
 # Drogon
 
@@ -35,6 +35,8 @@ RUN ./build.sh
 
 ENV SITE_ROOT="$SERVER_ROOT/site"
 
+WORKDIR $SITE_ROOT
+
 RUN yarn install
 
 RUN yarn build
@@ -43,4 +45,8 @@ ENV BIN_DIR="$SERVER_ROOT/build"
 
 WORKDIR $BIN_DIR
 
-CMD [ "$BIN_DIR/IOTServer" ]
+EXPOSE 8089
+
+COPY config.yaml /install/IOTServer/config/config.yaml
+
+CMD [ "/install/IOTServer/build/IOTServer" ]
