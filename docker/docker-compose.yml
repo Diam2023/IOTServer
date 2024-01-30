@@ -1,16 +1,6 @@
 version: '3'
 
 services:
-  iotserver:
-    build:
-      context: iotserver
-      dockerfile: Dockerfile
-    container_name: iotserver
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    ports:
-      - "8089:8089"
-    restart: always
   mysql:
 #    build:
 #      context: mysql
@@ -81,3 +71,14 @@ services:
       - "9889:8080"
     volumes:
       - "./cqhttp/cqconf:/data"
+
+  iotserver:
+    build:
+      context: iotserver
+      dockerfile: Dockerfile
+    container_name: iotserver
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - "8089:8089"
+    restart: always
