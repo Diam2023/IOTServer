@@ -6,7 +6,7 @@ ENV CC=gcc \
     RANLIB=gcc-ranlib \
     IROOT=/install
 
-RUN pacman -Syu --noconfirm && pacman -S --needed base-devel cmake git c-ares hiredis jsoncpp mariadb yay --noconfirm
+RUN pacman -Syu --noconfirm && pacman -S --needed base-devel cmake git c-ares hiredis jsoncpp mariadb yay qt5-mqtt --noconfirm
 
 # Drogon
 
@@ -29,6 +29,12 @@ RUN git clone https://github.com/Diam2023/IOTServer $SERVER_ROOT
 
 WORKDIR $SERVER_ROOT
 
+RUN chmod +x ./build.sh
+
 RUN ./build.sh
 
-CMD [ "/install/IOTServer/build/IOTServer" ]
+ENV BIN_DIR="$SERVER_ROOT/build"
+
+WORKDIR $BIN_DIR
+
+CMD [ "cd $BIN_DIR && ./IOTServer" ]
