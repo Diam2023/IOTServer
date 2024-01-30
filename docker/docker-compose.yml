@@ -60,6 +60,7 @@ services:
     restart: always
     container_name: sign-compose
 
+# use https://qsign.loli.vet/ if error
   cqhttp:
     extra_hosts:
       - host.docker.internal:host-gateway
