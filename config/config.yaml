@@ -43,7 +43,7 @@ app:
   enable_session: false
   session_timeout: 1000
   session_same_site: 'Null'
-  document_root: '../site/dist/browser'
+  document_root: '/install/IOTServer/site/dist/browser'
   home_page: index.html
   use_implicit_page: true
   implicit_page: index.html
