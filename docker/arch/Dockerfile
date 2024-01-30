@@ -6,29 +6,22 @@ ENV CC=gcc \
     RANLIB=gcc-ranlib \
     IROOT=/install
 
-RUN pacman -Syu --noconfirm && pacman -S --needed base-devel git yay --noconfirm
-
-# yay
-#
-#ENV YAY_ROOT="$IROOT/yay"
-#
-#RUN git clone https://aur.archlinux.org/yay.git $YAY_ROOT
-#
-#WORKDIR $YAY_ROOT
-#
-#RUN makepkg -si
-#
-RUN yay --version
+RUN pacman -Syu --noconfirm && pacman -S --needed base-devel cmake git c-ares hiredis jsoncpp mariadb yay --noconfirm
 
 # Drogon
 
-RUN yay -Syyu --noconfirm && yay -S drogon --noconfirm
+ENV DROGON_ROOT="$IROOT/drogon"
 
-#    LANG=en_US.UTF-8 \
-#    LANGUAGE=en_US:en \
-#    LC_ALL=en_US.UTF-8 \
+RUN git clone https://github.com/drogonframework/drogon $DROGON_ROOT
 
-CMD [ "drogon_ctl version" ]
+WORKDIR $DROGON_ROOT
+
+RUN ./build.sh
+
+RUN drogon_ctl version
+
+
+# IOTServer
 
 ENV SERVER_ROOT="$IROOT/IOTServer"
 
