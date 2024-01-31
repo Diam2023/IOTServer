@@ -41,13 +41,14 @@ namespace mqtt {
         isConnected = false;
         if (clientPtr->error() != QMqttClient::NoError) {
             abort();
-            LOG_ERROR << qt_getEnumName(clientPtr->error()) << " Enum Value: " << (int) clientPtr->error();
+            // LOG_ERROR << qt_getEnumName(clientPtr->error()) << " Enum Value: " << (int) clientPtr->error();
         }
     }
 
     void MqttClient::start() {
         // TODO Add SSL
 
+        // !If ndef use setKeepAlive
         clientPtr->setAutoKeepAlive(true);
 
         clientPtr->connectToHost();
