@@ -108,6 +108,10 @@ cd drogon
 
 #### User Interface
 
+All Command: config/config.yaml:240
+
+Or send "help" to Bot
+
 [//]: # (TODO)
 
 | command              | action    |
