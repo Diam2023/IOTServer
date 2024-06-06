@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
         mqtt::MqttClient::instance().registerNotifyCallback(DeviceMessageNotifyHandler::getInstance());
         mqtt::MqttClient::instance().registerNotifyCallback([](const auto &r){
             // DEBUG
-            LOG_INFO << r.second.toStyledString();
+            LOG_INFO << "TOPIC: " << r.first.name().toStdString() << "DATA: " << r.second.toStyledString();
         });
 
         // Load Mqtt Launch Mqtt start!
