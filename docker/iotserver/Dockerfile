@@ -49,4 +49,4 @@ EXPOSE 8089
 
 COPY config.yaml /install/IOTServer/config/config.yaml
 
-CMD [ "/install/IOTServer/build/IOTServer" ]
+CMD [ "/install/IOTServer/build/IOTServer", "/install/IOTServer/config/config.yaml" ]
