@@ -10,8 +10,7 @@
 ## Use Docker
 ```shell
 
-git clone -b docker https://github.com/Diam2023/IOTServer
-# Or switch to
+git clone https://github.com/Diam2023/IOTServer
 cd docker 
 docker compose run *
 # use -d if need
