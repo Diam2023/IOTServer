@@ -10,7 +10,7 @@
 #     # [Options, Compression]
 #   ]
 listeners:
-  - address: 127.0.0.1
+  - address: 192.168.0.188
     port: 8089
     https: false
 db_clients:
@@ -18,7 +18,7 @@ db_clients:
   - name: 'default'
     # rdbms: Server type, postgresql,mysql or sqlite3, "postgresql" by default
     rdbms: mysql
-    host: 127.0.0.1
+    host: 192.168.0.188
     port: 3306
     dbname: iot_server
     user: 'server'
@@ -30,7 +30,7 @@ db_clients:
     auto_batch: true
 redis_clients:
   - name: 'default'
-    host: 127.0.0.1
+    host: 192.168.0.188
     port: 6379
     username: 'default'
     passwd: 'iO81@71'
@@ -228,7 +228,7 @@ plugins:
 custom_config:
   debug_cache: false
   mqtt: {
-    host: '127.0.0.1',
+    host: '192.168.0.188',
     port: 1883,
     filter_cache_update_time: 500
   }

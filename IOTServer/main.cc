@@ -37,7 +37,7 @@ static int runServer() {
         drogon::app().setTermSignalHandler(&exitSignalHandler);
 
         // Load config file
-        drogon::app().loadConfigFile("../config/config.yaml");
+        drogon::app().loadConfigFile("/install/IOTServer/config/config.yaml");
         LOG_INFO << "Document Root: " << drogon::app().getDocumentRoot();
 
         // Get Customer Config
